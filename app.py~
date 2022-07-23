@@ -2,7 +2,7 @@ import os
 
 import openai
 from flask import Flask, redirect, render_template, request, url_for
-import datetime, json
+import datetime
 
 
 from cuentos import cuentos#, jsonify
@@ -32,21 +32,7 @@ def editar_sesiones():
         nuevasesion['fecha'] = datetime.date
         nuevasesion['historias']=historias
         sesiones.append(nuevasesion)
-
-        # create json object from dictionary
-        #jsonfile = json.dumps(sesiones)
-        # open file for writing, "w" 
-        #f = open("sesiones.json","w")
-        # write json object to file
-        #f.write(jsonfile)
-        # close file
-        #f.close()
-
-        # write the python object (dict) to pickle file
-        f = open("sesiones.pkl","wb")
-        pickle.dump(sesiones,f)
-        f.close()
-
+        
         return render_template("sesiones.html", historias=historias, sesiones=sesiones)
     if request.method == "DELETE":
         pass

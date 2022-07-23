@@ -27,21 +27,21 @@ def crearcuentos(file):
         else:
             nameline=1
         number=cuento[0][:-1]
-        cuentosdict[number]={"name":cuento[nameline], "content":[]}
+        cuentosdict[number]={"titulo":cuento[nameline], "historia":[]}
         for line in cuento[nameline+1:]:
             if line.find("años")==-1 or len(line)>10:
-                cuentosdict[number]["content"].append(line)
+                cuentosdict[number]["historia"].append(line)
             else:
-                cuentosdict[number]["author"]= cuentosdict[number]["content"].pop()
+                cuentosdict[number]["edad"]= cuentosdict[number]["historia"].pop()
                 cuentosdict[number]["age"]=line
                 break
     return cuentosdict
 
 def printtale(cuento):
-    print(cuento["name"])
-    for line in cuento["content"]:
+    print(cuento["titulo"])
+    for line in cuento["historia"]:
         print(line[:-1])
-    print(cuento["author"])
+    print(cuento["autor"])
     print(cuento["age"])
     
     
@@ -62,6 +62,8 @@ def printparagraphfile(pars,outputfile='output.txt'):
 
 f = open("cuentos.txt", 'r')
 cuentos=crearcuentos(f)     
+
+#from cienpalabras import cuentos as cuentos
 
 if __name__== "__main__":
     printtale(cuentos["88"])

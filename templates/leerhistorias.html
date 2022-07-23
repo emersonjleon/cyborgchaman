@@ -1,0 +1,25 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<h4>Leer historias</h4>
+  {% for post in historias %}
+<div class="story">
+  <p> <b>{{ post.titulo }}</b></p>
+  <p> {{post.historia}}</p>
+  <p>{{ post.autor}} </p>
+  
+</div>
+  {% endfor %}
+{% if historias %}
+{% else %}
+<div> Aún no hay historias aquí...</div>
+{% endif %}
+
+
+  <!--form action="/leerhistorias/" method="post">
+    <p> 
+    <input type="submit" text value="Leer historia" />
+    </p>
+  </form-->
+{% endblock %}

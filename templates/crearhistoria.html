@@ -1,0 +1,39 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+
+  <h4>Crear historia</h4>
+  <form action="/crearhistoria" method="post">
+    <div>
+      openAI creará una nueva historia
+      {% if historias %}
+         a partir de los siguientes relatos:
+      {% endif %}
+      
+      {% for post in historias %}
+        <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
+      {% endfor %}
+
+
+    </div>
+
+    <input type="submit" text value="Crear historia" />
+  </form>
+  {% if leer %}
+    <div class="result">{{ leer }}</div>
+  {% endif %}
+
+
+  {% if result %}
+    <div class="story">
+      <p> <b>{{ result.titulo }}</b></p>
+      <p> {{result.historia}}</p>
+      <p>{{ result.autor}} </p>
+    </div>
+    {% endif %}
+</body>
+
+
+
+{% endblock %}

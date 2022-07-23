@@ -1,0 +1,47 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+
+  <h4>Sesión Actual de Historias</h4>
+    <div>
+      
+      {% if historias %}
+         Estas son las historias de la sesión actual:
+      
+        {% for post in historias %}
+          <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
+          {% endfor %}
+      {% else %}
+        <p> Aun no hay historias aquí...</p>	  
+      {% endif %}
+      
+    </div>
+
+    <form action="/sesiones" method="post">
+      <p>  <input type="text" name="sesionname" placeholder="nombre de la sesión" />
+    <input type="submit" text value="Guardar historias" /> </p>
+    </form>
+    
+
+    <h4>Sesiones Anteriores</h4>
+
+    <div class=story>
+
+      {% for s in sesiones %}
+      <p> <b>{{s.nombre}}</b>:</p>
+      <p>
+	  {% for post in s.historias %}
+	     {{post.titulo }}, de {{post.autor}};
+	  {% endfor %}
+      </p>
+    {% endfor %}
+
+      </div>
+      
+    
+  
+
+
+
+{% endblock %}
