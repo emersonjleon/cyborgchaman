@@ -36,17 +36,20 @@
 	  {% endfor %}
       </p>
     {% endfor %}
+</div>
 
+    <div>
+  <h4>Borrar sesión</h4>
     <form action="/sesiones" method="delete">
-      <p>  <input type="text" name="deletesesion" placeholder="Nombre de la sesion" />
+      <p>  <input type="text" name="deletesesion" placeholder="Nombre de la sesión" />
     <input type="submit" text value="Eliminar sesión" /> </p>
     </form>
 
       {% if nota %}
           <p> {{nota}}</p>
       {% endif %}
-      
-    </div>
+      </div>
+    
       
     
   
