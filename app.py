@@ -8,15 +8,15 @@ import datetime, pickle
 from cuentos import cuentos#, jsonify
 #from sesiones import sesiones as sesiones
     
-objects = []
+pickleobjects = []
 with (open("sesiones.pkl", "rb")) as openfile:
     while True:
         try:
-            objects.append(pickle.load(openfile))
+            pickleobjects.append(pickle.load(openfile))
         except EOFError:
             break
 
-sesiones=objects[0]
+sesiones=pickleobjects[-1]
 
 app = Flask(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -27,8 +27,8 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 def loscuentos():
     #return cuentos
     #return str(historias)
-    #return str(type(sesiones))
-    return sesiones
+    #return str(sesiones)
+    return str(pickleobjects)
 
 
 
@@ -43,22 +43,34 @@ def editar_sesiones():
         sesiones.append(nuevasesion)
 
         # create json object from dictionary
-        #jsonfile = json.dumps(sesiones)
+        jsonfile = json.dumps(sesiones)
         # open file for writing, "w" 
-        #f = open("sesiones.json","w")
+        f = open("sesiones.json","w")
         # write json object to file
-        #f.write(jsonfile)
+        f.write(jsonfile)
         # close file
-        #f.close()
+        f.close()
 
         # write the python object (dict) to pickle file
         f = open("sesiones.pkl","wb")
         pickle.dump(sesiones,f)
         f.close()
 
+ 
         return render_template("sesiones.html", historias=historias, sesiones=sesiones)
     if request.method == "DELETE":
-        pass
+        borrarsesion = request.form["deletesesion"]
+        for i in range(len(sesiones)):
+            if sesiones[i]['nombre']==borrarsesion:
+                deleted=sesiones.pop(i)
+                nota=f'Se eliminó la sesión {borrarsesion}'
+                f = open("sesiones.pkl","wb")
+                pickle.dump(sesiones,f)
+                f.close()
+                break
+            else:
+                nota='No se encontró ninguna sesión con ese nombre'
+        return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
     return render_template("sesiones.html", historias=historias, sesiones=sesiones)
 
 ###################
