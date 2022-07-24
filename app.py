@@ -21,14 +21,16 @@ sesiones=pickleobjects[-1]
 app = Flask(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-
+def listToDict(lst):
+    op = {i: lst[i] for i in range(len(lst))}
+    return op
 
 @app.route('/cuentos')
 def loscuentos():
     #return cuentos
     #return str(historias)
     #return str(sesiones)
-    return str(pickleobjects)
+    return listToDict(pickleobjects)
 
 
 
@@ -58,6 +60,7 @@ def editar_sesiones():
 
  
         return render_template("sesiones.html", historias=historias, sesiones=sesiones)
+    ##############
     if request.method == "DELETE":
         borrarsesion = request.form["deletesesion"]
         for i in range(len(sesiones)):
@@ -69,6 +72,7 @@ def editar_sesiones():
                 f.close()
                 break
             else:
+                
                 nota='No se encontró ninguna sesión con ese nombre'
         return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
     return render_template("sesiones.html", historias=historias, sesiones=sesiones)

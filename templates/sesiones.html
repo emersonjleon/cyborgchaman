@@ -19,7 +19,7 @@
     </div>
 
     <form action="/sesiones" method="post">
-      <p>  <input type="text" name="sesionname" placeholder="nombre de la sesión" />
+      <p>  <input type="text" name="sesionname" placeholder="nombre de la sesión" required />
     <input type="submit" text value="Guardar historias" /> </p>
     </form>
     
@@ -29,7 +29,7 @@
     <div class=story>
 
       {% for s in sesiones %}
-      <p> <b>{{s.nombre}}</b>:</p>
+      <p> <b>{{s.fecha}}, {{s.nombre}}</b>:</p>
       <p>
 	  {% for post in s.historias %}
 	     {{post.titulo }}, de {{post.autor}};
@@ -41,7 +41,7 @@
     <div>
   <h4>Borrar sesión</h4>
     <form action="/sesiones" method="delete">
-      <p>  <input type="text" name="deletesesion" placeholder="Nombre de la sesión" />
+      <p>  <input type="text" name="deletesesion" placeholder="Nombre de la sesión" required />
     <input type="submit" text value="Eliminar sesión" /> </p>
     </form>
 
