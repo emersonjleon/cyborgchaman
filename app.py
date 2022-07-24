@@ -2,11 +2,17 @@ import os
 
 import openai
 from flask import Flask, redirect, render_template, request, url_for
-import datetime, pickle
+import datetime, pickle, 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app = Flask(__name__)
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-from cuentos import cuentos#, jsonify
-#from sesiones import sesiones as sesiones
+
+
     
 pickleobjects = []
 with (open("sesiones.pkl", "rb")) as openfile:
@@ -18,12 +24,14 @@ with (open("sesiones.pkl", "rb")) as openfile:
 
 sesiones=pickleobjects[-1]
 
-app = Flask(__name__)
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def listToDict(lst):
     op = {i: lst[i] for i in range(len(lst))}
     return op
+
+from cuentos import cuentos#, jsonify
+#from sesiones import sesiones as sesiones
+
 
 @app.route('/cuentos')
 def loscuentos():

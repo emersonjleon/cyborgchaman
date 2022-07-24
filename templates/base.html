@@ -1,5 +1,7 @@
 <!doctype html>
 <html>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <head>
       <title>Cyborg Shaman</title>
   <link
@@ -9,8 +11,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
   </head>
   <body>
+     <div class="w3-container"> 
       <img src="{{ url_for('static', filename='cyborgshaman.jpg') }}" width="150" height="150"/>
-  <h3>Cyborg Shaman</h3>
+  <h3 href="/index">Cyborg Shaman</h3>
 
       <div> <a href="/ingresarhistoria">Ingresar historias</a>
 	<a href="/leerhistorias">Leer historias</a>
@@ -18,5 +21,6 @@
       </div>
         <hr>
         {% block content %}{% endblock %}
+	</div>
     </body>
 </html>
