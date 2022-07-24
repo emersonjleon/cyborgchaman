@@ -6,8 +6,17 @@ import datetime, pickle
 
 
 from cuentos import cuentos#, jsonify
-from sesiones import sesiones as sesiones
+#from sesiones import sesiones as sesiones
     
+objects = []
+with (open("sesiones.pkl", "rb")) as openfile:
+    while True:
+        try:
+            objects.append(pickle.load(openfile))
+        except EOFError:
+            break
+
+sesiones=objects[0]
 
 app = Flask(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY")
