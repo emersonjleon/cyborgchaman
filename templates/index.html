@@ -3,13 +3,13 @@
 
 {% block content %}
 <h4>Index</h4>
+<div>
 
   {% for link in links %}
-<div >
    {{link[0]}}
-  
+    <a href="{{link}}">{{link}}</a>  
+  {% endfor %}
 </div>
-{% endfor %}
   
 
 

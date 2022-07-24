@@ -13,11 +13,13 @@
   <body>
      <div class="w3-container"> 
       <img src="{{ url_for('static', filename='cyborgshaman.jpg') }}" width="150" height="150"/>
-  <h3 href="/index">Cyborg Shaman</h3>
+  <h3>Cyborg Shaman</h3>
 
-      <div> <a href="/ingresarhistoria">Ingresar historias</a>
-	<a href="/leerhistorias">Leer historias</a>
-	<a href="/crearhistoria">Crear historias</a>
+  <div> 
+    <a href="/ingresarhistoria">Ingresar historias</a>
+    <a href="/leerhistorias">Leer historias</a>
+    <a href="/crearhistoria">Crear historias</a>
+    <a href="/index">index</a>
       </div>
         <hr>
         {% block content %}{% endblock %}
