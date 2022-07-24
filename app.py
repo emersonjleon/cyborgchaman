@@ -2,7 +2,7 @@ import os
 
 import openai
 from flask import Flask, redirect, render_template, request, url_for
-import datetime, pickle, 
+import datetime, pickle
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
