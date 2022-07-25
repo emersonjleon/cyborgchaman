@@ -61,11 +61,15 @@ input[type="text"] {
   color: #8e8ea0;
   opacity: 1;
 }
-input[type="textarea"] {
+textarea {
   padding: 2px 2px;
   border: 1px solid #10a37f;
   border-radius: 4px;
   margin-bottom: 24px;
+}
+::placeholder {
+  color: #8e8ea0;
+  opacity: 1;
 }
 
 
