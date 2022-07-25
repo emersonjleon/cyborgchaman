@@ -41,6 +41,13 @@ def loscuentos():
     return listToDict(pickleobjects)
 
 
+@app.route('/display')
+def display():
+    displaylist=[str(elt) for elt in pickleobjects]
+    return render_template("display.html", displaylist=displaylist)
+
+
+
 
 @app.route("/sesiones", methods=("GET", "POST","DELETE"))
 def editar_sesiones():
