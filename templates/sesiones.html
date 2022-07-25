@@ -29,7 +29,7 @@
     <div class=story>
 
       {% for s in sesiones %}
-      <p> <b>{{s.fecha}}, {{s.nombre}}</b>:</p>
+      <p> <b>{{s.nombre}}  </b>({{s.fecha}})</p>
       <p>
 	  {% for post in s.historias %}
 	     {{post.titulo }}, de {{post.autor}};
