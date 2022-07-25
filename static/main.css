@@ -56,6 +56,10 @@ input[type="text"] {
   border-radius: 4px;
   margin-bottom: 24px;
 }
+::placeholder {
+  color: #8e8ea0;
+  opacity: 1;
+}
 input[type="textarea"] {
   padding: 2px 2px;
   border: 1px solid #10a37f;
@@ -64,10 +68,7 @@ input[type="textarea"] {
 }
 
 
-::placeholder {
-  color: #8e8ea0;
-  opacity: 1;
-}
+
 input[type="submit"] {
   padding: 12px 0;
   color: #fff;
