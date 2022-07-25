@@ -11,16 +11,15 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
   </head>
   <body>
-     <div class="w3-container" style="align-items: center;"> 
-      <img src="{{ url_for('static', filename='cyborgshaman.jpg') }}" width="150" height="150"/>
-  <h3>Cyborg Shaman</h3>
+     <div class="w3-container w3-teal" style="align-items: center;"> 
+     <a href="/index"> <img src="{{ url_for('static', filename='cyborgshaman.jpg') }}" width="150" height="150" cursor="default"   /> </a>
+  <h2>Cyborg Shaman</h2>
 
   <div> 
     <a href="/ingresarhistoria">Ingresar historias</a>
     <a href="/leerhistorias">Leer historias</a>
-    <p>
     <a href="/crearhistoria">Crear historias</a>
-    <a href="/index">index</a>
+    
       </div>
         <hr>
         {% block content %}{% endblock %}

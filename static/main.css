@@ -36,6 +36,16 @@ h3 {
   color: #202123;
   margin: 16px 0 40px;
 }
+h4 {
+  font-size: 28px;
+  line-height: 40px;
+  font-weight: bold;
+  color: #05584f;
+  margin: 16px 0 20px;
+}
+
+
+
 form {
   display: flex;
   flex-direction: column;
@@ -65,6 +75,10 @@ input[type="submit"] {
   margin-top: 40px;
 }
 
+.center {
+  align-items: center;
+  text-align: center;
+}
 
 
 
