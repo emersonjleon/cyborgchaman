@@ -15,7 +15,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
     
 pickleobjects = []
-with (open("sesiones.pkl", "rb")) as openfile:
+with (open("sesiones0.pkl", "rb")) as openfile:
     while True:
         try:
             pickleobjects.append(pickle.load(openfile))
