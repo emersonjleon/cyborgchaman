@@ -16,3 +16,7 @@ build/
 .DS_STORE
 
 .env
+
+sesiones (1).pkl
+sesiones1.pkl
+sesiones2.pkl

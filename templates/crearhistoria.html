@@ -12,16 +12,17 @@
           a partir de los siguientes relatos:
 	{% endif %}
       </p>
-      
-      {% for post in historias %}
+
       <p>
-	<input type="checkbox" id="{{post.titulo}}" name="{{post.titulo }}" value="True">
+      {% for post in historias %}
+      
+	<input type="checkbox" id="{{post.titulo}}" name="{{post.titulo }}" value="True" checked>
 	<label for="{{post.titulo }}"> 
 	<b>{{post.titulo }}</b>, de {{post.autor}}
-        </label>
-      </p>
+        </label> <br>
       {% endfor %}
-
+      </p>
+      
 
     </div>
 
@@ -42,6 +43,13 @@
     </div>
     {% endif %}
 
+    {% if checked %}
+    <div> (inspirada en:
+      {% for story in checked %}
+        {{story.titulo}};
+      {% endfor %}
+    )</div>
+    {% endif %}
 
 
 

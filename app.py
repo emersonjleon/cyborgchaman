@@ -86,6 +86,19 @@ def editar_sesiones():
                 
                     nota='No se encontró ninguna sesión con ese nombre'
             return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
+        #######################
+        elif myaction == "cargarsesion":  
+            cargarsesion = request.form["cargarsesion"]
+            for i in range(len(sesiones)):
+                if sesiones[i]['nombre']==cargarsesion:
+                    historias=sesiones[i]['historias']
+                    nota= f'se cargó la sesión { sesiones[i]["nombre"] }'
+                    break
+                else:
+                    nota='No se encontró ninguna sesión con ese nombre'
+            return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
+
+
     return render_template("sesiones.html", historias=historias, sesiones=sesiones)
 
 ###################
@@ -187,11 +200,29 @@ def leerhistorias():
 @app.route("/crearhistoria", methods=("GET", "POST"))
 def crearhistoria():
     if request.method == "POST":
-        nuevahistoria=openAI_create_story(historias)
+        checked=[]
+        unchecked=[]
+        for historia in historias:
+            try:
+                tit=request.form[historia['titulo']]
+
+            except KeyError:
+                unchecked.append(historia)
+            # optional block
+            # Handling of exception (if required)
+
+            else:
+                checked.append(historia)
+            # execute if no exception
+            #checked=[historia for historia in historias if request.form[historia['titulo']]==True]
+        
+        
+        nuevahistoria=openAI_create_story(checked)
         result = {'historia':nuevahistoria, 'autor':"openAI"}
         result['titulo']=openAI_generar_titulo(result['historia'])
+        result['AIinspiration']=[story['titulo'] for story in checked ]
         historias.append(result)
-        return render_template("crearhistoria.html", historias=historias, result=result)
+        return render_template("crearhistoria.html", historias=historias, result=result, checked=checked)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
 
     #result = request.args.get("result")
