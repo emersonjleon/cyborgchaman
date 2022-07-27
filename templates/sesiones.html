@@ -3,7 +3,7 @@
 
 {% block content %}
 
-  <h4>Sesión Actual de Historias</h4>
+  <h4>Sesiones</h4>
     <div>
       
       {% if historias %}
@@ -11,17 +11,30 @@
       
         {% for post in historias %}
           <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
-          {% endfor %}
+        {% endfor %}
       {% else %}
         <p> Aun no hay historias aquí...</p>	  
       {% endif %}
-      
     </div>
 
-    <form action="/sesiones" method="post">
-      <p>  <input type="text" name="sesionname" placeholder="nombre de la sesión" required />
-    <input type="submit" text value="Guardar historias" /> </p>
-    </form>
+
+    <div>      
+      <form action="/sesiones" method="post">
+	  <input type="submit" text value="Guardar historias" />
+	  <input type="text" name="sesionname" placeholder="nombre de la sesión" required />
+      </form>
+    </div>
+
+
+    {% if historias%}
+    <div class="leftalign">
+
+      <form action="/sesiones" method="post">
+        <input type="submit" text value="Borrar sesión" />
+      </form>
+    </div>
+    {% endif %}
+
     
 
     <h4>Sesiones Anteriores</h4>
@@ -35,20 +48,22 @@
 	     {{post.titulo }}, de {{post.autor}};
 	  {% endfor %}
       </p>
-    {% endfor %}
-</div>
+      {% endfor %}
+    </div>
 
-    <div>
-  <h4>Borrar sesión</h4>
-    <form action="/sesiones" method="delete">
-      <p>  <input type="text" name="deletesesion" placeholder="Nombre de la sesión" required />
-    <input type="submit" text value="Eliminar sesión" /> </p>
-    </form>
 
+    
+    <div class="center">
+      <h4>Borrar sesión</h4>
+      <form action="/sesiones" method="post">
+	  <input type="text" name="deletesesion" placeholder="Nombre de la sesión" required />
+	  <input type="submit" text value="Eliminar sesión" />
+      </form>
+    
       {% if nota %}
           <p> {{nota}}</p>
       {% endif %}
-      </div>
+    </div>
     
       
     

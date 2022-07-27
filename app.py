@@ -60,13 +60,13 @@ def editar_sesiones():
         sesiones.append(nuevasesion)
 
         # create json object from dictionary
-        jsonfile = json.dumps(sesiones)
+        #jsonfile = json.dumps(sesiones)
         # open file for writing, "w" 
-        f = open("sesiones.json","w")
+        #f = open("sesiones.json","w")
         # write json object to file
-        f.write(jsonfile)
+        #f.write(jsonfile)
         # close file
-        f.close()
+        #f.close()
 
         # write the python object (dict) to pickle file
         f = open("sesiones.pkl","wb")

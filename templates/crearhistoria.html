@@ -5,14 +5,21 @@
 
   <h4>Crear historia</h4>
   <form action="/crearhistoria" method="post">
-    <div>
-      openAI creará una nueva historia
-      {% if historias %}
-         a partir de los siguientes relatos:
-      {% endif %}
+    <div class="alignleft">
+      <p>
+	openAI creará una nueva historia
+	{% if historias %}
+          a partir de los siguientes relatos:
+	{% endif %}
+      </p>
       
       {% for post in historias %}
-        <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
+      <p>
+	<input type="checkbox" id="{{post.titulo}}" name="{{post.titulo }}" value="True">
+	<label for="{{post.titulo }}"> 
+	<b>{{post.titulo }}</b>, de {{post.autor}}
+        </label>
+      </p>
       {% endfor %}
 
 
@@ -20,9 +27,11 @@
 
     <input type="submit" text value="Crear historia" />
   </form>
-  {% if leer %}
-    <div class="result">{{ leer }}</div>
-  {% endif %}
+
+
+
+  
+    
 
 
   {% if result %}
@@ -32,7 +41,7 @@
       <p>{{ result.autor}} </p>
     </div>
     {% endif %}
-</body>
+
 
 
 
