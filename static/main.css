@@ -46,11 +46,13 @@ h4 {
 
 
 
-/* form { */
-/*   display: flex; */
-/*   flex-direction: column; */
-/*   width: 320px; */
-/* } */
+form {
+  margin-bottom: 24px;
+}
+.old {
+  display: flex;
+  flex-direction: column;
+}
 input[type="text"] {
   padding: 12px 16px;
   border: 1px solid #10a37f;

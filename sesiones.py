@@ -1,24 +1,28 @@
 import datetime, pickle
 
-pickleobjects = []
-sesiones=[]
-f = open("sesiones0.pkl","wb")
-pickle.dump(sesiones,f)
-f.close()
+def clearsesiones():
+    sesiones=[]
+    f = open("sesiones0.pkl","wb")
+    pickle.dump(sesiones,f)
+    f.close()
 
+def loadsesiones():
+    pickleobjects = []
+    with (open("sesiones.pkl", "rb")) as openfile:
+        while True:
+            try:
+                pickleobjects.append(pickle.load(openfile))
+            except EOFError:
+                break
 
-with (open("sesiones.pkl", "rb")) as openfile:
-    while True:
-        try:
-            pickleobjects.append(pickle.load(openfile))
-        except EOFError:
-            break
+    return pickleobjects[-1]
 
-sesiones=pickleobjects[-1]
+sesiones=loadsesiones()
 
-print(sesiones.pop(4))
+#print(sesiones.pop(4))
 
-print(len(pickleobjects))
+#print(len(pickleobjects)) # 1
+
 
 for obj in sesiones:
     print('*******************')
@@ -30,9 +34,10 @@ for obj in sesiones:
         print(historia['historia'])
         
 
-f = open("sesiones.pkl","wb")
-pickle.dump(sesiones,f)
-f.close()
+def savesesiones():        
+    f = open("sesiones.pkl","wb")
+    pickle.dump(sesiones,f)
+    f.close()
 
 
 

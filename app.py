@@ -15,7 +15,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
     
 pickleobjects = []
-with (open("sesiones0.pkl", "rb")) as openfile:
+with (open("sesiones.pkl", "rb")) as openfile:
     while True:
         try:
             pickleobjects.append(pickle.load(openfile))
@@ -35,10 +35,10 @@ from cuentos import cuentos#, jsonify
 
 @app.route('/cuentos')
 def loscuentos():
-    #return cuentos
+    return cuentos
     #return str(historias)
     #return str(sesiones)
-    return listToDict(pickleobjects)
+    #return listToDict(pickleobjects)
 
 
 @app.route('/display')
@@ -46,50 +46,46 @@ def display():
     displaylist=[str(elt) for elt in pickleobjects]
     return render_template("display.html", displaylist=displaylist)
 
+historias=[]
 
 
-
-@app.route("/sesiones", methods=("GET", "POST","DELETE"))
+@app.route("/sesiones", methods=("GET", "POST"))
 def editar_sesiones():
-    #guardar sesion
+    global historias
+
     if request.method == "POST":
-        nuevasesion={}
-        nuevasesion['nombre'] = request.form["sesionname"]
-        nuevasesion['fecha'] = datetime.date
-        nuevasesion['historias']=historias
-        sesiones.append(nuevasesion)
+        myaction = request.form["myaction"]
+        if myaction == "guardarhistorias":  #nueva sesion
+            nuevasesion={}
+            nuevasesion['nombre'] = request.form["sesionname"]
+            nuevasesion['fecha'] = datetime.date
+            nuevasesion['historias']=historias
+            sesiones.append(nuevasesion)
 
-        # create json object from dictionary
-        #jsonfile = json.dumps(sesiones)
-        # open file for writing, "w" 
-        #f = open("sesiones.json","w")
-        # write json object to file
-        #f.write(jsonfile)
-        # close file
-        #f.close()
-
-        # write the python object (dict) to pickle file
-        f = open("sesiones.pkl","wb")
-        pickle.dump(sesiones,f)
-        f.close()
-
- 
-        return render_template("sesiones.html", historias=historias, sesiones=sesiones)
-    ##############
-    if request.method == "DELETE":
-        borrarsesion = request.form["deletesesion"]
-        for i in range(len(sesiones)):
-            if sesiones[i]['nombre']==borrarsesion:
-                deleted=sesiones.pop(i)
-                nota=f'Se eliminó la sesión {borrarsesion}'
-                f = open("sesiones.pkl","wb")
-                pickle.dump(sesiones,f)
-                f.close()
-                break
-            else:
+            # write the python object (dict) to pickle file
+            f = open("sesiones.pkl","wb")
+            pickle.dump(sesiones,f)
+            f.close()
+            return render_template("sesiones.html", historias=historias, sesiones=sesiones)
+            
+        elif myaction == "borrarhistorias":  #caution
+            historias=[]
+            return render_template("sesiones.html", historias=historias, sesiones=sesiones)
+        ##############
+        elif myaction == "borrarsesionguardada":  
+            borrarsesion = request.form["deletesesion"]
+            for i in range(len(sesiones)):
+                if sesiones[i]['nombre']==borrarsesion:
+                    deleted=sesiones.pop(i)
+                    nota=f'Se eliminó la sesión {borrarsesion}'
+                    f = open("sesiones.pkl","wb")
+                    pickle.dump(sesiones,f)
+                    f.close()
+                    break
+                else:
                 
-                nota='No se encontró ninguna sesión con ese nombre'
-        return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
+                    nota='No se encontró ninguna sesión con ese nombre'
+            return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
     return render_template("sesiones.html", historias=historias, sesiones=sesiones)
 
 ###################
@@ -158,7 +154,6 @@ def palabrasprincipales(cnumber):
 
 
 ###################################
-historias=[]
 ##mejorar esto con sesiones...............
 #[{'autor': 'emersin', 'titulo': 'Locura', 'historia': ' El mundo se deshace ante mis ojos. No hay palabras que puedan describir esta sensación. Veo luces y voy hacia ellas.'}, {'autor': 'mamá', 'titulo': 'Me agarraste dormida', 'historia': ' La puerta me despertó. Dije: voy al baño, y no he entrado. Creo que sigo dormida, pero me quedé contando historias.'}, {'historia': '\n\nA veces me siento como si estuviera en una película. Todo es muy brillante y las luces son muy intensas. Me siento como si estuviera en un sueño. Todo es un poco confuso y no puedo despertar. Me siento atrapada en mi propia mente. La única vez que puedo salir de este sueño es cuando estoy en el baño. Me siento en la bañera y me quedo dormida. Tengo que estar en el baño para que pueda despertar. Me siento como si estuviera en una película de terror. Tengo que estar en el baño para no morir.', 'autor': 'openAI', 'titulo': ' El baño'}]
 
