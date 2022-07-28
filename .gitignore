@@ -17,4 +17,5 @@ build/
 
 .env
 
-sesiones(*
+sesiones.pkl
+historias.pkl
