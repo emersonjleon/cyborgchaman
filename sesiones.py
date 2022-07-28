@@ -23,13 +23,13 @@ def pickleLoad(filename):
                 break
     return pickleobject[-1]
 
-sesiones=pickleLoad('sesiones.pkl')
+#sesiones=pickleLoad('sesiones.pkl')
 
-historias=pickleLoad('historias.pkl')
+#historias=pickleLoad('historias.pkl')
 
-historia=historias[3]
-print(historia['fecha'])
-hoy=historia['fecha']
+#historia=historias[3]
+#print(historia['fecha'])
+#hoy=historia['fecha']
 
 def printhistorias():
     for k, historia in enumerate(historias):
@@ -37,7 +37,7 @@ def printhistorias():
         historia['fecha']=hoy
         print(historia['fecha'])
 
-printhistorias()
+#printhistorias()
         
 
 

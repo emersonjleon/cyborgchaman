@@ -26,7 +26,12 @@ def pickleLoad(filename):
 
 
 sesiones=pickleLoad('sesiones.pkl')
-historias=pickleLoad('historias.pkl')
+#historias=pickleLoad('historias.pkl')
+historias=[]
+
+f = open("historias.pkl","wb")
+pickle.dump(historias,f)
+f.close()
 
 
 #####    
