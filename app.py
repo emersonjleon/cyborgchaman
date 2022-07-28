@@ -377,8 +377,40 @@ def presentation():
 ########################################
 
 
-from cuentos import cuentos#, jsonify
+#petname##########################
 
+@app.route("/petname", methods=("GET", "POST"))
+def petname():
+    if request.method == "POST":
+        animal = request.form["animal"]
+        response = openai.Completion.create(
+            model="text-davinci-002",
+            prompt=generate_petname(animal),
+            temperature=0.6,
+        )
+        return render_template("petname.html", result=response.choices[0].text)
+
+    result = request.args.get("result")
+    return render_template("petname.html", result=result)
+
+
+def generate_petname(animal):
+    return """Suggest three names for an animal that is a superhero.
+
+Animal: Cat
+Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
+Animal: Dog
+Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
+Animal: {}
+Names:""".format(
+        animal.capitalize()
+    )
+
+###################################
+
+if False:
+    ignore="""
+from cuentos import cuentos#, jsonify
 
 
 @app.route('/cuentos')
@@ -421,36 +453,7 @@ def palabrasprincipales(cnumber):
 
 
 
-#petname##########################
 
-@app.route("/petname", methods=("GET", "POST"))
-def petname():
-    if request.method == "POST":
-        animal = request.form["animal"]
-        response = openai.Completion.create(
-            model="text-davinci-002",
-            prompt=generate_petname(animal),
-            temperature=0.6,
-        )
-        return render_template("petname.html", result=response.choices[0].text)
-
-    result = request.args.get("result")
-    return render_template("petname.html", result=result)
-
-
-def generate_petname(animal):
-    return """Suggest three names for an animal that is a superhero.
-
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: {}
-Names:""".format(
-        animal.capitalize()
-    )
-
-###################################
 
 @app.route('/nuevahistoria/<string:cnumber>')
 def nuevahistoria(cnumber):
@@ -470,3 +473,4 @@ def nuevahistoria(cnumber):
     return myprompt+elcuento["nuevahistoria"]
 
 
+"""
