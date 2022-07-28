@@ -1,23 +1,46 @@
-import datetime, pickle
+import pickle
+from datetime import datetime, timedelta, date
 
-def clearsesiones():
+def clearHistorias():
     sesiones=[]
-    f = open("sesiones0.pkl","wb")
+    f = open("sesiones.pkl","wb")
     pickle.dump(sesiones,f)
     f.close()
 
-def loadsesiones():
-    pickleobjects = []
-    with (open("sesiones.pkl", "rb")) as openfile:
+def savesesiones():
+    f = open("sesiones.pkl","wb")
+    pickle.dump(sesiones,f)
+    f.close()
+
+
+def pickleLoad(filename):
+    pickleobject = []
+    with (open(filename, "rb")) as openfile:
         while True:
             try:
-                pickleobjects.append(pickle.load(openfile))
+                pickleobject.append(pickle.load(openfile))
             except EOFError:
                 break
+    return pickleobject[-1]
 
-    return pickleobjects[-1]
+sesiones=pickleLoad('sesiones.pkl')
 
-sesiones=loadsesiones()
+historias=pickleLoad('historias.pkl')
+
+historia=historias[3]
+print(historia['fecha'])
+hoy=historia['fecha']
+
+def printhistorias():
+    for k, historia in enumerate(historias):
+        print(k,historia['titulo'])
+        historia['fecha']=hoy
+        print(historia['fecha'])
+
+printhistorias()
+        
+
+
 
 #print(sesiones.pop(4))
 
@@ -28,12 +51,23 @@ for obj in sesiones:
     print('*******************')
     print(obj['nombre'])
     print(obj['fecha'])
+
+
+now=datetime.now()
+print(now)
+
+print(now.date())
+today=datetime.today()-timedelta(days=1)
+print(today)
+print(today.date())
+
+def printHistorias(obj):
     for historia in obj['historias']:
         print("*")
         print(historia['titulo'])
         print(historia['historia'])
         
-
+        
 def savesesiones():        
     f = open("sesiones.pkl","wb")
     pickle.dump(sesiones,f)

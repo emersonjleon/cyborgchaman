@@ -3,6 +3,25 @@
 
 {% block content %}
 
+
+  {% if result %}
+    <div class="story">
+      <p> <b>{{ result.titulo }}</b></p>
+      <p> {{result.historia}}</p>
+      <p>{{ result.autor}} </p>
+    </div>
+    {% endif %}
+
+    {% if checked %}
+    <div class='story'> (inspirada en:
+      {% for story in checked %}
+        {{story.titulo}};
+      {% endfor %}
+    )</div>
+  {% endif %}
+
+    
+
   <h4>Crear historia</h4>
   <form class="old" action="/crearhistoria" method="post">
     <div class="alignleft">
@@ -28,29 +47,5 @@
 
     <input type="submit" text value="Crear historia" />
   </form>
-
-
-
-  
-    
-
-
-  {% if result %}
-    <div class="story">
-      <p> <b>{{ result.titulo }}</b></p>
-      <p> {{result.historia}}</p>
-      <p>{{ result.autor}} </p>
-    </div>
-    {% endif %}
-
-    {% if checked %}
-    <div> (inspirada en:
-      {% for story in checked %}
-        {{story.titulo}};
-      {% endfor %}
-    )</div>
-    {% endif %}
-
-
 
 {% endblock %}

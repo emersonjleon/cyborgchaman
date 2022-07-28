@@ -1,0 +1,30 @@
+<!doctype html>
+{% extends "base.html" %}
+{% block content %}
+
+
+  {% if result %}
+    <div class="story">
+      <p> <b>{{ result.titulo }}</b></p>
+      <p> {{result.historia}}</p>
+      <p>{{ result.autor}} </p>
+      <div class='center'> <p>{{ result.AIinspiration}}</p> </div>
+    </div>
+  {% endif %}
+
+    
+
+<h3>Crear historia de palabras</h3>
+<p> OpenAI creará una historia usando las palabras que ingreses.
+</p>
+
+<div>
+  <form class='old' action="/historiadepalabras" method="post">
+    <textarea name="story1" placeholder="Coloca algunas palabras inspiradoras aquí..." rows="2" required> </textarea>
+    <input type="submit" text value="Crear historia" />
+  </form>
+</div>
+
+
+</body>
+{% endblock %}
