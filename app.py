@@ -26,12 +26,7 @@ def pickleLoad(filename):
 
 
 sesiones=pickleLoad('sesiones.pkl')
-#historias=pickleLoad('historias.pkl')
-historias=[]
-
-f = open("historias.pkl","wb")
-pickle.dump(historias,f)
-f.close()
+historias=pickleLoad('historias.pkl')
 
 
 #####    
@@ -52,9 +47,13 @@ def guardarSesionActual(name='*unsaved '):
     pickle.dump(sesiones,f)
     f.close()
 
-def borrarHistorias(name='*unsaved'):
+def borrarHistorias():
     global historias
     historias=[]
+
+    f = open("historias.pkl","wb")
+    pickle.dump(historias,f)
+    f.close()
 
 
 def guardarHistoria(story):
