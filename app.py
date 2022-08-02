@@ -38,9 +38,17 @@ def animation():
 def room():
     return render_template("room.html")
 
-@app.route('/visual')
+@app.route("/visual", methods=("GET", "POST"))
 def visual():
-    return render_template("visual.html")
+    spheres=[]
+    for x in range(-10,10,1):
+        for y in range(-10,10,1):
+            spheres.append((10*x,10*y,0))
+    
+    spheresText=threejsSpheresText(spheres)
+    return render_template("visual.html", width=600, height=400,
+                           spheresText=spheresText)
+
 
 
 #####    
