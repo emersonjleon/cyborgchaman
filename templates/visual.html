@@ -50,10 +50,10 @@ container.appendChild( renderer.domElement );
   
   //camera
   var VIEW_ANGLE = 45,
-  ASPECT = w / h,
+      ASPECT = (w / h),
        // Aspect ratio// window.innerWidth/window.innerHeight // WIDTH / HEIGHT,
-  NEAR = 0.1,
-  FAR = 10000;
+      NEAR = 0.1,
+      FAR = 10000;
   
   var camera =
       new THREE.PerspectiveCamera(
