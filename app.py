@@ -6,6 +6,10 @@ import pickle
 from datetime import datetime, date
 
 from dotenv import load_dotenv, find_dotenv
+
+
+from visual import threejsSpheresText
+
 #from sesiones import pickleLoad
 
 
