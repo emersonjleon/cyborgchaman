@@ -7,8 +7,8 @@ from datetime import datetime, date
 
 from dotenv import load_dotenv, find_dotenv
 
-
-from visual import threejsSpheresText
+#this seems to work locally but not online
+#from visual import threejsSpheresText
 
 #from sesiones import pickleLoad
 
