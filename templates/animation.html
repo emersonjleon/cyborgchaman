@@ -1,0 +1,188 @@
+<!--JavaScript - Move Object with Arrow Keys using JavaScript Function.-->
+<html>
+    <head>
+      <title>Cyborg Shaman video-mapping</title>
+
+      <link rel="shortcut icon"
+	href="{{ url_for('static', filename='cyborgshaman.jpg') }}"/>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  resize: none;
+}
+
+.background-image {
+    overflow:hidden;
+    background-image: url("{{ url_for('static', filename='gaugan_output.jpg') }}"); 
+    background-color: #cccccc;
+    height: 1000px;/* fix*/
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.hero-div {
+    margin: 0px 0px 0px 0px;
+    width: 230px; /* height of container */
+    height: 230px; /* height of container */
+    overflow: hidden;
+    background-color: transparent;
+
+  /*top: 50%;
+  left: 50%;
+  background-color: #FFFFFF;
+  transform: translate(-50%, -50%);*/
+}
+
+.hero1 {
+    position: relative;
+    /*margin: -165px 0px -30px 0px;*/
+    background-color: transparent;
+    
+  top: -175px;
+  left: -20px;
+  /*transform: translate(-50%, -50%);*/
+}
+
+.hero2 {
+    position: relative;
+    /*margin: -165px 0px -30px 0px;*/
+    background-color: transparent;
+    
+  top: -175px;
+  left: -270px;
+  /*transform: translate(-50%, -50%);*/
+}
+
+
+</style>
+
+
+
+<script type="text/javascript">
+  //init object globally
+  var objImage = null;
+  function init() {
+      objImage = document.getElementById("image1");
+      objImage.style.position = "relative";
+      objImage.style.left = "0px";
+      objImage.style.top = "0px";
+      objImage.walkdirection="right"
+      objImage2 = document.getElementById("image2");
+      objImage2.style.position = "relative";
+      objImage2.style.left = "0px";
+      objImage2.style.top = "0px";
+      objImage2.walkdirection="right"
+  }
+  function getKeyAndMove(e) {
+      var key_code = e.which || e.keyCode;
+      switch (key_code) {
+	  //object 1
+      case 37: //left arrow key
+          moveLeft(objImage);
+          break;
+      case 38: //Up arrow key
+          moveUp(objImage);
+          break;
+      case 39: //right arrow key
+          moveRight(objImage);
+          break;
+      case 40: //down arrow key
+          moveDown(objImage);
+          break;
+	  //object 2
+      case 65: //left arrow key
+          moveLeft(objImage2);
+          break;
+      case 87: //Up arrow key
+          moveUp(objImage2);
+          break;
+      case 68: //right arrow key
+          moveRight(objImage2);
+          break;
+      case 83: //down arrow key
+          moveDown(objImage2);
+          break;
+      }
+  }
+  function changeWalkDirection(hero) {
+      switch (hero.walkdirection) {
+	  //object 1
+      case "right": //left arrow key
+	  hero.style.transform= "scaleX(-1)";
+          hero.walkdirection="left";
+          break;
+      case 'left':
+	  hero.style.transform= "scaleX(1)";
+          hero.walkdirection="right";
+          break;
+      }
+  }
+  function moveLeft(hero) {
+      hero.style.left = parseInt(hero.style.left) - 50 + "px";
+      if (hero.walkdirection=='right'){
+	  changeWalkDirection(hero);
+      }
+  }
+  function moveUp(hero) {
+      hero.style.top = parseInt(hero.style.top) - 5 + "px";
+  }
+  function moveRight(hero) {
+      hero.style.left = parseInt(hero.style.left) + 50 + "px";
+      if (hero.walkdirection=='left'){
+	  changeWalkDirection(hero);
+      }
+  }
+  function moveDown(hero) {
+      hero.style.top = parseInt(hero.style.top) + 5 + "px";
+  }
+  window.onload = init;
+  
+  window.addEventListener("keydown", function(e) {
+      if(["Space","ArrowUp","ArrowDown","ArrowLeft",
+	  "ArrowRight"].indexOf(e.code) > -1) {
+	  e.preventDefault();
+      }
+  }, false);
+  
+</script>
+
+<script>
+  let modifier = 5;
+  window.addEventListener('keydown', (event) => {
+    const { style } = block;
+    switch(event.key) {
+      case 'ArrowUp': style.top = `${parseInt(style.top) - modifier}px`; break;
+      case 'ArrowDown': style.top = `${parseInt(style.top) + modifier}px`; break;
+      case 'ArrowLeft': style.left = `${parseInt(style.left) - modifier}px`; break;
+      case 'ArrowRight': style.left = `${parseInt(style.left) + modifier}px`; break;
+    }
+  });
+</script>
+
+    </head>
+
+    <body onkeydown="getKeyAndMove(event)">
+      <div class="background-image">
+        <!--img id="background" src="{{ url_for('static', filename='gaugan_output.jpg') }}"  /-->
+
+	<div id="image1" class="hero-div">
+          <img  id="hero1" class="hero1" src="{{ url_for('static', filename='character1t.png') }}" alt="includehelp.com" />
+	</div>
+
+	<div id="image2" class="hero-div">
+          <img  id="hero2" class="hero2" src="{{ url_for('static', filename='dinosaurtr.png') }}" alt="includehelp.com" />
+	</div>
+
+	<div id="block" class="hero-div">
+          <img  class="hero2" src="{{ url_for('static', filename='character1t.png') }}" alt="includehelp.com" />
+	</div>
+
+
+	
+      </div>
+    </body>
+</html>
