@@ -28,6 +28,20 @@ def pickleLoad(filename):
 sesiones=pickleLoad('sesiones.pkl')
 historias=pickleLoad('historias.pkl')
 
+######
+
+@app.route('/animation')
+def animation():
+    return render_template("animation.html")
+
+@app.route('/room')
+def room():
+    return render_template("room.html")
+
+@app.route('/visual')
+def visual():
+    return render_template("visual.html")
+
 
 #####    
 
