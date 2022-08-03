@@ -33,25 +33,10 @@ sesiones=pickleLoad('sesiones.pkl')
 historias=pickleLoad('historias.pkl')
 
 ######
-
-@app.route('/animation')
-def animation():
-    return render_template("animation.html")
-
-@app.route('/room')
-def room():
-    return render_template("room.html")
-
-@app.route("/visual", methods=("GET", "POST"))
-def visual():
-    spheres=[]
-    for x in range(-10,10,1):
-        for y in range(-10,10,1):
-            spheres.append((10*x,10*y,0))
-    
-    spheresText=threejsSpheresText(spheres)
-    return render_template("visual.html", width=600, height=400,
-                           spheresText=spheresText)
+@app.route('/')
+@app.route('/home')
+def home():
+    return render_template("home.html")
 
 
 
@@ -148,7 +133,6 @@ def editar_sesiones():
 #[{'autor': 'emersin', 'titulo': 'Locura', 'historia': ' El mundo se deshace ante mis ojos. No hay palabras que puedan describir esta sensación. Veo luces y voy hacia ellas.'}, {'autor': 'mamá', 'titulo': 'Me agarraste dormida', 'historia': ' La puerta me despertó. Dije: voy al baño, y no he entrado. Creo que sigo dormida, pero me quedé contando historias.'}, {'historia': '\n\nA veces me siento como si estuviera en una película. Todo es muy brillante y las luces son muy intensas. Me siento como si estuviera en un sueño. Todo es un poco confuso y no puedo despertar. Me siento atrapada en mi propia mente. La única vez que puedo salir de este sueño es cuando estoy en el baño. Me siento en la bañera y me quedo dormida. Tengo que estar en el baño para que pueda despertar. Me siento como si estuviera en una película de terror. Tengo que estar en el baño para no morir.', 'autor': 'openAI', 'titulo': ' El baño'}]
 
 
-@app.route('/')
 @app.route("/ingresarhistoria", methods=("GET", "POST"))
 def ingresarhistoria():
     if request.method == "POST":
