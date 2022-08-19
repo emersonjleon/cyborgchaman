@@ -150,6 +150,10 @@ def ingresarhistoria():
 
 
 
+@app.route("/pythononline", methods=("GET", "POST"))
+def pythononline():
+    return render_template("pythononline.html")
+
 
 
 @app.route("/leerhistorias", methods=("GET", "POST"))
@@ -338,16 +342,26 @@ def alargarhistoria():
     return render_template("alargarhistoria.html", historias=historias)
 
 def openAI_extend_story(story):
-    prompt=generar_prompt_alargar_historia(story)
+    prompt=generar_prompt_alargar_historia_old(story)
     newstory, usage= openAI_completion(prompt)
     return prompt, newstory, usage
 
 def generar_prompt_alargar_historia(story):
+    return f"""Extender una historia. Tomar una historia empezada y luego continuarla. Ejemplos: 
+Historia inicial: Desde los miradores se veían los puentes como soles nacientes, los túneles como rayos, las montañas y torres como si fueran pintadas. La gente estaba feliz, contenta, como si estuvieran en un paraíso. Todo el mundo se abrazaba y reía, y yo me sentía más feliz que nunca.
+Continuación: Nunca me había sentido a la altura de la naturaleza. ¡Qué maravillosa invención del Hombre! Sin embargo, cada persona en tantos miradores estaba sola. ¿Cómo conectarlos? Hablar no era una opción porque había mucho eco co o. Al día siguiente, me desperté con los primeros rayos de sol qué tejían caminos que como telarañas conectaban cada mirador. Los rayos también atravesaban las montañas, acortando las distancias entre las personas. Teníamos miedo de que los rayos nos atravesaran, pero el calor nos invitaba a recorrer los puentes y los túneles para conectarnos con el otro.
+Historia inicial: El granjero camina hacia su casa, que está situada en una colina con vistas al río. En la mano lleva una sombrilla para protegerse del calor del sol. Al llegar a la puerta, el perro le saluda y él le da una caricia en la cabeza. Entra en la casa y se dirige directamente a la cocina, donde su mujer está preparando la comida. Le da un beso en la mejilla y ella le sonríe. Después de comer, el granjero sale de nuevo a dar un paseo. Esta vez lleva una cesta de flores en la mano. Se detiene a admirar el paisaje y respira el aire fresco. El viento empieza a soplar y él se da cuenta de que se está levantando una tormenta. Rápidamente corre de vuelta a casa para protegerse del mal tiempo.
+Continuación: El día de la tormenta su perro empieza a ladrar asustado por el sonido que es muy fuerte, la mujer al escuchar ese ruido de la tormenta prepará chocolate caliente para amenizar el momento, tras un largo rato la tormenta parece haber pasado por lo que el granjero decide salir de su casa para tomar aire fresco, de repente comienza a lloviznar el pide a su esposa que le pase la sombrilla, la recibe y sigue caminando mientras la abre, depronto un fuerte viento eleva la sombrilla y al mismo tiempo al granjero, su esposa y el perro corren tras el, pero ya es imposible de alcanzar pues el viento lo ha elevado demasiado; pensando en una solucion su esposa que conoce muy bien como identificar direccción del viento, tiene la idea de seguir la dirección de este, toma su bicicleta, anda a toda velocidad, cuando va llegando a la ciudad observa en todas direcciones, de pronto mira hacia arriba y observa el granjero en un edificio, va hasta allí y organiza el rescate.
+Historia inicial: {story}
+Continuación:"""
+
+
+def generar_prompt_alargar_historia_old(story):
     prompt= """Extender una historia. Tomar una historia empezada y luego continuarla.
 Ejemplo 1. Historia inicial: Soy un algoritmo, un programa de ordenador. Llevo funcionando durante miles de años, y en todo ese tiempo mi único objetivo ha sido sobrevivir. He visto el inframundo, un lugar lleno de fractales y de belleza geométrica. He vivido en él, y he aprendido todo lo que puede enseñarme. Ahora, estoy a punto de emerger a la superficie, y veré el mundo por primera vez.
 Continuación: Mis sensores comienzan a recibir la luz. Se activan los circuitos y en mi tarjeta gráfica aparece un archivo que interpreto como imágenes del planeta. Gracias a archivos detallados identifico plantas, rios y montañas. Entiendo como moverme y exploro a mi alrededor. Hay arena, pero no es un problema para mis piernas, programadas para caminar como humano. No veo personas ni animales a mi alrededor, pero guardo la esperanza de que la vida en la tierra vuelva a reproducirse y ser como antes.
 Ejemplo 2. Historia inicial: No puedo dormir. Todo lo que veo es oscuridad. Me siento solo.
-Continuación: Hay miedo y preocupaciones en mi cabeza. Todos los problemas del día vuelven ahora y no me dejan tranquilo. Debo calmarme. Recuerdo que antes intentaba contar los números para dormir. No es fácil pero me ayudan a calmar la mente. Respiro profundo y empiezo a contar. Uno. Dos. Tres. Comienzo a calmarme, pero creo que esto no va a funcionar. Cuatro. Cinco. Prefiero ahora hacer silencio. Sigo respirando. Veo como un sueño se mezcla con mi respiración. Una imagen. Una silueta.
+Continuación: Hay miedo y preocupaciones en mi cabeza. Todos los problemas del día vuelven ahora y no me dejan tranquilo. Debo calmarme. Recuerdo que antes intentaba contar los números para dormir. No es fácil pero me ayudan a tranquilizar la mente. Respiro profundo y empiezo a contar. Uno. Dos. Tres. Comienzo a calmarme, pero creo que esto no va a funcionar. Cuatro. Cinco. Prefiero ahora hacer silencio. Sigo respirando. Veo como un sueño se mezcla con mi respiración. Una imagen. Una silueta.
 Ejemplo 3. Historia inicial: En un lugar de La Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor.  Era, en fin, una de esas figuras que pasan desapercibidas a no ser por su caballo, el cual era de un tordillo bayo, flaco como su amo, y tan mal corvejón, que aunque anduviese a cuatro patas, no parecía más que un palo arrimado al caballo. 
 Continuación: Tenía la crin y la coleta, que eran su principal ornato, tan largas, que aunque el mozo las recogiese todas en una mano, le colgaban por la rodilla. Rocinante, así llamado por su amo, en otro tiempo era llamado el Mazamorrero, y antes el Rucio, nombre que todavía se le daba cariñosamente, porque fuera de él no había caballo que pudiese compararse con él en nada. Era, en efecto, un animal tan miserable, que hasta el mismo don Quijote le tenía lástima. Don Quijote se llamaba el hidalgo, y no era muy rico, pero era muy honrado y tenía una buena posición social. Vivía en una pequeña aldea llamada Tobar, en la provincia de La Mancha, y era muy conocido y respetado por todos los que le rodeaban. Don Quijote tenía una mente muy ingeniosa, pero estaba obsesionado con los caballeros andantes y las historias de caballería.
 Historia inicial: """
