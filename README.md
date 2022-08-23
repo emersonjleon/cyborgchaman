@@ -13,7 +13,7 @@ Contains the pet name generator app used in the OpenAI API [quickstart tutorial]
 3. Navigate into the project directory
 
    ```bash
-   $ cd openai-quickstart-python
+   $ cd cyborgchaman
    ```
 
 4. Create a new virtual environment
