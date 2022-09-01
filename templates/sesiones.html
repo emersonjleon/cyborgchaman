@@ -2,7 +2,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<div>
+  <a href="{{ url_for('user.edit_user_profile') }}">Editar perfil de usuario</a>
+  <hr>
+  <p>
+    Bienvenido, {{ current_user.username or current_user.email }}. Acá podrás encontrar tus historias y sesiones guardadas. 
+  </p>
+</div>
   <h4>Sesion actual</h4>
     <div>
       

@@ -24,6 +24,7 @@ toml==0.10.2
 tqdm==4.62.3
 urllib3==1.26.7
 Werkzeug==2.0.2
-flask-security-too==4.1.5
+flask-user==1.0.2
 sqlalchemy==1.4.40
 pymysql==1.0.2
+Flask-BabelEx==0.9.4
