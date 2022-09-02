@@ -1,3 +1,0 @@
-FLASK_APP=mynewapp
-FLASK_ENV=development
-OPENAI_API_KEY=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
