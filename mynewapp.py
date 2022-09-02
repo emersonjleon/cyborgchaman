@@ -6,12 +6,6 @@
 #####
 # need: pip install email_validator, Flask-User and others from cyborgchaman
 
-
-from flaskusers import create_app
-from flask_user import login_required, UserManager, UserMixin
-from flask_sqlalchemy import SQLAlchemy
-
-
 import os
 import openai
 from flask import Flask, redirect, render_template, request, url_for
@@ -21,8 +15,140 @@ from dotenv import load_dotenv, find_dotenv
 
 
 
+#from flaskusers import create_app
+from flask_user import login_required, UserManager, UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from flask_babelex import Babel
 
-app = create_app()
+
+# Class-based application configuration
+class ConfigClass(object):
+    """ Flask application config """
+
+    # Flask settings
+    SECRET_KEY = 'This is an INSECURE secret!! DO NOT use this in production!!'
+
+    # Flask-SQLAlchemy settings
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app2.sqlite'    # File-based SQL database
+    SQLALCHEMY_TRACK_MODIFICATIONS = False    # Avoids SQLAlchemy warning
+
+    # Flask-User settings
+    USER_APP_NAME = "Flask-User QuickStart App"      # Shown in and email templates and page footers
+    USER_ENABLE_EMAIL = False      # Disable email authentication
+    #USER_EMAIL_SENDER_EMAIL = 'emersonleon@gmail.com'      # email
+    USER_ENABLE_USERNAME = True    # Enable username authentication
+    USER_REQUIRE_RETYPE_PASSWORD = True    # Simplify register form
+
+
+""" Flask application factory """
+    
+# Create Flask app load app.config
+app = Flask(__name__)
+app.config.from_object(__name__+'.ConfigClass')
+
+babel = Babel(app)
+babel.BABEL_DEFAULT_LOCALE='es'
+
+#app.config.from_pyfile('mysettings.cfg')
+# Initialize Flask-SQLAlchemy
+db = SQLAlchemy(app)
+
+
+
+
+
+################## Mis Clases
+
+# Define the User data-model.
+# NB: Make sure to add flask_user UserMixin !!!
+
+class User(db.Model, UserMixin):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
+    
+    # User authentication information. The collation='NOCASE' is required
+    # to search case insensitively when USER_IFIND_MODE is 'nocase_collation'.
+    username = db.Column(db.String(100, collation='NOCASE'), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False, server_default='')
+    manualemail = db.Column(db.String(120), nullable=False, server_default='')
+    email_confirmed_at = db.Column(db.DateTime())
+    
+    # User information
+    first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
+    last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
+    
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+
+user_sessions = db.Table('usersessions', 
+    db.Column('sesion_id', db.Integer, db.ForeignKey('sesion.id'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+)
+
+
+    
+
+class Sesion(db.Model):
+    #__tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50), nullable=False)
+    fecha = db.Column(db.DateTime, nullable=False,
+        default=datetime.utcnow)
+    # usuarios = db.relationship('Usuarios', secondary=user_sessions,
+    #             lazy='subquery', backref=db.backref('sesiones', lazy=True))
+
+
+    def __repr__(self):
+        return f'<Sesion {self.nombre} >' 
+
+
+
+class Historia(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(80), nullable=False)
+    autor = db.Column(db.String(50), nullable=False)
+    texto = db.Column(db.Text, nullable=False)
+    fecha = db.Column(db.DateTime, nullable=False,
+        default=datetime.utcnow)
+
+    sesion_id = db.Column(db.Integer, db.ForeignKey('sesion.id'),
+        nullable=False)
+    sesion = db.relationship('Sesion',
+        backref=db.backref('historias', lazy=True))
+
+    def __repr__(self):
+        return '<Historia: %r>' % self.titulo
+
+
+#################################3
+
+
+
+
+# Create all database tables
+db.create_all()
+
+
+# Setup Flask-User and specify the User data-model
+user_manager = UserManager(app, db, User)
+
+# The Home page is accessible to anyone
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+
+
+@app.route('/usuario/<string: username>')
+def show_user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('show_user.html', user=user)
+
+###############################################
+
 load_dotenv(find_dotenv())
 openai.api_key = os.getenv("OPENAI_API_KEY")
 

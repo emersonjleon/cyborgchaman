@@ -35,7 +35,7 @@ class ConfigClass(object):
     USER_APP_NAME = "Flask-User QuickStart App"      # Shown in and email templates and page footers
     USER_ENABLE_EMAIL = False      # Disable email authentication
     USER_ENABLE_USERNAME = True    # Enable username authentication
-    USER_REQUIRE_RETYPE_PASSWORD = False    # Simplify register form
+    USER_REQUIRE_RETYPE_PASSWORD = True    # Simplify register form
 
 
 def create_app():
@@ -52,22 +52,26 @@ def create_app():
     # Initialize Flask-SQLAlchemy
     db = SQLAlchemy(app)
 
-    # Define the User data-model.
-    # NB: Make sure to add flask_user UserMixin !!!
     class User(db.Model, UserMixin):
         __tablename__ = 'users'
         id = db.Column(db.Integer, primary_key=True)
         active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
-
+        
         # User authentication information. The collation='NOCASE' is required
         # to search case insensitively when USER_IFIND_MODE is 'nocase_collation'.
         username = db.Column(db.String(100, collation='NOCASE'), nullable=False, unique=True)
         password = db.Column(db.String(255), nullable=False, server_default='')
         email_confirmed_at = db.Column(db.DateTime())
-
+        
         # User information
         first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
         last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
+        #sesiones = db.relationship('Sesion', secondary=user_sessions, lazy='subquery',
+        #    backref=db.backref('usuarios', lazy=True))
+        
+    def __repr__(self):
+        return '<User %r>' % self.username
+
 
     # Create all database tables
     db.create_all()
@@ -94,28 +98,7 @@ def create_app():
                 <a href={{ url_for('user.logout') }}>Sign out</a>
             {% endblock %}
             """)
-
-
-
-    
-    # The Members page is only accessible to authenticated users via the @login_required decorator
-    @app.route('/members')
-    @login_required    # User must be authenticated
-    def member_page():
-        # String-based templates
-        return render_template('ingresarhistoria.html')
-    """
-            {% extends "base0.html" %}
-            {% block content %}
-                <h2>Members page</h2>
-                <p>Hola {{}}</p>
-                <p><a href={{ url_for('user.login') }}>Sign in</a></p>
-                <p><a href={{ url_for('home_page') }}>Home page</a> (accessible to anyone)</p>
-                <p><a href={{ url_for('member_page') }}>Member page</a> (login required)</p>
-                <p><a href={{ url_for('user.logout') }}>Sign out</a></p>
-            {% endblock %}
-            """
-
+    ### end create_app
     return app
 
 

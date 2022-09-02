@@ -17,8 +17,10 @@
             <div class="col-xs-6 text-right">
                 {% if user_manager.USER_ENABLE_REGISTER %}
                 <p style="margin-bottom:1cm;">
+                    <!--a href="{{ url_for('user.login') }}" tabindex='290'>
+                        {%trans%}Already registered? Sign in.{%endtrans%}</a-->
 		  <a  href="{{ url_for('user.login') }}" tabindex='290'>
-                    {%trans%}Registrado? Sign in.{%endtrans%}</a>
+                    {%trans%}¿Ya registrado? Sign in.{%endtrans%}</a>
 		  </p>
                 {% endif %}
             </div>
