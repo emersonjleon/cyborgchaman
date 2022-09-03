@@ -18,6 +18,7 @@ from dotenv import load_dotenv, find_dotenv
 #from flaskusers import create_app
 from flask_user import login_required, UserManager, UserMixin
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import current_user
 from flask_babelex import Babel
 
 
@@ -29,11 +30,11 @@ class ConfigClass(object):
     SECRET_KEY = 'This is an INSECURE secret!! DO NOT use this in production!!'
 
     # Flask-SQLAlchemy settings
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app2.sqlite'    # File-based SQL database
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app3.sqlite'    # File-based SQL database
     SQLALCHEMY_TRACK_MODIFICATIONS = False    # Avoids SQLAlchemy warning
 
     # Flask-User settings
-    USER_APP_NAME = "Flask-User QuickStart App"      # Shown in and email templates and page footers
+    USER_APP_NAME = "El Cyborg Chamán"      # Shown in and email templates and page footers
     USER_ENABLE_EMAIL = False      # Disable email authentication
     #USER_EMAIL_SENDER_EMAIL = 'emersonleon@gmail.com'      # email
     USER_ENABLE_USERNAME = True    # Enable username authentication
@@ -45,9 +46,6 @@ class ConfigClass(object):
 # Create Flask app load app.config
 app = Flask(__name__)
 app.config.from_object(__name__+'.ConfigClass')
-
-babel = Babel(app)
-babel.BABEL_DEFAULT_LOCALE='es'
 
 #app.config.from_pyfile('mysettings.cfg')
 # Initialize Flask-SQLAlchemy
@@ -77,16 +75,17 @@ class User(db.Model, UserMixin):
     # User information
     first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
     last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
-    
+    ultima_sesion_id=db.Column(db.Integer)
+    is_admin=db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<User %r>' % self.username
 
 
-user_sessions = db.Table('usersessions', 
-    db.Column('sesion_id', db.Integer, db.ForeignKey('sesion.id'), primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
-)
+# user_sessions = db.Table('usersessions', 
+#     db.Column('sesion_id', db.Integer, db.ForeignKey('sesion.id'), primary_key=True),
+#     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+# )
 
 
     
@@ -97,9 +96,19 @@ class Sesion(db.Model):
     nombre = db.Column(db.String(50), nullable=False)
     fecha = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
-    # usuarios = db.relationship('Usuarios', secondary=user_sessions,
+    #many-to many (add table above)
+    # usuarios = db.relationship('User', secondary=user_sessions,
     #             lazy='subquery', backref=db.backref('sesiones', lazy=True))
+    
+    #one to many. What is wrong here?
+    # user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'),
+    #    nullable=False)
+    # user = db.relationship('User',
+    #    backref=db.backref('sesiones', lazy=True))
+    usuario_id=db.Column(db.Integer)
 
+    is_public=db.Column(db.Boolean, default=False)
+    is_shared=db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f'<Sesion {self.nombre} >' 
@@ -110,10 +119,11 @@ class Historia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(80), nullable=False)
     autor = db.Column(db.String(50), nullable=False)
-    texto = db.Column(db.Text, nullable=False)
+    AIinspiration = db.Column(db.String(300), nullable=True)
+    historia = db.Column(db.Text, nullable=False)
     fecha = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
-
+    #story=db.Column(JSON, nullable=True)
     sesion_id = db.Column(db.Integer, db.ForeignKey('sesion.id'),
         nullable=False)
     sesion = db.relationship('Sesion',
@@ -127,13 +137,22 @@ class Historia(db.Model):
 
 
 
-
 # Create all database tables
 db.create_all()
 
 
 # Setup Flask-User and specify the User data-model
 user_manager = UserManager(app, db, User)
+#userbabel=user_manager.babel
+babel = Babel(app)
+babel.BABEL_DEFAULT_LOCALE='es'
+babel.init_app(app)
+
+# this line is inside user_manager
+#self.babel = app.extensions.get('babel', None)
+
+
+
 
 # The Home page is accessible to anyone
 @app.route('/')
@@ -142,11 +161,17 @@ def home():
 
 
 
-@app.route('/usuario/<string: username>')
+@app.route('/usuario/<string:username>')
+@login_required    # User must be authenticated
 def show_user(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template('show_user.html', user=user)
-
+    if current_user.is_admin:
+        user = User.query.filter_by(username=username).first_or_404()
+        return render_template('show_user.html', user=user)
+    else:
+        return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
 ###############################################
 
 load_dotenv(find_dotenv())
@@ -170,6 +195,18 @@ historias=pickleLoad('historias.pkl')
 
 
 ######## Usar sql aquí, y usuarios para cada sesión
+
+def cargar_ultima_sesion(user):
+    try:
+        user.sesion_actual=[sesion for sesion in user.sesiones
+                            if sesion.id==user.ultima_sesion_id][0]
+    except:
+        user.sesion_actual=Sesion(nombre='**Nueva Sesión**', usuario_id=user.id)
+        user.ultima_sesion_id=user.sesion_actual.id
+    return user.sesion_actual
+
+
+
 def guardarSesionActual(name='*unsaved '):
     global historias
     nuevasesion={}
@@ -197,10 +234,18 @@ def borrarHistorias():
     f.close()
 
 
-def guardarHistoria(story):
-    story['datetime'] = datetime.now()
-    story['fecha'] = date.today()
-    historias.append(story)
+def guardarHistoria(newstory):
+    newstory['datetime'] = datetime.now()
+    newstory['fecha'] = date.today()
+    historias.append(newstory)
+    sesion_actual=cargar_ultima_sesion(current_user)
+    h=Historia(titulo=newstory['titulo'],
+               autor=newstory['autor'],
+               historia=newstory['historia'],
+               fecha=newstory['fecha'],
+               sesion=sesion_actual)
+    db.session.add(h)
+    db.session.commit()
     f = open("historias.pkl","wb")
     pickle.dump(historias,f)
     f.close()
