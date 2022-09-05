@@ -1,0 +1,33 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+
+
+</div>
+  <h4>Historias</h4>
+    <div>
+      
+      {% if historias %}
+      <p>
+   
+        {% for h in historias %}
+	  <a href="adm/historia/{{ h.titulo }}">{{h.titulo }}</a>, id {{h.id}}
+        {% endfor %}
+      </p>
+      {% else %}
+        <p> Aún no hay historias aquí...</p>	  
+      {% endif %}
+    </div>
+
+
+
+
+      
+    
+  
+
+
+
+{% endblock %}

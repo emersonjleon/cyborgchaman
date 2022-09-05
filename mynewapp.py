@@ -30,7 +30,7 @@ class ConfigClass(object):
     SECRET_KEY = 'This is an INSECURE secret!! DO NOT use this in production!!'
 
     # Flask-SQLAlchemy settings
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app7.sqlite'    # File-based SQL database
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'    # File-based SQL database
     SQLALCHEMY_TRACK_MODIFICATIONS = False    # Avoids SQLAlchemy warning
 
     # Flask-User settings
@@ -71,15 +71,36 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False, server_default='')
     manualemail = db.Column(db.String(120), nullable=False, server_default='')
     email_confirmed_at = db.Column(db.DateTime())
+    tokens_usados = db.Column(db.Integer, nullable=False, default=0)
     
     # User information
     first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
     last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
-    ultima_sesion_id=db.Column(db.Integer)
-    is_admin=db.Column(db.Boolean, nullable=False, default=False)
+    sesion_actual_id=db.Column(db.Integer, nullable=False, default=-111)
+    #-111= no sesion created
 
+    def cargar_ultima_sesion(self):
+        if self.sesion_actual_id==-111:
+            self.sesionActual=Sesion(nombre='**Nueva Sesión**',
+                                      usuario_id=self.id, user=self)
+            db.session.commit()
+            self.sesion_actual_id = self.sesionActual.id
+            print(f'##########{self.sesionActual},    {self.sesionActual.id}')
+            db.session.commit()
+        else:
+            self.sesionActual=Sesion.query.filter_by(id=self.sesion_actual_id)[0]
+        return self.sesionActual
+            
+    def sesion_actual(self):
+        try:
+            return self.sesionActual
+        except:
+            return self.cargar_ultima_sesion()
+            
+    is_admin=db.Column(db.Boolean, nullable=False, default=False)
+    
     def __repr__(self):
-        return '<User %r>' % self.username
+        return f'<User {self.username} >'
 
 
 # user_sessions = db.Table('usersessions', 
@@ -112,7 +133,7 @@ class Sesion(db.Model):
     #historias (backref)
 
     def __repr__(self):
-        return f'<Sesion {self.nombre} >' 
+        return f'<Sesion {self.nombre} id {self.id}>' 
 
 
 
@@ -121,8 +142,8 @@ class Historia(db.Model):
     titulo = db.Column(db.String(80), nullable=False)
     autor = db.Column(db.String(50), nullable=False)
     AIinspiration = db.Column(db.String(300), nullable=True)
-    AIprompt = db.Column(db.Text, nullable=True)
-    AItokens = db.Column(db.Integer, nullable=True)
+    prompt = db.Column(db.Text, nullable=True)
+    tokens_usados = db.Column(db.Integer, nullable=False, default=0)
     historia = db.Column(db.Text, nullable=False)
     fecha = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
@@ -163,33 +184,6 @@ def home():
     return render_template('home.html')
 
 
-
-@app.route('/usuarios')
-@login_required    # User must be authenticated
-def mostrar_usuarios():
-    if current_user.is_admin:
-        return render_template('sudo_usuarios.html', usuarios=User.query.all())
-    else:
-        return render_template_string("""{% extends "base.html" %}
-        {% block content %}
-        El usuario no está autorizado para ver esta página...
-        {% endblock %}""")
-
-
-
-@app.route('/usuario/<string:username>')
-@login_required    # User must be authenticated
-def mostrar_usuario(username):
-    if current_user.is_admin:
-        user = User.query.filter_by(username=username).first_or_404()
-        return render_template('sudo_username.html', user=user)
-    else:
-        return render_template_string("""{% extends "base.html" %}
-        {% block content %}
-        El usuario no está autorizado para ver esta página...
-        {% endblock %}""")
-###############################################
-
 load_dotenv(find_dotenv())
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -212,16 +206,6 @@ historias=pickleLoad('historias.pkl')
 
 ######## Usar sql aquí, y usuarios para cada sesión
 
-def cargar_ultima_sesion(user):
-    try:
-        user.sesion_actual=[sesion for sesion in user.sesiones
-                            if sesion.id==user.ultima_sesion_id][0]
-    except:
-        user.sesion_actual=Sesion(nombre='**Nueva Sesión**',
-                                  usuario_id=user.id, user=user)
-        user.ultima_sesion_id=user.sesion_actual.id
-        db.session.commit()
-    return user.sesion_actual
 
     
 ## incluye db
@@ -229,12 +213,18 @@ def guardarHistoria(newstory):
     newstory['datetime'] = datetime.now()
     newstory['fecha'] = date.today()
     historias.append(newstory)
-    sesion_actual=cargar_ultima_sesion(current_user)
+    #sesion_actual=cargar_ultima_sesion(current_user)
     h=Historia(titulo=newstory['titulo'],
                autor=newstory['autor'],
                historia=newstory['historia'],
                fecha=newstory['fecha'],
-               sesion=sesion_actual)
+               sesion=current_user.sesion_actual())
+    try: 
+        h.prompt=newstory['prompt']
+        h.AIinspiration=newstory['AIinspiration']
+        h.tokens_usados=newstory['tokens_usados']
+    except:
+        print(f'###################  historia {h} with no prompt, AI, tokens')
     db.session.add(h)
     db.session.commit()
     f = open("historias.pkl","wb")
@@ -259,6 +249,11 @@ def guardarSesionActual(name='*unsaved '):
     pickle.dump(sesiones,f)
     f.close()
 
+def guardarSesion(sesion,nombre):
+    if sesion.nombre == '**Nueva Sesión**':
+        sesion.nombre = nombre
+        db.session.commit()
+    
 
 
 def borrarHistorias():
@@ -284,14 +279,20 @@ def editar_sesiones():
         ##################
         if myaction == "guardarhistorias":  #nueva sesion
             sesionname = request.form["sesionname"]
-            guardarSesionActual(sesionname)
+            guardarSesionActual(sesionname) #pickle
+            #db SQLAlchemy
+            guardarSesion(current_user.sesion_actual(), nombre=sesionname)
+            #return values
+            ses=current_user.sesiones
+            his=current_user.sesion_actual().historias
+            return render_template("sesiones.html", historias=his, sesiones=ses)
 
-            return render_template("sesiones.html", historias=historias, sesiones=sesiones)
+            
         ###############
         elif myaction == "borrarhistorias":  #caution
             borrarHistorias()
             return render_template("sesiones.html", historias=historias, sesiones=sesiones)
-        ##############
+        ############## Va para editar sesiones
         elif myaction == "borrarsesionguardada":  
             borrarsesion = request.form["deletesesion"]
             for i in range(len(sesiones)):
@@ -306,6 +307,10 @@ def editar_sesiones():
                 
                     nota='No se encontró ninguna sesión con ese nombre'
             return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
+        #####################
+        elif myaction == "editarsesiones":
+            return render_template("editar_sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
+
         #######################
         elif myaction == "cargarsesion":  
             cargarsesion = request.form["cargarsesion"]
@@ -319,8 +324,83 @@ def editar_sesiones():
             return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
 
     ses=current_user.sesiones
-    his=cargar_ultima_sesion(current_user).historias
+    his=current_user.sesion_actual().historias
     return render_template("sesiones.html", historias=his, sesiones=ses)
+
+
+
+
+
+
+
+
+
+
+
+
+#######################
+#Administrador
+
+
+#### define un decorador@admin_required
+@app.route('/adm/usuarios')
+@login_required    # User must be authenticated
+def mostrar_usuarios():
+    if current_user.is_admin:
+        return render_template('adm_usuarios.html', usuarios=User.query.all())
+    else:
+        return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+
+
+@app.route('/adm/sesiones')
+@login_required    # User must be authenticated
+def mostrar_sesiones():
+    if current_user.is_admin:
+        return render_template('adm_sesiones.html', sesiones=Sesion.query.all())
+    else:
+        return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+
+
+@app.route('/adm/historias')
+@login_required    # User must be authenticated
+def mostrar_historias():
+    if current_user.is_admin:
+        return render_template('adm_historias.html', historias=Historia.query.all())
+    else:
+        return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+
+    
+
+@app.route('/adm/user/<string:username>')
+@login_required    # User must be authenticated
+def mostrar_usuario(username):
+    if current_user.is_admin:
+        user = User.query.filter_by(username=username).first_or_404()
+        return render_template('sudo_username.html', user=user)
+    else:
+        return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+###############################################
+
+
+
+
+
+
+
+
+
 
 
 
@@ -345,7 +425,7 @@ def ingresarhistoria():
 
 @app.route("/leerhistorias", methods=("GET", "POST"))
 def leerhistorias():
-    return render_template("leerhistorias.html",historias=historias)
+    return render_template("leerhistorias.html",historias=current_user.sesion_actual().historias)
     
 
 
@@ -368,9 +448,9 @@ def crearhistoria():
                 # execute if no exception
                 checked.append(historia)
             
-        prompt, nuevahistoria, usage = openAI_create_story(checked)
+        prompt, nuevahistoria, tokens_usados = openAI_create_story(checked)
         result = {'prompt':prompt, 'historia':nuevahistoria,
-                  'autor':"openAI", 'usage':usage}
+                  'autor':"openAI", 'usage':tokens_usados}
         result['titulo']=openAI_generar_titulo(result['historia'])
         result['AIinspiration']=[story['titulo'] for story in checked ]
         guardarHistoria(result)
@@ -379,6 +459,10 @@ def crearhistoria():
 
     #result = request.args.get("result")
     return render_template("crearhistoria.html", historias=historias)
+
+
+
+
 
 
 

@@ -25,24 +25,14 @@
 	</p>
     </div>
 
-    {% if current_user.sesion_actual().nombre=='**Nueva Sesión**' %}
+
     <div>      
       <form action="/miperfil" method="post">
 	<input type="hidden" name="myaction" value="guardarhistorias" />
 	  <input type="submit"  text value="Guardar historias" />
-	  <input type="text"  name="sesionname" placeholder="nombre de la sesión" required   />
+	  <input type="text" name="sesionname" placeholder="nombre de la sesión" required />
       </form>
     </div>
-    {% else %}
-    <div class="center">
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="editarsesion" />
-	<input type="submit" text value="Editar sesion" />
-      </form>
-    </div>
-         
-    {% endif %}
-
 
 
     {% if historias%}
@@ -92,9 +82,11 @@
 
     
     <div class="center">
+      <h4>Borrar sesión</h4>
       <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="editarsesiones" />
-	<input type="submit" text value="Editar sesiones" />
+	<input type="hidden" name="myaction" value="borrarsesionguardada" />
+	<input type="text" name="deletesesion" placeholder="Nombre de la sesión" required />
+	  <input type="submit" text value="Eliminar sesión" />
       </form>
     
       {% if nota %}

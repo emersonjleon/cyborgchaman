@@ -3,15 +3,6 @@
 
 {% block content %}
 <div>
-  <p>
-    Usuario: {{current_user.username or current_user.email }}<br>
-    
-    
-
-  </p>
-
-
-
 
 
 </div>
@@ -19,17 +10,21 @@
     <div>
       
       {% if usuarios %}
-      Estos son todos los usuarios registrados en el Cyborg Chamán:
-      
+      <p>
+   
         {% for user in usuarios %}
-      <!-- <p> <a href=" url_for(f'usuario/{ user.username }') ">{{user.username }}</a>, id {{user.id}} </p> -->
-      <p> <b>{{user.username }}</b>, id {{user.id}} 
+	<a href="adm/user/{{ user.username }}">{{user.username }}</a>, id {{user.id}}
 	{% if user.is_authenticated %}
-	 (activo)
+	 Autenticado: {{user.is_authenticated}},
 	{% endif %}
-    
-      </p>
+	{% if user.is_active %}
+	  activo: {{user.is_active}}
+	{% endif %}
+	id de sesión actual: {{user.sesion_actual_id}}
+	sesion actual: {{user.sesion_actual()}}
+	<br>
         {% endfor %}
+      </p>
       {% else %}
         <p> Aún no hay usuarios aquí...</p>	  
       {% endif %}

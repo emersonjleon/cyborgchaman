@@ -1,41 +1,44 @@
 <!doctype html>
 {% extends "base0.html" %}
-  {% block content0 %}
+
+{% block content0 %}
 
   {% if call_or_get(current_user.is_authenticated) %}
 
-  <a href="/miperfil">{{ current_user.username or current_user.email }}</a>
-  &nbsp; | &nbsp;
-  <a href="{{ url_for('user.logout') }}">{%trans%}Sign out{%endtrans%}</a>
+    <a href="/miperfil">{{ current_user.username or current_user.email }}</a>
+    &nbsp; | &nbsp;
+    <a href="{{ url_for('user.logout') }}">{%trans%}Sign out{%endtrans%}</a>
 
 
-  <hr>
-  <div> 
+    <hr>
+    <div> 
+      
+      <a href="/ingresarhistoria">Ingresar historias</a>
+      <a href="/leerhistorias">Leer historias</a>
+      <a href="/crearhistoria">Crear historias</a>
+      <br>
+      <a href="/alargarhistoria">Alargar historias</a>
+      <a href="/historiadepalabras">Historia de palabras</a>
+    </div>
 
-    <a href="/ingresarhistoria">Ingresar historias</a>
-    <a href="/leerhistorias">Leer historias</a>
-    <a href="/crearhistoria">Crear historias</a>
-    <br>
-    <a href="/alargarhistoria">Alargar historias</a>
-    <a href="/historiadepalabras">Historia de palabras</a>
-</div>
-  
+    {% if call_or_get(current_user.is_admin) %}
+       <hr>
+       Administrador: <a href="/adm/usuarios">Usuarios</a> <a href="/adm/sesiones">Sesiones</a> <a href="/adm/historias">Historias</a>
+    
+    {% endif %}
+     
   {% else %}
     <div> 
       <a href="/user/register">Registrarse</a>
       &nbsp; | &nbsp;
       <a href="/user/sign-in">Ingresar</a>
-    <!--a href="/user/sign-out">Salir</a-->
-    
-    
+      <!--a href="/user/sign-out">Salir</a-->
     </div>
-<!--a href="{{ url_for('user.login') }}">{%trans%}Sign in{%endtrans%}</a-->
-    {% endif %}
-
-
+    <!--a href="{{ url_for('user.login') }}">{%trans%}Sign in{%endtrans%}</a-->
     
-    
+  {% endif %}
   <hr>
 
-        {% block content %}{% endblock %}
-  {% endblock %}
+  {% block content %}{% endblock %}
+
+{% endblock %}

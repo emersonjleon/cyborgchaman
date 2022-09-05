@@ -1,0 +1,33 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+
+
+</div>
+  <h4>Sesiones</h4>
+    <div>
+      
+      {% if sesiones %}
+      <p>
+   
+        {% for sesion in sesiones %}
+	<a href="adm/sesion/{{ sesion.nombre }}">{{sesion.nombre }}</a>, id {{sesion.id}}
+        {% endfor %}
+      </p>
+      {% else %}
+        <p> Aún no hay sesiones aquí...</p>	  
+      {% endif %}
+    </div>
+
+
+
+
+      
+    
+  
+
+
+
+{% endblock %}
