@@ -3,54 +3,62 @@
 
 {% block content %}
 <div>
-  <a href="{{ url_for('user.edit_user_profile') }}">Editar perfil de usuario</a>
-  <hr>
   <p>
-    Bienvenido, {{ current_user.username or current_user.email }}. Acá podrás encontrar tus historias y sesiones guardadas. 
+    Usuario: {{user.username or user.email }}<br>
+    
+    {{ user.first_name}} {{user.last_name}}
+    
+
   </p>
+
+
+  {% if user.sesion_actual() %}
+
 </div>
   <h4>Sesion actual</h4>
     <div>
       
-      {% if historias %}
+      sesión: {{historias.nombre}}
+      
          Estas son las historias de la sesión actual:
       
         {% for post in historias %}
           <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
         {% endfor %}
       {% else %}
-        <p> Aun no hay historias aquí...</p>	  
+        <p> Aún no hay historias aquí...</p>	  
+    </div>
+    {% endif %}
+  
+
+  
+
+</div>
+  <h4>Sesion actual</h4>
+    <div>
+      
+      {% if historias %}
+      sesión: {{historias.nombre}}
+      
+         Estas son las historias de la sesión actual:
+      
+        {% for post in historias %}
+          <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
+        {% endfor %}
+      {% else %}
+        <p> Aún no hay historias aquí...</p>	  
       {% endif %}
     </div>
 
 
-    <div>      
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="guardarhistorias" />
-	  <input type="submit"  text value="Guardar historias" />
-	  <input type="text" name="sesionname" placeholder="nombre de la sesión" required />
-      </form>
-    </div>
 
+  
 
-    {% if historias%}
-    <div class="leftalign">
-
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="borrarhistorias" />
-	<p>
-	  <input type="submit" text value="Nueva Sesión" />
-	  <br> (Cuidado, se borraran todas las historias actuales que no hayan sido guardadas)
-	</p>
-        
-      </form>
-    </div>
-    {% endif %}
 
     
     {% if sesiones%}
 
-    <h4>Sesiones Anteriores</h4>
+    <h4>Mis Sesiones</h4>
 
     <div class=story>
 
@@ -91,6 +99,8 @@
           <p> {{nota}}</p>
       {% endif %}
     </div>
+      {% else %}
+        <p> Aún no hay sesiones aquí...</p>	  
     
     {% endif %}
       

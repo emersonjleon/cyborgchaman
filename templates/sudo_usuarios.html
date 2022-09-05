@@ -1,0 +1,47 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+  <p>
+    Usuario: {{current_user.username or current_user.email }}<br>
+    
+    
+
+  </p>
+
+
+
+
+
+</div>
+  <h4>Usuarios</h4>
+    <div>
+      
+      {% if usuarios %}
+      Estos son todos los usuarios registrados en el Cyborg Chamán:
+      
+        {% for user in usuarios %}
+      <!-- <p> <a href=" url_for(f'usuario/{ user.username }') ">{{user.username }}</a>, id {{user.id}} </p> -->
+      <p> <b>{{user.username }}</b>, id {{user.id}} 
+	{% if user.is_authenticated %}
+	 (activo)
+	{% endif %}
+    
+      </p>
+        {% endfor %}
+      {% else %}
+        <p> Aún no hay usuarios aquí...</p>	  
+      {% endif %}
+    </div>
+
+
+
+
+      
+    
+  
+
+
+
+{% endblock %}

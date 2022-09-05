@@ -8,7 +8,7 @@
 
 import os
 import openai
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, render_template_string
 import pickle
 from datetime import datetime, date
 from dotenv import load_dotenv, find_dotenv
@@ -30,7 +30,7 @@ class ConfigClass(object):
     SECRET_KEY = 'This is an INSECURE secret!! DO NOT use this in production!!'
 
     # Flask-SQLAlchemy settings
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app3.sqlite'    # File-based SQL database
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app7.sqlite'    # File-based SQL database
     SQLALCHEMY_TRACK_MODIFICATIONS = False    # Avoids SQLAlchemy warning
 
     # Flask-User settings
@@ -61,7 +61,7 @@ db = SQLAlchemy(app)
 # NB: Make sure to add flask_user UserMixin !!!
 
 class User(db.Model, UserMixin):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
     
@@ -76,7 +76,7 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
     last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
     ultima_sesion_id=db.Column(db.Integer)
-    is_admin=db.Column(db.Boolean, default=False)
+    is_admin=db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -101,14 +101,15 @@ class Sesion(db.Model):
     #             lazy='subquery', backref=db.backref('sesiones', lazy=True))
     
     #one to many. What is wrong here?
-    # user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'),
-    #    nullable=False)
-    # user = db.relationship('User',
-    #    backref=db.backref('sesiones', lazy=True))
-    usuario_id=db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+       nullable=False)
+    user = db.relationship('User',
+       backref=db.backref('sesiones', lazy=True))
+    usuario_id=db.Column(db.Integer,nullable=False)#my manually created user id.
 
     is_public=db.Column(db.Boolean, default=False)
     is_shared=db.Column(db.Boolean, default=False)
+    #historias (backref)
 
     def __repr__(self):
         return f'<Sesion {self.nombre} >' 
@@ -120,6 +121,8 @@ class Historia(db.Model):
     titulo = db.Column(db.String(80), nullable=False)
     autor = db.Column(db.String(50), nullable=False)
     AIinspiration = db.Column(db.String(300), nullable=True)
+    AIprompt = db.Column(db.Text, nullable=True)
+    AItokens = db.Column(db.Integer, nullable=True)
     historia = db.Column(db.Text, nullable=False)
     fecha = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
@@ -161,12 +164,25 @@ def home():
 
 
 
+@app.route('/usuarios')
+@login_required    # User must be authenticated
+def mostrar_usuarios():
+    if current_user.is_admin:
+        return render_template('sudo_usuarios.html', usuarios=User.query.all())
+    else:
+        return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+
+
+
 @app.route('/usuario/<string:username>')
 @login_required    # User must be authenticated
-def show_user(username):
+def mostrar_usuario(username):
     if current_user.is_admin:
         user = User.query.filter_by(username=username).first_or_404()
-        return render_template('show_user.html', user=user)
+        return render_template('sudo_username.html', user=user)
     else:
         return render_template_string("""{% extends "base.html" %}
         {% block content %}
@@ -201,11 +217,31 @@ def cargar_ultima_sesion(user):
         user.sesion_actual=[sesion for sesion in user.sesiones
                             if sesion.id==user.ultima_sesion_id][0]
     except:
-        user.sesion_actual=Sesion(nombre='**Nueva Sesión**', usuario_id=user.id)
+        user.sesion_actual=Sesion(nombre='**Nueva Sesión**',
+                                  usuario_id=user.id, user=user)
         user.ultima_sesion_id=user.sesion_actual.id
+        db.session.commit()
     return user.sesion_actual
 
+    
+## incluye db
+def guardarHistoria(newstory):
+    newstory['datetime'] = datetime.now()
+    newstory['fecha'] = date.today()
+    historias.append(newstory)
+    sesion_actual=cargar_ultima_sesion(current_user)
+    h=Historia(titulo=newstory['titulo'],
+               autor=newstory['autor'],
+               historia=newstory['historia'],
+               fecha=newstory['fecha'],
+               sesion=sesion_actual)
+    db.session.add(h)
+    db.session.commit()
+    f = open("historias.pkl","wb")
+    pickle.dump(historias,f)
+    f.close()
 
+################################################################
 
 def guardarSesionActual(name='*unsaved '):
     global historias
@@ -233,22 +269,6 @@ def borrarHistorias():
     pickle.dump(historias,f)
     f.close()
 
-
-def guardarHistoria(newstory):
-    newstory['datetime'] = datetime.now()
-    newstory['fecha'] = date.today()
-    historias.append(newstory)
-    sesion_actual=cargar_ultima_sesion(current_user)
-    h=Historia(titulo=newstory['titulo'],
-               autor=newstory['autor'],
-               historia=newstory['historia'],
-               fecha=newstory['fecha'],
-               sesion=sesion_actual)
-    db.session.add(h)
-    db.session.commit()
-    f = open("historias.pkl","wb")
-    pickle.dump(historias,f)
-    f.close()
 
 
 
@@ -298,8 +318,9 @@ def editar_sesiones():
                     nota='No se encontró ninguna sesión con ese nombre'
             return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
 
-
-    return render_template("sesiones.html", historias=historias, sesiones=sesiones)
+    ses=current_user.sesiones
+    his=cargar_ultima_sesion(current_user).historias
+    return render_template("sesiones.html", historias=his, sesiones=ses)
 
 
 
