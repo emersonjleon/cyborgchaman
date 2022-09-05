@@ -3,66 +3,43 @@
 
 {% block content %}
 <div>
+  <h4>  Usuario: {{user.username or user.email }}</h4>
   <p>
-    Usuario: {{user.username or user.email }}<br>
     
     {{ user.first_name}} {{user.last_name}}
     
-
   </p>
 
 
-  {% if user.sesion_actual() %}
 
 </div>
-  <h4>Sesion actual</h4>
-    <div>
+
+
+{% if user.sesion_actual() %}
+
+  <div>
+    {% set historias=user.sesion_actual().historias %}
       
-      sesión: {{historias.nombre}}
+    sesión: {{historias.nombre}}
       
-         Estas son las historias de la sesión actual:
+    Estas son las historias de la sesión actual:
       
-        {% for post in historias %}
-          <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
-        {% endfor %}
-      {% else %}
-        <p> Aún no hay historias aquí...</p>	  
-    </div>
-    {% endif %}
+    {% for post in historias %}
+      <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
+      {% endfor %}
+{% else %}
+    <p> Aún no hay historias aquí...</p>	  
+  </div>
+{% endif %}
   
 
-  
+    {% if user.sesiones%}
 
-</div>
-  <h4>Sesion actual</h4>
-    <div>
-      
-      {% if historias %}
-      sesión: {{historias.nombre}}
-      
-         Estas son las historias de la sesión actual:
-      
-        {% for post in historias %}
-          <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
-        {% endfor %}
-      {% else %}
-        <p> Aún no hay historias aquí...</p>	  
-      {% endif %}
-    </div>
-
-
-
-  
-
-
-    
-    {% if sesiones%}
-
-    <h4>Mis Sesiones</h4>
+    <h4>Sesiones</h4>
 
     <div class=story>
 
-      {% for s in sesiones %}
+      {% for s in user.sesiones %}
       <p> <b>{{s.nombre}}  </b>({{s.fecha}})</p>
       <p>
 	  {% for post in s.historias %}
@@ -72,39 +49,9 @@
       {% endfor %}
     </div>
 
-
-
-    <div class="center">
-      <h4>Cargar sesión</h4>
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="cargarsesion" />
-	<input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required />
-	  <input type="submit" text value="Cargar sesión" />
-      </form>
-    
-      
-    </div>
-
-
-    
-    <div class="center">
-      <h4>Borrar sesión</h4>
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="borrarsesionguardada" />
-	<input type="text" name="deletesesion" placeholder="Nombre de la sesión" required />
-	  <input type="submit" text value="Eliminar sesión" />
-      </form>
-    
-      {% if nota %}
-          <p> {{nota}}</p>
-      {% endif %}
-    </div>
-      {% else %}
-        <p> Aún no hay sesiones aquí...</p>	  
-    
     {% endif %}
-      
-    
+
+
   
 
 

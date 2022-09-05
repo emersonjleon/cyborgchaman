@@ -13,7 +13,7 @@
       <p>
    
         {% for user in usuarios %}
-	<a href="adm/user/{{ user.username }}">{{user.username }}</a>, id {{user.id}}
+	<a href="user/{{ user.username }}">{{user.username }}</a>, id {{user.id}}
 	{% if user.is_authenticated %}
 	 Autenticado: {{user.is_authenticated}},
 	{% endif %}

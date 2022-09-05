@@ -81,12 +81,7 @@ class User(db.Model, UserMixin):
 
     def cargar_ultima_sesion(self):
         if self.sesion_actual_id==-111:
-            self.sesionActual=Sesion(nombre='**Nueva Sesión**',
-                                      usuario_id=self.id, user=self)
-            db.session.commit()
-            self.sesion_actual_id = self.sesionActual.id
-            print(f'##########{self.sesionActual},    {self.sesionActual.id}')
-            db.session.commit()
+            self.nueva_sesion()
         else:
             self.sesionActual=Sesion.query.filter_by(id=self.sesion_actual_id)[0]
         return self.sesionActual
@@ -96,6 +91,13 @@ class User(db.Model, UserMixin):
             return self.sesionActual
         except:
             return self.cargar_ultima_sesion()
+    def nueva_sesion(self):
+         self.sesionActual=Sesion(nombre='**Nueva Sesión**',
+                                      usuario_id=self.id, user=self)
+         db.session.commit()
+         self.sesion_actual_id = self.sesionActual.id
+         db.session.commit()
+        
             
     is_admin=db.Column(db.Boolean, nullable=False, default=False)
     
@@ -217,7 +219,7 @@ def guardarHistoria(newstory):
     h=Historia(titulo=newstory['titulo'],
                autor=newstory['autor'],
                historia=newstory['historia'],
-               fecha=newstory['fecha'],
+               fecha=newstory['datetime'],
                sesion=current_user.sesion_actual())
     try: 
         h.prompt=newstory['prompt']
@@ -255,7 +257,7 @@ def guardarSesion(sesion,nombre):
         db.session.commit()
     
 
-
+#pickle
 def borrarHistorias():
     global historias
     historias=[]
@@ -264,7 +266,7 @@ def borrarHistorias():
     pickle.dump(historias,f)
     f.close()
 
-
+    
 
 
 
@@ -290,9 +292,14 @@ def editar_sesiones():
             
         ###############
         elif myaction == "borrarhistorias":  #caution
-            borrarHistorias()
-            return render_template("sesiones.html", historias=historias, sesiones=sesiones)
-        ############## Va para editar sesiones
+            borrarHistorias() #pickle
+            current_user.nueva_sesion()
+            #return values
+            ses=current_user.sesiones
+            his=current_user.sesion_actual().historias
+            return render_template("sesiones.html", historias=his, sesiones=ses)
+
+        ############## Va para editar sesiones.mover esto!
         elif myaction == "borrarsesionguardada":  
             borrarsesion = request.form["deletesesion"]
             for i in range(len(sesiones)):
@@ -385,7 +392,7 @@ def mostrar_historias():
 def mostrar_usuario(username):
     if current_user.is_admin:
         user = User.query.filter_by(username=username).first_or_404()
-        return render_template('sudo_username.html', user=user)
+        return render_template('adm_username.html', user=user)
     else:
         return render_template_string("""{% extends "base.html" %}
         {% block content %}

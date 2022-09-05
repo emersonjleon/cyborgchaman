@@ -16,8 +16,9 @@
 <p> Acá puedes escribir tu propia historia</p>
 <form class="old" action="/ingresarhistoria" method="post">
     <p> Título: <input type="text" name="titulo" placeholder="título de la historia" required /></p>
-    <textarea name="historia" placeholder="Escribe aquí tu historia." rows="12" required> </textarea>
-    <p> Autor: <input type="text" name="autor" placeholder="tu nombre" required /></p>
+    <textarea name="historia" placeholder="Escribe aquí tu historia." rows="12" required></textarea>
+    <p> Autor: <input type="text" name="autor" placeholder="nombre del autor" text value="{{current_user.username}}" required />
+    </p>
     <input type="submit" text value="Ingresar historia" />
   </form>
   
