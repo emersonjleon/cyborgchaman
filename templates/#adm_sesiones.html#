@@ -13,7 +13,8 @@
       <p>
    
         {% for sesion in sesiones %}
-	<a href="adm/sesion/{{ sesion.nombre }}">{{sesion.nombre }}</a>, id {{sesion.id}},  {{sesion.user}} <br>
+	<a href="adm/sesion/{{ sesion.nombre }}">{{sesion.nombre }}</a>,
+	id {{sesion.id}},  {{sesion.user}} <br>
         {% endfor %}
       </p>
       {% else %}

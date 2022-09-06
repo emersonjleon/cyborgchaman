@@ -3,8 +3,6 @@
 
 {% block content %}
 <div>
-  <a href="{{ url_for('user.edit_user_profile') }}">Editar perfil de usuario</a>
-  <hr>
   <p>
     Bienvenido, {{ current_user.username or current_user.email }}. Acá podrás encontrar tus historias y sesiones guardadas. 
   </p>
@@ -25,78 +23,73 @@
 	</p>
     </div>
 
-    {% if current_user.sesion_actual().nombre=='**Nueva Sesión**' %}
     <div>      
       <form action="/miperfil" method="post">
 	<input type="hidden" name="myaction" value="guardarhistorias" />
-	  <input type="submit"  text value="Guardar historias" />
+	  <input type="submit"  text value="Guardar como" />
 	  <input type="text"  name="sesionname" placeholder="nombre de la sesión" required   />
       </form>
     </div>
-    {% else %}
-    <div class="center">
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="editarsesion" />
-	<input type="submit" text value="Editar sesion" />
-      </form>
-    </div>
-         
-    {% endif %}
 
 
 
-    {% if historias%}
-    <div class="leftalign">
-
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="borrarhistorias" />
-	<p>
-	  <input type="submit" text value="Nueva Sesión" />
-	  <br> (Cuidado, se borraran todas las historias actuales que no hayan sido guardadas)
-	</p>
-        
-      </form>
-    </div>
-    {% endif %}
 
     
     {% if sesiones%}
 
     <h4>Mis sesiones</h4>
 
-    <div class=story>
-
-      {% for s in sesiones %}
-      <p> <b>{{s.nombre}}  </b>({{s.fecha}})</p>
-      <p>
-	  {% for post in s.historias %}
-	     {{post.titulo }}, de {{post.autor}};
-	  {% endfor %}
-      </p>
-      {% endfor %}
-    </div>
-
-
-
-    <div class="center">
-      <h4>Cargar sesión</h4>
-      <form action="/miperfil" method="post">
+    <form action="/miperfil" method="post">
 	<input type="hidden" name="myaction" value="cargarsesion" />
-	<input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required />
-	  <input type="submit" text value="Cargar sesión" />
-      </form>
-    
+	<div class=story>
+
+	  {% for s in sesiones %}
+	  <p>
+	    <input type="radio" id="cargarsesion"
+		   name='cargarsesion' value="{{s.id }}" >
+	    
+	    <b>{{s.nombre}}  </b>({{s.fecha}})</p>
+	  <p>
+	    {% for post in s.historias %}
+	      {{post.titulo }}, de {{post.autor}};
+	    {% endfor %}
+	  </p>
+	  {% endfor %}
+	</div>
+
+	<!-- <input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required /> -->
+
+	<input type="submit" text value="Cargar sesión" />
       
     </div>
+    </form>
 
-
-    
     <div class="center">
+
+
+    {% if historias%}
+    <div class="leftalign">
+
       <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="editarsesiones" />
-	<input type="submit" text value="Editar sesiones" />
+	<input type="hidden" name="myaction" value="nuevasesion" />
+	<p>
+	  <input type="submit" text value="Crear nueva sesión" />
+	  
+	</p>
+        
       </form>
-    
+    </div>
+    {% endif %}
+
+
+
+      
+      <hr>
+
+
+
+      <a href="editar_sesiones.html">Editar sesiones</a> <br>   
+      <a href="{{ url_for('user.edit_user_profile') }}"> Editar perfil de usuario</a>    
       {% if nota %}
           <p> {{nota}}</p>
       {% endif %}

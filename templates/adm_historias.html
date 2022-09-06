@@ -13,7 +13,8 @@
       <p>
    
         {% for h in historias %}
-	  <a href="adm/historia/{{ h.titulo }}">{{h.titulo }}</a>, id {{h.id}}
+	<a href="adm/historia/{{ h.titulo }}">{{h.titulo }}</a>, {{h.fecha}},
+	{{h.sesion.user}} <br>
         {% endfor %}
       </p>
       {% else %}

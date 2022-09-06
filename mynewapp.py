@@ -92,8 +92,8 @@ class User(db.Model, UserMixin):
         except:
             return self.cargar_ultima_sesion()
     def nueva_sesion(self):
-         self.sesionActual=Sesion(nombre='**Nueva Sesión**',
-                                      usuario_id=self.id, user=self)
+         self.sesionActual=Sesion(nombre='**Nueva Sesión**', usuario_id=self.id, user=self)
+         #usuario_id=self.id,
          db.session.commit()
          self.sesion_actual_id = self.sesionActual.id
          db.session.commit()
@@ -128,7 +128,7 @@ class Sesion(db.Model):
        nullable=False)
     user = db.relationship('User',
        backref=db.backref('sesiones', lazy=True))
-    usuario_id=db.Column(db.Integer,nullable=False)#my manually created user id.
+    usuario_id=db.Column(db.Integer,nullable=True)#my manually created user id.
 
     is_public=db.Column(db.Boolean, default=False)
     is_shared=db.Column(db.Boolean, default=False)
@@ -225,7 +225,7 @@ def guardarHistoria(newstory):
         h.prompt=newstory['prompt']
         h.AIinspiration=newstory['AIinspiration']
         h.tokens_usados=newstory['tokens_usados']
-    except:
+    except KeyError:
         print(f'###################  historia {h} with no prompt, AI, tokens')
     db.session.add(h)
     db.session.commit()
@@ -251,6 +251,7 @@ def guardarSesionActual(name='*unsaved '):
     pickle.dump(sesiones,f)
     f.close()
 
+#sql
 def guardarSesion(sesion,nombre):
     if sesion.nombre == '**Nueva Sesión**':
         sesion.nombre = nombre
@@ -279,7 +280,7 @@ def editar_sesiones():
     if request.method == "POST":
         myaction = request.form["myaction"]
         ##################
-        if myaction == "guardarhistorias":  #nueva sesion
+        if myaction == "guardarhistorias":  
             sesionname = request.form["sesionname"]
             guardarSesionActual(sesionname) #pickle
             #db SQLAlchemy
@@ -291,7 +292,7 @@ def editar_sesiones():
 
             
         ###############
-        elif myaction == "borrarhistorias":  #caution
+        elif myaction == "nuevasesion": 
             borrarHistorias() #pickle
             current_user.nueva_sesion()
             #return values
@@ -299,7 +300,7 @@ def editar_sesiones():
             his=current_user.sesion_actual().historias
             return render_template("sesiones.html", historias=his, sesiones=ses)
 
-        ############## Va para editar sesiones.mover esto!
+        ############## Va para editar_sesiones.html mover esto!
         elif myaction == "borrarsesionguardada":  
             borrarsesion = request.form["deletesesion"]
             for i in range(len(sesiones)):
@@ -314,13 +315,10 @@ def editar_sesiones():
                 
                     nota='No se encontró ninguna sesión con ese nombre'
             return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
-        #####################
-        elif myaction == "editarsesiones":
-            return render_template("editar_sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
-
         #######################
-        elif myaction == "cargarsesion":  
+        elif myaction == "cargarsesionold":  
             cargarsesion = request.form["cargarsesion"]
+            #pickle
             for i in range(len(sesiones)):
                 if sesiones[i]['nombre']==cargarsesion:
                     historias=sesiones[i]['historias']
@@ -328,6 +326,22 @@ def editar_sesiones():
                     break
                 else:
                     nota='No se encontró ninguna sesión con ese nombre'
+                #sql
+            current_user.sesionActual=Sesion.query.filter_by(user_id=current_user.id).filter_by(nombre=cargarsesion).first()
+            current_user.sesion_actual_id=current_user.sesionActual.id
+            db.session.commit()
+            ##############################
+        elif myaction == "cargarsesion":  
+            cargarsesion_id = request.form["cargarsesion"]
+            current_user.sesionActual=Sesion.query.filter_by(user_id=current_user.id).filter_by(id=cargarsesion_id).first()
+            current_user.sesion_actual_id=current_user.sesionActual.id
+            db.session.commit()
+        
+            #return values
+            ses=current_user.sesiones
+            his=current_user.sesion_actual().historias
+            return render_template("sesiones.html", historias=his, sesiones=ses)
+
             return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
 
     ses=current_user.sesiones
@@ -412,6 +426,7 @@ def mostrar_usuario(username):
 
 
 @app.route("/ingresarhistoria", methods=("GET", "POST"))
+@login_required
 def ingresarhistoria():
     if request.method == "POST":
         nuevahistoria={}
@@ -431,14 +446,16 @@ def ingresarhistoria():
 
 
 @app.route("/leerhistorias", methods=("GET", "POST"))
+@login_required
 def leerhistorias():
-    return render_template("leerhistorias.html",historias=current_user.sesion_actual().historias)
+    return render_template("leerhistorias.html", historias=current_user.sesion_actual().historias)
     
 
 
 
 
 @app.route("/crearhistoria", methods=("GET", "POST"))
+@login_required
 def crearhistoria():
     if request.method == "POST":
         checked=[]
@@ -461,11 +478,11 @@ def crearhistoria():
         result['titulo']=openAI_generar_titulo(result['historia'])
         result['AIinspiration']=[story['titulo'] for story in checked ]
         guardarHistoria(result)
-        return render_template("crearhistoria.html", historias=historias, result=result, checked=checked)
+        return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=result, checked=checked)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
 
     #result = request.args.get("result")
-    return render_template("crearhistoria.html", historias=historias)
+    return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias)
 
 
 
@@ -557,6 +574,7 @@ mi madre para que entre la ropa. Título del cuento: Llover o no llover
 ##################################
 
 @app.route("/historiadepalabras", methods=("GET", "POST"))
+@login_required
 def historiadepalabras():
     if request.method == "POST":
         palabras = request.form["story1"]
@@ -597,6 +615,7 @@ Ejemplo 3: *PALABRAS PRINCIPALES:
 
 #########alargarhistoria##############
 @app.route("/alargarhistoria", methods=("GET", "POST"))
+@login_required
 def alargarhistoria():
     if request.method == "POST":
         titulo=request.form['alargarhistoria']
@@ -614,12 +633,24 @@ def alargarhistoria():
                 result['titulo']=story['titulo']+'+'
                 result['AIinspiration'] = "alargar historia" 
                 guardarHistoria(result)
-                return render_template("alargarhistoria.html", historias=historias, result=result)
+                return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
             else:
                 pass
         note="no se encontró la historia buscada "+titulo
-        return render_template("alargarhistoria.html", historias=historias, note=note)
-    return render_template("alargarhistoria.html", historias=historias)
+        return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, note=note)
+    return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias)
+
+
+
+
+
+
+
+
+
+
+
+
 
 def openAI_extend_story(story):
     prompt=generar_prompt_alargar_historia(story)
