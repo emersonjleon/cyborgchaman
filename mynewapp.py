@@ -476,7 +476,7 @@ def crearhistoria():
         result = {'prompt':prompt, 'historia':nuevahistoria,
                   'autor':"openAI", 'usage':tokens_usados}
         result['titulo']=openAI_generar_titulo(result['historia'])
-        result['AIinspiration']=[story['titulo'] for story in checked ]
+        result['AIinspiration']=str([story['titulo'] for story in checked ])
         guardarHistoria(result)
         return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=result, checked=checked)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
