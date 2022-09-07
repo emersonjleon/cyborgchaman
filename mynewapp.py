@@ -468,7 +468,7 @@ def crearhistoria():
         for historia in historiassql:
             try:
                 # only valid for checked items.
-                tit=request.form[historia['titulo']]
+                tit=request.form[historia.titulo]
 
             except KeyError:
                 pass
@@ -626,13 +626,13 @@ def alargarhistoria():
         titulo=request.form['alargarhistoria']
         historiassql=current_user.sesion_actual().historias
         for story in historiassql:
-            if story['titulo']==titulo:
+            if story.titulo==titulo:
                 prompt, nuevaparte, usage = openAI_extend_story(story)
-                if story['autor'][-6:]=='openAI':
-                    newautor=story['autor']
+                if story.autor[-6:]=='openAI':
+                    newautor=story.autor
                 else:
-                    newautor=story['autor']+' + openAI'
-                historiaalargada=story['historia']+""" *** """+nuevaparte
+                    newautor=story.autor+' + openAI'
+                historiaalargada=story.historia+""" *** """+nuevaparte
                 result = {'prompt':prompt,
                           'historia':historiaalargada,
                           'autor':newautor, 'usage':usage}
