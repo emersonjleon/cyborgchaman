@@ -30,17 +30,47 @@ body {
   flex-direction: column;
   align-items: center;
   padding-top: 60px;
-  background-image: url("little_cyborg_shaman_meditating_on_a_futuristic_galaxy.png"), linear-gradient(#aaa, #456);
-  background-attachment: fixed;
-  background-position: 50% 50%;
-  background-size: cover;  
-  background-repeat: no-repeat,repeat;
-  background-color: #aaa;
-
+  
 }
 .icon {
   width: 34px;
 }
+
+.myfixedbackground {
+    /* position: fixed; */
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 120%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    /* margin: 0; */
+    background-image: url("little_cyborg_shaman_meditating_on_a_futuristic_galaxy.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    /* height: 100vh; */
+    /* width: 100vw; */
+    position: fixed;
+    /* background-position: 50% 50%; */
+    background-repeat: no-repeat;
+    
+    /* -webkit-background-size: cover; */
+    /* -moz-background-size: cover; */
+    /* -o-background-size: cover; */
+    background-size: cover;
+}
+
+.mycontent{
+  position: absolute;
+  margin-top: 5rem;
+  left: 50%; 
+  transform: translateX(-50%);
+  width: 80%;
+}
+
+
+
 h3 {
   font-size: 32px;
   line-height: 40px;
