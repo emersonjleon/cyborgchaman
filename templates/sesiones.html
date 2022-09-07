@@ -35,10 +35,25 @@
 
 
     
-    {% if sesiones%}
 
     <h4>Mis sesiones</h4>
 
+    {% if historias%}
+    <div class="leftalign">
+
+      <form action="/miperfil" method="post">
+	<input type="hidden" name="myaction" value="nuevasesion" />
+	<p>
+	  <input type="submit" text value="Crear nueva sesión" />
+	  
+	</p>
+        
+      </form>
+    </div>
+    {% endif %}
+
+    {% if sesiones%}
+    
     <form action="/miperfil" method="post">
 	<input type="hidden" name="myaction" value="cargarsesion" />
 	<div class=story>
@@ -67,19 +82,6 @@
     <div class="center">
 
 
-    {% if historias%}
-    <div class="leftalign">
-
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="nuevasesion" />
-	<p>
-	  <input type="submit" text value="Crear nueva sesión" />
-	  
-	</p>
-        
-      </form>
-    </div>
-    {% endif %}
 
 
 
