@@ -3,92 +3,99 @@
 
 {% block content %}
 <div>
-  <a href="{{ url_for('user.edit_user_profile') }}">Editar perfil de usuario</a>
-  <hr>
   <p>
-    Bienvenido, {{ current_user.username or current_user.email }}. Acá podrás encontrar tus historias y sesiones guardadas. 
+    Bienvenido, {{ current_user.username or current_user.email }}. Acá podrás editar tus sesiones guardadas. 
   </p>
-</div>
-  <h4>Sesion actual</h4>
-    <div>
-      
-      {% if historias %}
-       {{current_user.sesion_actual().nombre}} <br>
-         
-       <p> 
-        {% for post in historias %}
-         <b>{{post.titulo }}</b>, de {{post.autor}} <br>
-        {% endfor %}
-      {% else %}
-         Aun no hay historias aquí...	  
-	{% endif %}
-	</p>
-    </div>
+***work in progress***
 
+    <h4>Buscar Historia</h4>
+      
+         
+      <p> 
+	{% if historias %}
+
+	{% for post in historias %}
+          <b>{{post.titulo }}</b>, de {{post.autor}} <br>
+	  {% endfor %}
+  
+	{% else %}
+           Aun no hay historias aquí...
+	{% endif %}
+      </p>
+
+
+</div>
 
     <div>      
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="guardarhistorias" />
-	  <input type="submit"  text value="Guardar historias" />
-	  <input type="text" name="sesionname" placeholder="nombre de la sesión" required />
+      <form action="/mishistorias" method="post">
+	<input type="hidden" name="myaction" value="buscarhistorias" />
+	  <input type="text"  name="sesionname" placeholder="nombre de la sesión" required   />
+	  <input type="submit"  text value="Buscar" />
+
       </form>
     </div>
 
 
+
+
+    
+
+ 
     {% if historias%}
     <div class="leftalign">
 
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="borrarhistorias" />
+      <form action="/mishistorias" method="post">
+	<input type="hidden" name="myaction" value="nuevasesion" />
 	<p>
-	  <input type="submit" text value="Nueva Sesión" />
-	  <br> (Cuidado, se borraran todas las historias actuales que no hayan sido guardadas)
+	  <input type="submit" text value="Crear nueva sesión" />
+	  
 	</p>
         
       </form>
     </div>
     {% endif %}
 
-    
     {% if sesiones%}
+    <h4>Borrar sesión</h4>
+   
+    <form action="/editar_sesiones" method="post">
+	<input type="hidden" name="myaction" value="borrarsesionguardada" />
+	<div class=story>
 
-    <h4>Mis sesiones</h4>
-
-    <div class=story>
-
-      {% for s in sesiones %}
-      <p> <b>{{s.nombre}}  </b>({{s.fecha}})</p>
-      <p>
-	  {% for post in s.historias %}
-	     {{post.titulo }}, de {{post.autor}};
+	  {% for s in sesiones %}
+	  <p>
+	    <input type="radio" id="cargarsesion"
+		   name='cargarsesion' value="{{s.id }}" >
+	    
+	    <b>{{s.nombre}}  </b>({{s.fecha}})</p>
+	  <p>
+	    {% for post in s.historias %}
+	      {{post.titulo }}, de {{post.autor}};
+	    {% endfor %}
+	  </p>
 	  {% endfor %}
-      </p>
-      {% endfor %}
-    </div>
+	</div>
 
+	<!-- <input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required /> -->
 
-
-    <div class="center">
-      <h4>Cargar sesión</h4>
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="cargarsesion" />
-	<input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required />
-	  <input type="submit" text value="Cargar sesión" />
-      </form>
-    
+	<input type="submit" text value="Borrar sesión" />
       
     </div>
+    </form>
 
-
-    
     <div class="center">
-      <h4>Borrar sesión</h4>
-      <form action="/miperfil" method="post">
-	<input type="hidden" name="myaction" value="borrarsesionguardada" />
-	<input type="text" name="deletesesion" placeholder="Nombre de la sesión" required />
-	  <input type="submit" text value="Eliminar sesión" />
-      </form>
-    
+
+
+
+
+
+      
+      <hr>
+
+
+
+      <a href="{{ url_for('editar_sesiones') }}">Editar sesiones</a> <br>   
+      <a href="{{ url_for('user.edit_user_profile') }}"> Editar perfil de usuario</a>    
       {% if nota %}
           <p> {{nota}}</p>
       {% endif %}

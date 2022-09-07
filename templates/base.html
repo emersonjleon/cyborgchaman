@@ -5,7 +5,7 @@
 
   {% if call_or_get(current_user.is_authenticated) %}
 
-    <a href="/miperfil">{{ current_user.username or current_user.email }}</a>
+    <a href="/mishistorias">{{ current_user.username or current_user.email }}</a>
     &nbsp; | &nbsp;
     <a href="{{ url_for('user.logout') }}">{%trans%}Sign out{%endtrans%}</a>
 

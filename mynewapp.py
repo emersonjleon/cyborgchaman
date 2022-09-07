@@ -276,9 +276,9 @@ def borrarHistorias():
 
 
 
-@app.route("/miperfil", methods=("GET", "POST"))
+@app.route("/mishistorias", methods=("GET", "POST"))
 @login_required    # User must be authenticated
-def editar_sesiones():
+def mis_historias():
     global historias
 
     if request.method == "POST":
@@ -352,6 +352,36 @@ def editar_sesiones():
     his=current_user.sesion_actual().historias
     return render_template("sesiones.html", historias=his, sesiones=ses)
 
+
+
+
+
+
+@app.route("/editarsesiones", methods=("GET", "POST"))
+@login_required    # User must be authenticated
+def editar_sesiones():
+    if request.method == "POST":
+        myaction = request.form["myaction"]
+
+        ############## hacer directamente en sql
+        if myaction == "borrarsesionguardada":  
+            borrarsesion = request.form["deletesesion"]
+            for i in range(len(sesiones)):
+                if sesiones[i]['nombre']==borrarsesion:
+                    deleted=sesiones.pop(i)
+                    nota=f'Se eliminó la sesión {borrarsesion}'
+                    f = open("sesiones.pkl","wb")
+                    pickle.dump(sesiones,f)
+                    f.close()
+                    break
+                else:
+                
+                    nota='No se encontró ninguna sesión con ese nombre'
+            return render_template("sesiones.html", historias=historias, sesiones=sesiones, nota=nota)
+
+    ses=current_user.sesiones
+    his=current_user.sesion_actual().historias
+    return render_template("editar_sesiones.html", historias=his, sesiones=ses)
 
 
 
