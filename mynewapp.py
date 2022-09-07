@@ -481,7 +481,7 @@ def crearhistoria():
         result = {'prompt':prompt, 'historia':nuevahistoria,
                   'autor':"openAI", 'usage':tokens_usados}
         result['titulo']=openAI_generar_titulo(result['historia'])
-        result['AIinspiration']=str([story['titulo'] for story in checked ])
+        result['AIinspiration']=str([story.titulo for story in checked ])
         guardarHistoria(result)
         return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=result, checked=checked)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
@@ -500,8 +500,8 @@ def generar_prompt_de_historias(historias):
     n=len(historias)+1
     prompt=f"{n} personas escribieron historias."
     for story in historias:
-        prompt+= f"\n{story['autor']} escribió: "
-        prompt+= story['historia']
+        prompt+= f"\n{story.autor} escribió: "
+        prompt+= story.historia
     return prompt+"\nEl último escribió:"
 
 
@@ -636,7 +636,7 @@ def alargarhistoria():
                 result = {'prompt':prompt,
                           'historia':historiaalargada,
                           'autor':newautor, 'usage':usage}
-                result['titulo']=story['titulo']+'+'
+                result['titulo']=story.titulo+'+'
                 result['AIinspiration'] = "alargar historia" 
                 guardarHistoria(result)
                 return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
@@ -674,7 +674,7 @@ Continuación: Tenía la crin y la coleta, que eran su principal ornato, tan lar
 Historia inicial: """
     ending="""
 Continuación:"""
-    return prompt+story['historia']+ending
+    return prompt+story.historia+ending
 
 
 
