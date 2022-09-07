@@ -186,6 +186,8 @@ def home():
     return render_template('home.html')
 
 
+
+#load pickle
 load_dotenv(find_dotenv())
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -210,7 +212,7 @@ historias=pickleLoad('historias.pkl')
 
 
     
-## incluye db
+## incluye db y pickle
 def guardarHistoria(newstory):
     newstory['datetime'] = datetime.now()
     newstory['fecha'] = date.today()
@@ -235,6 +237,8 @@ def guardarHistoria(newstory):
 
 ################################################################
 
+
+#pickle
 def guardarSesionActual(name='*unsaved '):
     global historias
     nuevasesion={}
@@ -253,9 +257,9 @@ def guardarSesionActual(name='*unsaved '):
 
 #sql
 def guardarSesion(sesion,nombre):
-    if sesion.nombre == '**Nueva Sesión**':
-        sesion.nombre = nombre
-        db.session.commit()
+    #if sesion.nombre == '**Nueva Sesión**':
+    sesion.nombre = nombre
+    db.session.commit()
     
 
 #pickle
@@ -460,7 +464,8 @@ def crearhistoria():
     if request.method == "POST":
         checked=[]
         #unchecked=[]
-        for historia in historias:
+        historiassql=current_user.sesion_actual().historias
+        for historia in historiassql:
             try:
                 # only valid for checked items.
                 tit=request.form[historia['titulo']]
@@ -476,7 +481,7 @@ def crearhistoria():
         result = {'prompt':prompt, 'historia':nuevahistoria,
                   'autor':"openAI", 'usage':tokens_usados}
         result['titulo']=openAI_generar_titulo(result['historia'])
-        result['AIinspiration']=[story['titulo'] for story in checked ]
+        result['AIinspiration']=str([story['titulo'] for story in checked ])
         guardarHistoria(result)
         return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=result, checked=checked)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
@@ -619,7 +624,8 @@ Ejemplo 3: *PALABRAS PRINCIPALES:
 def alargarhistoria():
     if request.method == "POST":
         titulo=request.form['alargarhistoria']
-        for story in historias:
+        historiassql=current_user.sesion_actual().historias
+        for story in historiassql:
             if story['titulo']==titulo:
                 prompt, nuevaparte, usage = openAI_extend_story(story)
                 if story['autor'][-6:]=='openAI':
