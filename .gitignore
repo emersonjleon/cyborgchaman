@@ -16,3 +16,4 @@ build/
 sesiones.pkl
 historias.pkl
 historias.pkl
+quickstart_app.sqlite
