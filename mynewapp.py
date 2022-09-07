@@ -253,9 +253,9 @@ def guardarSesionActual(name='*unsaved '):
 
 #sql
 def guardarSesion(sesion,nombre):
-    if sesion.nombre == '**Nueva Sesión**':
-        sesion.nombre = nombre
-        db.session.commit()
+    #if sesion.nombre == '**Nueva Sesión**':
+    sesion.nombre = nombre
+    db.session.commit()
     
 
 #pickle
