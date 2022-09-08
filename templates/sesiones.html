@@ -35,9 +35,6 @@
 
 
 
-
-    
-
     <h4>Mis sesiones</h4>
 
     {% if historias%}
@@ -92,7 +89,7 @@
 
 
 
-      <a href="{{ url_for('editar_sesiones') }}">Editar sesiones</a> <br>   
+      <!-- <a href="{{ url_for('editar_sesiones') }}">Editar sesiones</a> <br>    -->
       <a href="{{ url_for('user.edit_user_profile') }}"> Editar perfil de usuario</a>    
       {% if nota %}
           <p> {{nota}}</p>
