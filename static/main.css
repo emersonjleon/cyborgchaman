@@ -29,7 +29,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 60px;
+  padding-top: 20px;
+  background-color= #010
   
 }
 .icon {
@@ -38,8 +39,8 @@ body {
 
 .myfixedbackground {
     /* position: fixed; */
-    right: 0;
-    bottom: 0;
+    /* right: 0; */
+    top: 0;
     min-width: 100%;
     min-height: 120%;
     width: auto;
@@ -52,7 +53,7 @@ body {
     /* height: 100vh; */
     /* width: 100vw; */
     position: fixed;
-    /* background-position: 50% 50%; */
+    background-position: 50% 64%;
     background-repeat: no-repeat;
     
     /* -webkit-background-size: cover; */

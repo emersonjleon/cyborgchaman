@@ -1,0 +1,44 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+  <h4>  Sesión: {{sesion.nombre }}</h4>
+  <p>
+  id={{sesion.id}}, Usuario: {{sesion.user.username }}
+    
+    {{ sesion.user.first_name}} {{sesion.user.last_name}}
+    
+  </p>
+</div>
+
+
+
+
+  <h4>Historias</h4>
+  
+    {% if sesion.historias %}
+      {% for post in sesion.historias %}
+      <div class="story">
+	<p> <b>{{ post.titulo }}</b></p>
+	<p> {{post.historia}}</p>
+	<p>{{ post.autor}}, {{ post.fecha}} </p>
+	{% if post.AIinspiration %}
+	<div class='center'>
+	  <p>({{ post.AIinspiration }})</p>
+	</div>
+	{% endif %}
+      
+      </div>
+      {% endfor %}
+    
+    {% else %}
+      <div> Aún no hay historias aquí...</div>
+    {% endif %}
+
+
+  
+
+
+
+{% endblock %}

@@ -35,9 +35,10 @@ class ConfigClass(object):
 
     
     # Flask-SQLAlchemy settings
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'  # File-based SQL
     # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
-    SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:mysql0Secret@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
-    #SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'    # File-based SQL database
+    # SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:mysql0Secret@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False    # Avoids SQLAlchemy warning
 
     # Flask-User settings
@@ -407,7 +408,6 @@ def editar_sesiones():
 #######################
 #Administrador
 
-
 #### define un decorador@admin_required
 @app.route('/adm/usuarios')
 @login_required    # User must be authenticated
@@ -457,7 +457,22 @@ def mostrar_usuario(username):
         {% block content %}
         El usuario no está autorizado para ver esta página...
         {% endblock %}""")
-###############################################
+
+
+@app.route('/adm/sesion/<string:sesionid>')
+@login_required    # User must be authenticated
+def mostrar_sesion(sesionid):
+    if current_user.is_admin:
+        sesion = Sesion.query.filter_by(id=int(sesionid)-13500).first_or_404()
+        return render_template('adm_sesionid.html', sesion=sesion)
+    else:
+        return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+
+
+    ###############################################
 
 
 
