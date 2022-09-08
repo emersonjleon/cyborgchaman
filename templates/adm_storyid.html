@@ -1,0 +1,48 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+  <h4>  Historia: {{post.titulo }}</h4>
+  <p>
+  Sesion={{post.sesion}}, Usuario: {{post.sesion.user }}
+    
+  </p>
+</div>
+ 
+      <div class="story">
+	<p> <b>{{ post.titulo }}</b></p>
+	<p> {{post.historia}}</p>
+	<p>{{ post.autor}}, {{ post.fecha}} </p>
+	{% if post.AIinspiration %}
+	<div class='center'>
+	  <p>({{ post.AIinspiration }})</p>
+	</div>
+	{% endif %}
+      
+      </div>
+
+
+
+  
+  <div class="story">
+      {% if post.tokens_usados+1 %}
+      <p>
+      
+	tokens usados: {{post.tokens_usados}}
+    
+      </p>
+      {% endif %}
+
+      {% if post.prompt %}
+        prompt: <br>
+        {{ post.prompt }}
+	
+      {% endif %}
+      
+  </div>
+  
+
+
+
+{% endblock %}

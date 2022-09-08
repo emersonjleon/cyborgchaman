@@ -18,3 +18,5 @@ historias.pkl
 historias.pkl
 quickstart_app.sqlite
 *.sqlite
+quickstart_app.sqlite
+*.sqlite

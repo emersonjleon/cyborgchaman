@@ -67,6 +67,11 @@ db = SQLAlchemy(app)
 
 
 
+# #### migrate to add new columns:
+# from flask_migrate import Migrate
+
+# migrate2 = Migrate(app, db)
+
 
 
 ################## Mis Clases
@@ -83,7 +88,7 @@ class User(db.Model, UserMixin):
     # to search case insensitively when USER_IFIND_MODE is 'nocase_collation'.
     username = db.Column(db.String(100, collation='NOCASE'), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False, server_default='')
-    manualemail = db.Column(db.String(120), nullable=False, server_default='')
+    myuseremail = db.Column(db.String(120), nullable=False, server_default='')
     email_confirmed_at = db.Column(db.DateTime())
     tokens_usados = db.Column(db.Integer, nullable=False, default=0)
     
@@ -106,7 +111,7 @@ class User(db.Model, UserMixin):
         except:
             return self.cargar_ultima_sesion()
     def nueva_sesion(self):
-         self.sesionActual=Sesion(nombre='**Nueva Sesión**', usuario_id=self.id, user=self)
+         self.sesionActual=Sesion(nombre='**Nueva Sesión**',  user=self)
          #usuario_id=self.id,
          db.session.commit()
          self.sesion_actual_id = self.sesionActual.id
@@ -142,7 +147,7 @@ class Sesion(db.Model):
        nullable=False)
     user = db.relationship('User',
        backref=db.backref('sesiones', lazy=True))
-    usuario_id=db.Column(db.Integer,nullable=True)#my manually created user id.
+    #usuario_id=db.Column(db.Integer,nullable=True)#my manually created user id.
 
     is_public=db.Column(db.Boolean, default=False)
     is_shared=db.Column(db.Boolean, default=False)
@@ -160,6 +165,7 @@ class Historia(db.Model):
     AIinspiration = db.Column(db.String(300), nullable=True)
     prompt = db.Column(db.Text, nullable=True)
     tokens_usados = db.Column(db.Integer, nullable=False, default=0)
+    prompt_tokens = db.Column(db.Integer, default=0)
     historia = db.Column(db.Text, nullable=False)
     fecha = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
@@ -237,12 +243,23 @@ def guardarHistoria(newstory):
                sesion=current_user.sesion_actual())
     try: 
         h.prompt=newstory['prompt']
-        h.AIinspiration=newstory['AIinspiration']
-        h.tokens_usados=newstory['tokens_usados']
     except KeyError:
-        print(f'###################  historia {h} with no prompt, AI, tokens')
+        print(f'###################  historia {h} with no prompt')
+    try: 
+        h.AIinspiration=newstory['AIinspiration']
+    except KeyError:
+        print(f'###################  historia {h} with no AIisnpiration')
+    #({ "completion_tokens": 169, "prompt_tokens": 1155, "total_tokens": 1324 })
+    try: 
+        h.tokens_usados=newstory['usage']["total_tokens"]
+        h.prompt_tokens=newstory['usage']["prompt_tokens"]    
+    except:
+        print(f'###################  historia {h} with no tokens_usados')
+        print(f'###################  usage: {h["usage"]}')
+  
     db.session.add(h)
     db.session.commit()
+    
     f = open("historias.pkl","wb")
     pickle.dump(historias,f)
     f.close()
@@ -472,6 +489,19 @@ def mostrar_sesion(sesionid):
         {% endblock %}""")
 
 
+@app.route('/adm/story/<string:storyid>')
+@login_required    # User must be authenticated
+def mostrar_historia(storyid):
+    if current_user.is_admin:
+        historia = Historia.query.filter_by(id=int(storyid)-23500).first_or_404()
+        return render_template('adm_storyid.html', post=historia)
+    else:
+        return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+
+
     ###############################################
 
 
@@ -648,7 +678,9 @@ def historiadepalabras():
         )
         story=response.choices[0].text
         
-        result = {'AIinspiration':palabras, 'prompt':myprompt, 'historia': story, 'autor':"openAI", 'usage':response.usage}
+        result = {'AIinspiration':palabras, 'prompt':myprompt,
+                  'historia': story, 'autor':"openAI",
+                  'usage':response.usage}
         result['titulo']=openAI_generar_titulo(result['historia'])
         guardarHistoria(result)
         return render_template("historiadepalabras.html", result=result)

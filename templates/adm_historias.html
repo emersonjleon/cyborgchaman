@@ -13,7 +13,7 @@
       <p>
    
         {% for h in historias %}
-	<a href="adm/historia/{{ h.titulo }}">{{h.titulo }}</a>, {{h.fecha}},
+	<a href="story/{{ h.id+23500 }}">{{h.titulo }}</a>, {{h.fecha}},
 	{{h.sesion.user}} <br>
         {% endfor %}
       </p>
