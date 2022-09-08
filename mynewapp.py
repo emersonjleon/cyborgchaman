@@ -36,8 +36,8 @@ class ConfigClass(object):
     
     # Flask-SQLAlchemy settings
     # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
-    # SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:{mysqlkey}@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'    # File-based SQL database
+    SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:{mysqlkey}@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
+    #SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'    # File-based SQL database
     SQLALCHEMY_TRACK_MODIFICATIONS = False    # Avoids SQLAlchemy warning
 
     # Flask-User settings
