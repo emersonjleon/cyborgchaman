@@ -255,7 +255,7 @@ def guardarHistoria(newstory):
         h.prompt_tokens=newstory['usage']["prompt_tokens"]    
     except:
         print(f'###################  historia {h} with no tokens_usados')
-        print(f'###################  usage: {h["usage"]}')
+        #print(f'###################  usage: {h["usage"]}')
   
     db.session.add(h)
     db.session.commit()
