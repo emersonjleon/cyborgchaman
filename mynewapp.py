@@ -12,6 +12,7 @@ from flask import Flask, redirect, render_template, request, url_for, render_tem
 import pickle
 from datetime import datetime, date
 from dotenv import load_dotenv, find_dotenv
+#import pymysql
 
 
 
@@ -27,10 +28,16 @@ class ConfigClass(object):
     """ Flask application config """
 
     # Flask settings
-    SECRET_KEY = 'This is an INSECURE secret!! DO NOT use this in production!!'
+    mysqlkey = os.getenv("MYSQL_KEY")
+    myflaskkey=os.getenv("MYFLASK_KEY")
+    
+    SECRET_KEY = myflaskkey
 
+    
     # Flask-SQLAlchemy settings
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'    # File-based SQL database
+    # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
+    SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:{mysqlkey}@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
+    #SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'    # File-based SQL database
     SQLALCHEMY_TRACK_MODIFICATIONS = False    # Avoids SQLAlchemy warning
 
     # Flask-User settings
@@ -41,6 +48,11 @@ class ConfigClass(object):
     USER_REQUIRE_RETYPE_PASSWORD = True    # Simplify register form
 
 
+
+load_dotenv(find_dotenv())
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+    
 """ Flask application factory """
     
 # Create Flask app load app.config
@@ -188,8 +200,6 @@ def home():
 
 
 #load pickle
-load_dotenv(find_dotenv())
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def pickleLoad(filename):
     pickleobject = []
