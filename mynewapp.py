@@ -259,7 +259,7 @@ def guardarHistoria(newstory):
   
     db.session.add(h)
     db.session.commit()
-    
+    current_user.tokens_usados += h.tokens_usados
     f = open("historias.pkl","wb")
     pickle.dump(historias,f)
     f.close()
