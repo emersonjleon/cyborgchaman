@@ -49,6 +49,24 @@
       {% endfor %}
     </div>
 
+    <h4>Historias</h4>
+    {% for post in historias %}
+    <div class="story">
+      <p> <b>{{ post.titulo }}</b></p>
+      <p> {{post.historia}}</p>
+      <p>{{ post.autor}}, {{ post.fecha}} </p>
+      {% if post.AIinspiration %}
+      <div class='center'>  <p>({{ post.AIinspiration }})</p> </div>
+      {% endif %}
+      
+    </div>
+    {% endfor %}
+    {% if historias %}
+    {% else %}
+      <div> Aún no hay historias aquí...</div>
+    {% endif %}
+
+
     {% endif %}
 
 

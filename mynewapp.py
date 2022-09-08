@@ -28,16 +28,16 @@ class ConfigClass(object):
     """ Flask application config """
 
     # Flask settings
-    mysqlkey = os.getenv("MYSQL_KEY")
-    myflaskkey=os.getenv("MYFLASK_KEY")
+    #mysqlkey = os.getenv("MYSQL_KEY")
     
-    SECRET_KEY = myflaskkey
+    SECRET_KEY = "secretkey I dont get why os key is not working here"
+    #os.getenv("MYFLASK_KEY")
 
     
     # Flask-SQLAlchemy settings
     # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
-    SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:{mysqlkey}@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
-    #SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'    # File-based SQL database
+    # SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:{mysqlkey}@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'    # File-based SQL database
     SQLALCHEMY_TRACK_MODIFICATIONS = False    # Avoids SQLAlchemy warning
 
     # Flask-User settings
@@ -51,7 +51,8 @@ class ConfigClass(object):
 
 load_dotenv(find_dotenv())
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
+#myflaskkey=os.getenv("MYFLASK_KEY")
+#print(myflaskkey)
     
 """ Flask application factory """
     
