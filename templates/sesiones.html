@@ -8,9 +8,8 @@
   </p>
 
 
-    <h4>{{current_user.sesion_actual().nombre}}</h4>
-      
-         
+  <h6>Sesión Actual</h6>
+     <h4> {{current_user.sesion_actual().nombre}}</h4>
       <p> 
 	{% for post in historias %}
           <b>{{post.titulo }}</b>, de {{post.autor}} <br>

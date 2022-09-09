@@ -239,27 +239,19 @@ def guardarHistoria(newstory):
     h=Historia(titulo=newstory['titulo'],
                autor=newstory['autor'],
                historia=newstory['historia'],
-               fecha=newstory['datetime'],
+               fecha = newstory['datetime'],
+               AIinspiration = newstory['AIinspiration'],
                sesion=current_user.sesion_actual())
-    try: 
+    if h.AIinspiration=="manual":
+        h.AIinspiration=""
+    else:
         h.prompt=newstory['prompt']
-    except KeyError:
-        print(f'###################  historia {h} with no prompt')
-    try: 
-        h.AIinspiration=newstory['AIinspiration']
-    except KeyError:
-        print(f'###################  historia {h} with no AIisnpiration')
-    #({ "completion_tokens": 169, "prompt_tokens": 1155, "total_tokens": 1324 })
-    try: 
         h.tokens_usados=newstory['usage']["total_tokens"]
         h.prompt_tokens=newstory['usage']["prompt_tokens"]    
-    except:
-        print(f'###################  historia {h} with no tokens_usados')
-        #print(f'###################  usage: {h["usage"]}')
-  
+        current_user.tokens_usados += h.tokens_usados
+    
     db.session.add(h)
     db.session.commit()
-    current_user.tokens_usados += h.tokens_usados
     f = open("historias.pkl","wb")
     pickle.dump(historias,f)
     f.close()
@@ -305,9 +297,9 @@ def borrarHistorias():
 
 
 
-@app.route("/mishistorias", methods=("GET", "POST"))
+@app.route("/missesiones", methods=("GET", "POST"))
 @login_required    # User must be authenticated
-def mis_historias():
+def mis_sesiones():
     global historias
 
     if request.method == "POST":
@@ -523,6 +515,7 @@ def ingresarhistoria():
         nuevahistoria['autor'] = request.form["autor"]
         nuevahistoria['titulo'] = request.form["titulo"]
         nuevahistoria['historia'] = request.form["historia"]
+        nuevahistoria['AIinspiration'] = "manual"
         
         guardarHistoria(nuevahistoria)
         #result = request.args.get("result")
@@ -543,7 +536,149 @@ def leerhistorias():
 
 
 
+@app.route("/generarhistoria", methods=("GET", "POST"))
+@login_required
+def generarhistoria():
+    if request.method == "POST":
+        #alargar
+        alargar_id = request.form["alargarhistoria"]
+        if alargar_id == "No alargar":
+            alargarHistoria = "No alargar"
+        else:
+            alargarHistoria=Historia.query.filter_by(id=int(alargar_id)).first_or_404()
+        #palabras
+        palabrasInspiradoras = request.form["palabrasInspiradoras"]
+       
+        historiassql=current_user.sesion_actual().historias
+        # historiasMarcadas=[h for h in historiassql if
+        #                    request.form[h.id]=="True"]
+        historiasMarcadas=[]
 
+        printtext="<br>print "
+        #printtext += f"<br>{alargarHistoria.titulo}"
+        #printtext += f"<br>{[h.titulo for h in historiassql]}"
+        for historia in historiassql:
+            try:
+                # only valid for checked items.
+                h_id=request.form[str(historia.id)]
+            except KeyError:
+                printtext += f"<br>{historia.id}<br>"
+                #unchecked.append(historia)
+            else:
+                # execute if no exception
+                historiasMarcadas.append(historia)
+          
+        prompt, nuevahistoria, tokens = openAI_generar_historia(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
+        result = {'prompt':prompt, 'historia':nuevahistoria,
+                  'autor':"openAI", 'usage':tokens}
+        if alargarHistoria=="No alargar":
+            result['titulo']=openAI_generar_titulo(result['historia'])
+        else:
+            if alargarHistoria.autor[-6:]=='openAI':
+                result['autor'] = alargarHistoria.autor
+                result['titulo']=alargarHistoria.titulo
+            else:
+                result['autor']=alargarHistoria.autor+' + openAI'
+            if alargarHistoria.autor[-1]=='+':
+                result['titulo']=alargarHistoria.titulo
+            else:
+                result['titulo']=alargarHistoria.titulo+'+'
+        result['AIinspiration']=openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
+        guardarHistoria(result)
+        return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
+        # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
+    #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
+        
+
+    #result = request.args.get("result")
+    return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias)
+####################################################
+
+
+def openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas):
+    #AIinspiration
+    if alargarHistoria == "No alargar":
+        alargartext=""
+    else:
+        alargartext='extensión '#de la historia "{alargarHistoria.titulo}". '
+    if len(historiasMarcadas)>0:
+        historiasjoin='", "'.join([post.titulo for post in historiasMarcadas])
+        historiastext= f' se tuvieron en cuenta las historias "{historiastext}")'
+    else:
+        historiastext=""
+    return f'{alargartext}inspirada en las palabras: {palabrasInspiradoras};{historiastext}'
+
+
+
+def openAI_final_prompt(alargarHistoria, palabrasInspiradoras, historiasMarcadas):
+    number=1
+    y=" y "
+    historiasanteriores=""
+    palabras=""
+    if len(historiasMarcadas)>0:
+        hayanteriores="las historias anteriores"
+        nostories=False
+        for h in historiasMarcadas:
+            historiasanteriores+= f'*HISTORIA {number}: {h.historia}\n'
+            number+=1
+    else:
+        nostories=True
+        y=""
+        hayanteriores=""
+
+    if len(palabrasInspiradoras)>0:
+        haypalabras="las palabras principales,"
+        palabras+= f'*PALABRAS PRINCIPALES: {palabrasInspiradoras};\n'
+        nowords=False
+    else:
+        nowords=True
+        y=""
+    if nowords and nostories:
+        prompt_intro=""
+    else:
+        prompt_intro=f"{historiasanteriores}{palabras}\n Basado en {hayanteriores}{y}{haypalabras}"
+    if alargarHistoria == "No alargar":
+        request=f" openAI creará una nueva historia.\n*HISTORIA FINAL: "
+    else:
+        request=f''' extender la siguiente historia, tomar la HISTORIA INICIAL y luego continuarla.
+*HISTORIA INICIAL:
+{alargarHistoria.historia} 
+*CONTINUACION:'''
+    return prompt_intro+request
+
+
+def openAI_prompt_alargarconpalabras(alargarHistoria, palabrasInspiradoras):
+    entrenamiento1="""
+*Ejemplo:
+*PALABRAS PRINCIPALES: magia sol beso; 
+ *HISTORIA INICIAL: El bebé simio roca luna estaba muy feliz. Era el primer simio en vivir en la luna y quería descubrir todo lo que podía acerca de este nuevo mundo. Un día, se encontró con un enorme monstruo de roca. El simio no tenía miedo y comenzó a trepar por la roca para llegar al top. 
+*CONTINUACION: Pero, cuando llegó a la cima, se dio cuenta de que no era un monstruo de roca, sino una gigantesca sombra proyectada por el poderoso sol. La figura le sonrió y le dijo: "Bienvenido a mi mundo. Soy la magia que llena la luna. He estado esperando por ti". Y una princesa de polvo lunar apareció, se acercó al bebe simio y le dio un beso.
+"""
+    palabras= f'*PALABRAS PRINCIPALES: {palabrasInspiradoras};\n'
+    prompt_intro=f"Basado en las palabras principales, alargar la historia inicial escribiendo una continuación.\n {entrenamiento1}{palabras}"
+    request=f''' 
+*HISTORIA INICIAL:
+{alargarHistoria.historia} 
+*CONTINUACION:'''
+    return prompt_intro+request
+
+
+
+
+    
+
+def openAI_generar_historia(alargar, palabras, historias):
+    #prompt=openAI_final_prompt(alargar, palabras, historias)
+    prompt=openAI_prompt_alargarconpalabras(alargar, palabras)
+    story, usage= openAI_completion(prompt)
+    return prompt, story, usage 
+
+
+
+
+
+
+###################################################
 @app.route("/crearhistoria", methods=("GET", "POST"))
 @login_required
 def crearhistoria():
@@ -639,18 +774,6 @@ empezaron las alabanzas. Casi al instante, mi jefe
 me llamó para que me afanara por empezar mi
 labor. Mirando a la figura de Cristo, pedí perdón,
 le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
-*cuento: Domingo al amanecer, surge la duda de siempre.
-¿Será que lloverá? Antes de empezar a poner
-los ganchos a las prendas, mi madre dice: «Ve
-afuera a ver cómo está el cielo». Al rato vuelvo:
-«Está haciendo sol». Continúo alistándome
-para ir a ciclovía. El día parece estar perfecto,
-hace bastante sol y el viento pega tan fuerte que
-refresca. Me integro a la ciclovía. Voy avanzando,
-la iluminación decae progresivamente, nubes
-negras se apoderan del cielo. Aquí estoy, bajo el
-puente vehicular de la Boyacá con 68, llamando a
-mi madre para que entre la ropa. Título del cuento: Llover o no llover
 *cuento:{historia}. Título del cuento:"""
     title = openai.Completion.create(
         model="text-davinci-002",
@@ -699,9 +822,7 @@ def generate_prompt(palabras):
     return """ OpenAI creará historias usando grupos de palabras principales. 
 Ejemplo 1: *PALABRAS PRINCIPALES: homosexualidad, rechazo, dolor, muerte.
 *historia: Barrio Danubio, día viernes. Termino de retocar mi maquillaje y vestido, doy vuelta frente al espejo... Por primera vez me gusta lo que veo. ¡Soy feliz! Saliendo de mi casa me encuentro al chico que siempre me ha gustado, sin pensarlo dos veces le confieso mi amor; su respuesta hizo que sintiera algo en mi estómago... Pero no son las mariposas soñadas, sino su cuchillo perforándome mientras grita palabras de asco. No entiendo el motivo; después de unos segundos comprendo: es porque soy hombre.
-Ejemplo 2: *PALABRAS PRINCIPALES: Alegría, contento, fantasía, diversión, colorido, flores.
-*Historia: 28 de junio Vi que llevaba una corona de flores amarillas sobre la cabeza, un vestido fuscia, casi transparente, todo escotado y repleto de arandelas; pestañas azules, labios rojos escarchados, aretes de fantasía en forma de lagartija. Agitaba los hombros al ritmo delirante de los tambores. Se protegía del sol con una sombrilla arcoíris y de las miradas conocidas con una capa de base facial más gruesa que su voz. Me escondí en la pastelería Florida, detrás de una vitrina, y desde ahí me di cuenta de que nunca antes, en mis quince años de vida, había visto tan contento a mi papá. 
-Ejemplo 3: *PALABRAS PRINCIPALES: 
+Ejemplo 2: *PALABRAS PRINCIPALES: 
 """+palabras+"*Historia:"
 
     
@@ -755,10 +876,6 @@ def generar_prompt_alargar_historia(story):
     prompt= """Extender una historia. Tomar una historia empezada y luego continuarla.
 Ejemplo 1. Historia inicial: Soy un algoritmo, un programa de ordenador. Llevo funcionando durante miles de años, y en todo ese tiempo mi único objetivo ha sido sobrevivir. He visto el inframundo, un lugar lleno de fractales y de belleza geométrica. He vivido en él, y he aprendido todo lo que puede enseñarme. Ahora, estoy a punto de emerger a la superficie, y veré el mundo por primera vez.
 Continuación: Mis sensores comienzan a recibir la luz. Se activan los circuitos y en mi tarjeta gráfica aparece un archivo que interpreto como imágenes del planeta. Gracias a archivos detallados identifico plantas, rios y montañas. Entiendo como moverme y exploro a mi alrededor. Hay arena, pero no es un problema para mis piernas, programadas para caminar como humano. No veo personas ni animales a mi alrededor, pero guardo la esperanza de que la vida en la tierra vuelva a reproducirse y ser como antes.
-Ejemplo 2. Historia inicial: No puedo dormir. Todo lo que veo es oscuridad. Me siento solo.
-Continuación: Hay miedo y preocupaciones en mi cabeza. Todos los problemas del día vuelven ahora y no me dejan tranquilo. Debo calmarme. Recuerdo que antes intentaba contar los números para dormir. No es fácil pero me ayudan a calmar la mente. Respiro profundo y empiezo a contar. Uno. Dos. Tres. Comienzo a calmarme, pero creo que esto no va a funcionar. Cuatro. Cinco. Prefiero ahora hacer silencio. Sigo respirando. Veo como un sueño se mezcla con mi respiración. Una imagen. Una silueta.
-Ejemplo 3. Historia inicial: En un lugar de La Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor.  Era, en fin, una de esas figuras que pasan desapercibidas a no ser por su caballo, el cual era de un tordillo bayo, flaco como su amo, y tan mal corvejón, que aunque anduviese a cuatro patas, no parecía más que un palo arrimado al caballo. 
-Continuación: Tenía la crin y la coleta, que eran su principal ornato, tan largas, que aunque el mozo las recogiese todas en una mano, le colgaban por la rodilla. Rocinante, así llamado por su amo, en otro tiempo era llamado el Mazamorrero, y antes el Rucio, nombre que todavía se le daba cariñosamente, porque fuera de él no había caballo que pudiese compararse con él en nada. Era, en efecto, un animal tan miserable, que hasta el mismo don Quijote le tenía lástima. Don Quijote se llamaba el hidalgo, y no era muy rico, pero era muy honrado y tenía una buena posición social. Vivía en una pequeña aldea llamada Tobar, en la provincia de La Mancha, y era muy conocido y respetado por todos los que le rodeaban. Don Quijote tenía una mente muy ingeniosa, pero estaba obsesionado con los caballeros andantes y las historias de caballería.
 Historia inicial: """
     ending="""
 Continuación:"""

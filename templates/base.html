@@ -5,7 +5,7 @@
 
   {% if call_or_get(current_user.is_authenticated) %}
 
-    <a href="/mishistorias">{{ current_user.username or current_user.email }}</a>
+    <a href="{{ url_for('user.edit_user_profile') }}">{{ current_user.username or current_user.email }}</a>
     &nbsp; | &nbsp;
     <a href="{{ url_for('user.logout') }}">{%trans%}Sign out{%endtrans%}</a>
 
@@ -15,10 +15,9 @@
       
       <a href="/ingresarhistoria">Ingresar historias</a>
       <a href="/leerhistorias">Leer historias</a>
-      <a href="/crearhistoria">Crear historias</a>
       <br>
-      <a href="/alargarhistoria">Alargar historias</a>
-      <a href="/historiadepalabras">Historia de palabras</a>
+      <a href="/generarhistoria">Generar historias</a>
+      <a href="/missesiones">Mis Sesiones</a>
     </div>
 
     {% if call_or_get(current_user.is_admin) %}

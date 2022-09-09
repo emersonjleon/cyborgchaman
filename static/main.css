@@ -91,6 +91,16 @@ h4 {
 
 }
 
+h6 {
+  font-size: 20px;
+  line-height: 40px;
+  font-weight: bold;
+  color: #033;
+  margin: 8px 0 -15px;
+  font-family: "Exo";
+
+}
+
 
 
 form {

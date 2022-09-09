@@ -1,0 +1,101 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+      <p> Este nuevo algorítmo aún está en periodo de prueba, recomendamos usar preferiblemente los siguientes links para generar historias<p>
+     <p>
+       <a href="/crearhistoria">Crear historias</a>
+       <a href="/alargarhistoria">Alargar historias</a>
+       <a href="/historiadepalabras">Historia de palabras</a>
+     <p/>  
+      <hr>
+      <div/>
+      
+
+  {% if result %}
+    <div class="story">
+      <p> <b>{{ result.titulo }}</b></p>
+      <p> {{result.historia}}</p>
+      <p>{{ result.autor}} </p>
+    </div>
+  
+    {% if result.AIinspiration %}
+    <div class='story'> (
+        {{ result.AIinspiration }};
+    )</div>
+    {% endif %}
+  {% endif %}
+
+    
+
+  <h4>Generar historia</h4>
+  <form class="old" action="/generarhistoria" method="post">
+
+    <div class="alignleft">
+	  <p>
+            <input type="radio" id="alargarhistoria"
+		   name='alargarhistoria' value="No alargar" checked>
+	    <label for="alargarhistoria">
+	    openAI creará una nueva historia
+	  <p>
+
+      
+      	{% if historias %}
+	  <p>
+	    o continuará y alargará la siguiente historia:
+	  <p>
+	    {% for post in historias %}
+            <input type="radio" id="alargarhistoria"
+		   name='alargarhistoria' value="{{post.id }}" >
+	    <label for="alargarhistoria"> 
+	      <b>{{post.titulo }}</b>, de {{post.autor}}
+            </label> <br>
+	    {% endfor %}
+	  </p>
+
+
+	
+	{% endif %}
+    </div>
+
+
+    <div>
+      <p>  usando como guía las palabras que ingreses aquí
+      </p>
+
+ 
+      <textarea name="palabrasInspiradoras" placeholder="Coloca algunas palabras inspiradoras aquí..." rows="3"></textarea>
+    </div>
+
+
+
+    <div class="alignleft">
+      <p>
+	
+	{% if historias %}
+          y teniendo en cuenta los siguientes relatos:
+	{% endif %}
+      </p>
+
+      <p>
+      {% for post in historias %}
+      
+	<input type="checkbox" id="{{post.id}}" name="{{post.id}}" value="True">
+	<label for="{{post.id }}"> 
+	<b>{{post.titulo }}</b>, de {{post.autor}}
+        </label> <br>
+      {% endfor %}
+      </p>
+      
+
+    </div>
+    
+
+    
+
+    
+    <input type="submit" text value="Crear historia" />
+  </form>
+
+{% endblock %}
