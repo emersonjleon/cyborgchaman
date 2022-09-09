@@ -25,7 +25,7 @@
 </div>
 
     <div>      
-      <form action="/mishistorias" method="post">
+      <form action="/missesiones" method="post">
 	<input type="hidden" name="myaction" value="guardarhistorias" />
 	  <input type="submit"  text value="Guardar como" />
 	  <input type="text"  name="sesionname" placeholder="nombre de la sesión" required   />
@@ -39,7 +39,7 @@
     {% if historias%}
     <div class="leftalign">
 
-      <form action="/mishistorias" method="post">
+      <form action="/missesiones" method="post">
 	<input type="hidden" name="myaction" value="nuevasesion" />
 	<p>
 	  <input type="submit" text value="Crear nueva sesión" />
@@ -52,7 +52,7 @@
 
     {% if sesiones%}
     
-    <form action="/mishistorias" method="post">
+    <form action="/missesiones" method="post">
 	<input type="hidden" name="myaction" value="cargarsesion" />
 	<div class=story>
 
