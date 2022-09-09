@@ -2,17 +2,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>
-      <p> Este nuevo algorítmo aún está en periodo de prueba, recomendamos usar preferiblemente los siguientes links para generar historias<p>
      <p>
        <a href="/crearhistoria">Crear historias</a>
        <a href="/alargarhistoria">Alargar historias</a>
        <a href="/historiadepalabras">Historia de palabras</a>
-     <p/>  
-      <hr>
+     </p>  
       <div/>
-      
 
+
+<div>
   {% if result %}
     <div class="story">
       <p> <b>{{ result.titulo }}</b></p>
@@ -26,7 +24,9 @@
     )</div>
     {% endif %}
   {% endif %}
+      
 
+  
     
 
   <h4>Generar historia</h4>
