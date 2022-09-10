@@ -14,13 +14,9 @@
    
         {% for user in usuarios %}
 	<a href="user/{{ user.username }}">{{user.username }}</a>, id {{user.id}}
-	{% if user.is_authenticated %}
-	 Autenticado: {{user.is_authenticated}},
-	{% endif %}
-	{% if user.is_active %}
-	  activo: {{user.is_active}}
-	{% endif %}
 	id de sesión actual: {{user.sesion_actual_id}}
+	Tokens usados: {{user.tokens_usados}}
+
 	sesion actual: {{user.sesion_actual()}}
 	<br>
         {% endfor %}
