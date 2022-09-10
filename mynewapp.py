@@ -536,6 +536,20 @@ def leerhistorias():
 
 
 
+#############
+@app.route("/requestemail", methods=("GET", "POST"))
+@login_required
+def tokensemailrequest():
+    if request.method == "POST":
+        return render_template("emailreceived.html")
+    else:
+        return render_template("tokensemailrequest.html")
+
+
+
+
+
+
 @app.route("/generarhistoria", methods=("GET", "POST"))
 @login_required
 def generarhistoria():
@@ -569,21 +583,24 @@ def generarhistoria():
                 historiasMarcadas.append(historia)
           
         prompt, nuevahistoria, tokens = openAI_generar_historia(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
-        result = {'prompt':prompt, 'historia':nuevahistoria,
-                  'autor':"openAI", 'usage':tokens}
-        if alargarHistoria=="No alargar":
-            result['titulo']=openAI_generar_titulo(result['historia'])
+        if nuevahistoria=='tokens limit':
+            render_template("tokensemailrequest.html")
         else:
-            if alargarHistoria.autor[-6:]=='openAI':
-                result['autor'] = alargarHistoria.autor
-                result['titulo']=alargarHistoria.titulo
+            result = {'prompt':prompt, 'historia':nuevahistoria,
+                      'autor':"openAI", 'usage':tokens}
+            if alargarHistoria=="No alargar":
+                result['titulo']=openAI_generar_titulo(result['historia'])
             else:
-                result['autor']=alargarHistoria.autor+' + openAI'
-            if alargarHistoria.autor[-1]=='+':
-                result['titulo']=alargarHistoria.titulo
-            else:
-                result['titulo']=alargarHistoria.titulo+'+'
-        result['AIinspiration']=openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
+                if alargarHistoria.autor[-6:]=='openAI':
+                    result['autor'] = alargarHistoria.autor
+                    result['titulo']=alargarHistoria.titulo
+                else:
+                    result['autor']=alargarHistoria.autor+' + openAI'
+                if alargarHistoria.autor[-1]=='+':
+                    result['titulo']=alargarHistoria.titulo
+                else:
+                    result['titulo']=alargarHistoria.titulo+'+'
+            result['AIinspiration']=openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
         guardarHistoria(result)
         return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
         # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
@@ -717,9 +734,6 @@ def crearhistoria():
 
 
 
-
-
-
 ###################
 def generar_prompt_de_historias(historias):
     n=len(historias)+1
@@ -731,16 +745,24 @@ def generar_prompt_de_historias(historias):
 
 
 
-def openAI_completion(prompt, length=700, temp=0.8):
-    response = openai.Completion.create(
-        model="text-davinci-002",
-        prompt=prompt,
-        temperature=temp,
-        max_tokens=length,
-        presence_penalty=1.2,
-        frequency_penalty=0.7,
-    )
+def openAI_completion(prompt, user, length=700, temp=0.8):
+    if user.tokens_usados>15000:
+        return "tokens limit", 0
+    else:
+        response = openai.Completion.create(
+            model="text-davinci-002",
+            prompt=prompt,
+            temperature=temp,
+            max_tokens=length,
+            presence_penalty=1.2,
+            frequency_penalty=0.7,
+            user=current_user.id
+        )
     return response.choices[0].text, response.usage
+
+
+    
+
 
 
 def openAI_create_story(historias):

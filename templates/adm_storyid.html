@@ -5,7 +5,7 @@
 <div>
   <h4>  Historia: {{post.titulo }}</h4>
   <p>
-  Sesion={{post.sesion}}, Usuario: {{post.sesion.user }}
+  Sesion: {{post.sesion}}, Usuario: <a href="./../user/{{ post.sesion.user.username }}">{{post.sesion.user.username }}</a>
     
   </p>
 </div>

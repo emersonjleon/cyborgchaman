@@ -14,7 +14,7 @@
    
         {% for h in historias %}
 	<a href="story/{{ h.id+23500 }}">{{h.titulo }}</a>, {{h.fecha}},
-	{{h.sesion.user}} <br>
+	{{h.sesion.user}}, tokens usados {{h.tokens_usados}}, prompt {{h.prompt_tokens}} <br>
         {% endfor %}
       </p>
       {% else %}
