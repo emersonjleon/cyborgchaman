@@ -655,8 +655,12 @@ def openAI_prompt_alargarconpalabras(alargarHistoria, palabrasInspiradoras):
 *CONTINUACION: Pero, cuando llegó a la cima, se dio cuenta de que no era un monstruo de roca, sino una gigantesca sombra proyectada por el poderoso sol. La figura le sonrió y le dijo: "Bienvenido a mi mundo. Soy la magia que llena la luna. He estado esperando por ti". Y una princesa de polvo lunar apareció, se acercó al bebe simio y le dio un beso.
 """
     palabras= f'*PALABRAS PRINCIPALES: {palabrasInspiradoras};\n'
-    prompt_intro=f"Basado en las palabras principales, alargar la historia inicial escribiendo una continuación.\n {entrenamiento1}{palabras}"
-    request=f''' 
+    
+    if alargarHistoria=="No alargar":
+        return generate_prompt_de_palabras(palabrasInspiradoras)
+    else:
+        prompt_intro=f"Basado en las palabras principales, alargar la historia inicial escribiendo una continuación.\n {entrenamiento1}{palabras}"
+        request=f''' 
 *HISTORIA INICIAL:
 {alargarHistoria.historia} 
 *CONTINUACION:'''
@@ -792,7 +796,7 @@ le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
 def historiadepalabras():
     if request.method == "POST":
         palabras = request.form["story1"]
-        myprompt=generate_prompt(palabras)
+        myprompt=generate_prompt_de_palabras(palabras)
         response = openai.Completion.create(
             model="text-davinci-002",
             prompt=myprompt,
@@ -817,7 +821,7 @@ def historiadepalabras():
 #*Historia: La delincuencia Todos los días corro por miedo a que me cojan. Al igual que muchos, lo hago incumpliendo leyes, por conseguir billetes, todo por subsistir. Acecho a las personas de aquí, todos me odian por el trabajo que tengo, no saben lo que siento al cometer este hecho, me atormenta la sirena que a veces me viene persiguiendo. De todas las que me he salvado orando por un santo, el cual me está cobijando y no me ha desamparado. He despojado a muchos de sus pertenencias, las cuales utilizo para llevar de comer a mi familia en mi Bogotá.
 
 
-def generate_prompt(palabras):
+def generate_prompt_de_palabras(palabras):
     """Prompt usado en 'historiadepalabras', donde con unas palabras se genera una historia"""
     return """ OpenAI creará historias usando grupos de palabras principales. 
 Ejemplo 1: *PALABRAS PRINCIPALES: homosexualidad, rechazo, dolor, muerte.
