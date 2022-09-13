@@ -40,7 +40,8 @@
 	{% endif %}
       </p>
 
-      <p>
+      <p> <input type="button" class="check" value="check all" />
+	 <br>
       {% for post in historias %}
       
 	<input type="checkbox" id="{{post.titulo}}" name="{{post.titulo }}" value="True" checked>
@@ -57,3 +58,20 @@
   </form>
 
 {% endblock %}
+
+{% block script %}
+
+$(document).ready(function(){
+    $('.check:button').toggle(function(){
+        $('input:checkbox').attr('checked','checked');
+        $(this).val('uncheck all');
+    },function(){
+        $('input:checkbox').removeAttr('checked');
+        $(this).val('check all');        
+    })
+})
+
+  
+
+
+  {% endblock %}

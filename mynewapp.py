@@ -580,7 +580,7 @@ def confirm_email(user, email):
 
 ########
 
-TOKENS_LIMIT=5000
+TOKENS_LIMIT=6000
 TOKENS_EMAIL_REQUEST=5000
 
 def openAI_completion(prompt, user, length=700, temp=0.8):
@@ -658,7 +658,10 @@ def generarhistoria():
                     result['titulo']=alargarHistoria.titulo+'+'
             result['AIinspiration']=openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
             guardarHistoria(result)
-            return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
+            if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
+                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=result)
+            else:
+                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
         # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
     #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
         
