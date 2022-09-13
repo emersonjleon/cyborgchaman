@@ -14,25 +14,27 @@
 
 </div>
 
-
+ <div>
+ 
 {% if user.sesion_actual() %}
 
-  <div>
     {% set historias=user.sesion_actual().historias %}
       
     sesión: {{historias.nombre}}
-      
-    Estas son las historias de la sesión actual:
+
+    <p>
+    Estas son las historias de la sesión actual:<br>
       
     {% for post in historias %}
-      <p> <b>{{post.titulo }}</b>, de {{post.autor}} </p>
+       <b>{{post.titulo }}</b>, de {{post.autor}} <br>
       {% endfor %}
 {% else %}
-    <p> Aún no hay historias aquí...</p>	  
-  </div>
+     Aún no hay historias aquí...	  
+ 
 {% endif %}
-  
-
+  </p>
+ </div>
+ 
     {% if user.sesiones%}
 
     <h4>Sesiones</h4>

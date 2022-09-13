@@ -22,11 +22,11 @@
       
       <p>
    
-	Hola,<b>{{current_user.username }}</b>. has usado un total de <b>{{current_user.tokens_usados}}</b> tokens. Si ya superaste 15000 tokens, necesitamos saber quien eres para poder seguir usando nuestro servicio de forma gratuita. Para esto, ingresa a continuación tu correo electrónico, te estaremos escribiendo pronto.
+	Hola,<b>{{current_user.username }}</b>. has usado un total de <b>{{current_user.tokens_usados}}</b> tokens. Si ya superaste {{tokens_limit}} tokens, necesitamos saber quien eres para poder seguir usando nuestro servicio de forma gratuita. Para esto, ingresa a continuación tu correo electrónico, te estaremos escribiendo pronto. (Si ya enviaste tu correo, no es necesario que lo vuelvas a ingresar.)
       </p>
     <div class="center">
 
-<form action="/requestemail">
+<form action="/requestemail" method="post">
   <label for="email">Ingresa aquí tu correo electrónico:<br></label>
   <input type="email" id="email" name="email"><br>
   <input type="submit">

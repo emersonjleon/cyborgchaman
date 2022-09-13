@@ -3,11 +3,22 @@
 
 {% block content %}
 
+
+     <p>
+       <a href="/historiadepalabras">Historia de palabras</a>
+       <a href="/generarhistoria">Generar historias</a>
+     </p>  
+
+
+
+
   {% if result %}
     <div class="story">
       <p> <b>{{ result.titulo }}</b></p>
       <p> {{result.historia}}</p>
       <p>{{ result.autor}} </p>
+       <p>{{ result.tokens_usados}} </p>
+     
     </div>
 
   {% endif %}
