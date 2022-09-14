@@ -573,10 +573,11 @@ def tokensemailrequest():
 
 def confirm_email(user, email):
     """desde python, from mynewapp import db, User, Email, confirm_email"""
-    user.email_confirmed_at=datetime.utcnow
+    user.email_confirmed_at=datetime.utcnow()
     email.is_confirmed=True
     email.status="confirmed"
-    current_user.myuseremail= email.email
+    user.myuseremail= email.email
+    db.session.commit()
 
 ########
 
@@ -794,7 +795,10 @@ def crearhistoria():
             result['titulo']=openAI_generar_titulo(result['historia'])
             result['AIinspiration']=str([story.titulo for story in checked ])
             guardarHistoria(result)
-            return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=result, checked=checked)
+            if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
+                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=result)
+            else:
+                return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=result, checked=checked)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
 
     #result = request.args.get("result")
@@ -897,7 +901,10 @@ def historiadepalabras():
                       'usage':usage}
             result['titulo']=openAI_generar_titulo(result['historia'])
             guardarHistoria(result)
-            return render_template("historiadepalabras.html", result=result)
+            if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
+                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=result)
+            else:
+                return render_template("historiadepalabras.html", result=result)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
 
     result = request.args.get("result")
@@ -942,7 +949,10 @@ def alargarhistoria():
                     result['titulo']=story.titulo+'+'
                     result['AIinspiration'] = "alargar historia" 
                     guardarHistoria(result)
-                    return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
+                    if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
+                        return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=result)
+                    else:
+                        return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
             else:
                 pass
         note="no se encontró la historia buscada "+titulo

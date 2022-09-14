@@ -15,9 +15,6 @@ build/
 .env
 sesiones.pkl
 historias.pkl
-historias.pkl
 quickstart_app.sqlite
 *.sqlite
-quickstart_app.sqlite
-*.sqlite
-quickstart_app.sqlite
+emails.py
