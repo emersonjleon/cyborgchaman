@@ -26,9 +26,11 @@ historias0=[{'autor': 'eme', 'titulo': 'El algoritmo', 'historia': story1},{'aut
 def generate_prompt_de_palabras(palabras):
     """Prompt usado en 'historiadepalabras', donde con unas palabras se genera una historia"""
     return moderation+""" OpenAI creará historias usando grupos de palabras principales. 
-Ejemplo 1: *PALABRAS PRINCIPALES: homosexualidad, rechazo, dolor, muerte.
-*historia: Barrio Danubio, día viernes. Termino de retocar mi maquillaje y vestido, doy vuelta frente al espejo... Por primera vez me gusta lo que veo. ¡Soy feliz! Saliendo de mi casa me encuentro al chico que siempre me ha gustado, sin pensarlo dos veces le confieso mi amor; su respuesta hizo que sintiera algo en mi estómago... Pero no son las mariposas soñadas, sino su cuchillo perforándome mientras grita palabras de asco. No entiendo el motivo; después de unos segundos comprendo: es porque soy hombre.
-Ejemplo 2: *PALABRAS PRINCIPALES: 
+Ejemplo. *PALABRAS PRINCIPALES: Alegría, contento, fantasía, diversión, colorido, flores.
+*Historia: 28 de junio Vi que llevaba una corona de flores amarillas sobre la cabeza, un vestido fuscia, casi transparente, todo escotado y repleto de arandelas; pestañas azules, labios rojos escarchados, aretes de fantasía en forma de lagartija. Agitaba los hombros al ritmo delirante de los tambores. Se protegía del sol con una sombrilla arcoíris y de las miradas conocidas con una capa de base facial más gruesa que su voz. Me escondí en la pastelería Florida, detrás de una vitrina, y desde ahí me di cuenta de que nunca antes, en mis quince años de vida, había visto tan contento a mi papá.
+*PALABRAS PRINCIPALES: homosexualidad, rechazo, dolor, muerte.
+*historia: Barrio Danubio, día viernes. Termino de retocar mi maquillaje y vestido, doy vuelta frente al espejo... Por primera vez me gusta lo que veo. ¡Soy feliz! Saliendo de mi casa me encuentro al chico que siempre me ha gustado, sin pensarlo dos veces le confieso mi amor; su respuesta hizo que sintiera algo en mi estómago... Pero no son las mariposas soñadas, sino su maldad mientras grita palabras de asco. No entiendo el motivo; después de unos segundos comprendo: es porque soy hombre.
+*PALABRAS PRINCIPALES: 
 """+palabras+"*Historia:"
 
 
@@ -38,8 +40,10 @@ Ejemplo 2: *PALABRAS PRINCIPALES:
 def generar_prompt_alargar_historia(story):
     prompt= """Extender una historia. Tomar una historia empezada y luego continuarla. 
 Ejemplo 1. Historia inicial: Soy un algoritmo, un programa de ordenador. Llevo funcionando durante miles de años, y en todo ese tiempo mi único objetivo ha sido sobrevivir. He visto el inframundo, un lugar lleno de fractales y de belleza geométrica. He vivido en él, y he aprendido todo lo que puede enseñarme. Ahora, estoy a punto de emerger a la superficie, y veré el mundo por primera vez.
-Continuación: Mis sensores comienzan a recibir la luz. Se activan los circuitos y en mi tarjeta gráfica aparece un archivo que interpreto como imágenes del planeta. Gracias a archivos detallados identifico plantas, rios y montañas. Entiendo como moverme y exploro a mi alrededor. Hay arena, pero no es un problema para mis piernas, programadas para caminar como humano. No veo personas ni animales a mi alrededor, pero guardo la esperanza de que la vida en la tierra vuelva a reproducirse y ser como antes.
-Historia inicial: """
+Continuación: Mis sensores comienzan a recibir la luz. Se activan los circuitos y en mi tarjeta gráfica aparece un archivo que interpreto como imágenes del planeta. Gracias a archivos detallados identifico plantas, rios y montañas. Entiendo como moverme y exploro a mi alrededor. Hay arena, pero no es un problema para mis piernas, programadas para caminar como humano. No veo personas ni animales a mi alrededor, pero guardo la esperanza de que la vida en la tierra vuelva a reproducirse y ser como antes. 
+Ejemplo 2. Historia inicial: No puedo dormir. Todo lo que veo es oscuridad. Me siento solo.
+Continuación: Hay miedo y preocupaciones en mi cabeza. Todos los problemas del día vuelven ahora y no me dejan tranquilo. Debo calmarme. Recuerdo que antes intentaba contar los números para dormir. No es fácil pero me ayudan a tranquilizar la mente. Respiro profundo y empiezo a contar. Uno. Dos. Tres. Comienzo a calmarme, pero creo que esto no va a funcionar. Cuatro. Cinco. Prefiero ahora hacer silencio. Sigo respirando. Veo como un sueño se mezcla con mi respiración. Una imagen. Una silueta.
+Ejemplo 3. Historia inicial: """
     ending="""
 Continuación:"""
     return moderation+prompt+story.historia+ending
@@ -53,7 +57,12 @@ def openAI_prompt_alargarconpalabras(alargarHistoria, palabrasInspiradoras):
 *Ejemplo:
 *PALABRAS PRINCIPALES: magia sol beso; 
  *HISTORIA INICIAL: El bebé simio roca luna estaba muy feliz. Era el primer simio en vivir en la luna y quería descubrir todo lo que podía acerca de este nuevo mundo. Un día, se encontró con un enorme monstruo de roca. El simio no tenía miedo y comenzó a trepar por la roca para llegar al top. 
-*CONTINUACION: Pero, cuando llegó a la cima, se dio cuenta de que no era un monstruo de roca, sino una gigantesca sombra proyectada por el poderoso sol. La figura le sonrió y le dijo: "Bienvenido a mi mundo. Soy la magia que llena la luna. He estado esperando por ti". Y una princesa de polvo lunar apareció, se acercó al bebe simio y le dio un beso.
+*CONTINUACIÓN: Pero, cuando llegó a la cima, se dio cuenta de que no era un monstruo de roca, sino una gigantesca sombra proyectada por el poderoso sol. La figura le sonrió y le dijo: "Bienvenido a mi mundo. Soy la magia que llena la luna. He estado esperando por ti". Y una princesa de polvo lunar apareció, se acercó al bebe simio y le dio un beso.
+*PALABRAS PRINCIPALES: angel demonio chocolate vino;
+ *HISTORIA INICIAL: Leyenda urbana de un hombre que vive en el sótano de un edificio abandonado. Se dice que es muy reclusive y que nadie lo ha visto salir de su casa en años. La gente cuenta historias de cómo escucharon ruidos extraños provenientes de su casa, y algunos incluso afirman haberlo visto merodeando por la zona de noche. Nadie sabe realmente qué hay detrás de estas historias, pero todos están de acuerdo en que es mejor no molestar al hombre del sótano.
+*CONTINUACIÓN: La gente dice que una vez, unos niños fueron a la puerta de su casa y le pidieron dulces. Él los miró fijamente durante un largo tiempo sin decir nada, y luego cerró la puerta. Buscó unos chocolates que tenía guardados. En ese momento vio  un demonio que le dijo que no compartiera nada, pero un ángel también apareció que lo invitó a compartir. Se escuchó un grito. Los niños corrieron rápidamente para alejarse de allí, pero cuando se volvieron a mirar, el señor estába riendose en la puerta con una botella de vino. 
+*PALABRAS PRINCIPALES: vainilla, maravilla, ratón, sonrisa; *HISTORIA INICIAL: Había una vez un niño que era muy curioso. Un día, vio a un gato en el tejado de su casa y quiso saber cómo había llegado allí. Entonces, trepó hasta el tejado para ver al gato. Al hacerlo, resbaló y cayó por el costado del tejado. Afortunadamente, no se lastimó gravemente y aprendió la lección: nunca subas a lugares donde no estás permitido ir. 
+*CONTINUACIÓN: Después de eso, el niño se volvió más cauteloso y comenzó a pensar antes de hacer las cosas. Un día, vio una barra de chocolate en el suelo, con relleno sabor a vainilla, y quiso agarrarla. Pero recordó lo que le había pasado en el tejado y pensó mejor. En cambio, llamó a un ratón para que la tomara. El ratón fue muy feliz y le dio las gracias al niño con una sonrisa. Estaba de maravilla.
 """
     palabras= f'*PALABRAS PRINCIPALES: {palabrasInspiradoras};\n'
     
@@ -64,7 +73,7 @@ def openAI_prompt_alargarconpalabras(alargarHistoria, palabrasInspiradoras):
         request=f''' 
 *HISTORIA INICIAL:
 {alargarHistoria.historia} 
-*CONTINUACION:'''
+*CONTINUACIÓN:'''
     return moderation+prompt_intro+request
 
 

@@ -22,7 +22,7 @@ from flask_login import current_user
 from flask_babelex import Babel
 
 from moderation import moderation2 #as moderation
-from myprompts import openAI_final_prompt, openAI_prompt_alargarconpalabras, generar_prompt_alargar_historia, generate_prompt_de_palabras, generar_prompt_crear_historias
+from myprompts import openAI_final_prompt, openAI_prompt_alargarconpalabras, generar_prompt_alargar_historia, generate_prompt_de_palabras, generar_prompt_crear_historias, historias0
 
 
 
@@ -258,9 +258,10 @@ def guardarHistoria(newstory):
     if h.AIinspiration=="manual":
         h.AIinspiration=""
     else:
-        h.historia=moderation2(newstory['historia'])
+        censored=moderation2(newstory['historia'])
         h.prompt=newstory['prompt']
-        if h.historia[0:2]=='**':
+        if censored[0:11]=='**FLAGGED**':
+            h.historia=censored
             h.prompt+= '**FLAGGED** '+newstory['historia']
         h.tokens_usados=newstory['usage']["total_tokens"]
         h.prompt_tokens=newstory['usage']["prompt_tokens"]    
@@ -580,8 +581,9 @@ def tokensemailrequest():
     return render_template("tokensemailrequest.html")
 
 
-def confirm_email(user, email):
+def confirm_email(email):
     """desde python, from mynewapp import db, User, Email, confirm_email"""
+    user=User.query.filter_by(id=email.user_id).first()
     user.email_confirmed_at=datetime.utcnow()
     email.is_confirmed=True
     email.status="confirmed"
