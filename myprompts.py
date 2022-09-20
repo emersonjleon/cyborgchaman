@@ -1,4 +1,4 @@
-moderation='(usando lenguaje moderado, evitando contenido sexual explicito, violencia, mensajes de odio, satanismo o autoflagelación)'
+moderation=''#(usando lenguaje moderado, evitando contenido sexual explicito, violencia, mensajes de odio, satanismo o autoflagelación)'
 
 
 ###################

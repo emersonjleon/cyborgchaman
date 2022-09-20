@@ -21,6 +21,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import current_user
 from flask_babelex import Babel
 
+from moderation import moderation2 #as moderation
 from myprompts import openAI_final_prompt, openAI_prompt_alargarconpalabras, generar_prompt_alargar_historia, generate_prompt_de_palabras, generar_prompt_crear_historias
 
 
@@ -167,6 +168,7 @@ class Historia(db.Model):
     autor = db.Column(db.String(50), nullable=False)
     AIinspiration = db.Column(db.String(300), nullable=True)
     prompt = db.Column(db.Text, nullable=True)
+    #flagged = db.Column(db.Text, default='')
     tokens_usados = db.Column(db.Integer, nullable=False, default=0)
     prompt_tokens = db.Column(db.Integer, default=0)
     historia = db.Column(db.Text, nullable=False)
@@ -188,7 +190,8 @@ class Email(db.Model):
     status = db.Column(db.String(120), nullable=False, server_default='')
     is_confirmed=db.Column(db.Boolean, default=False)
     user_id=db.Column(db.Integer, nullable=False)
-    
+
+
 #################################3
 
 
@@ -238,7 +241,6 @@ historias=pickleLoad('historias.pkl')
 
 ######## Usar sql aquí, y usuarios para cada sesión
 
-
     
 ## incluye db y pickle
 def guardarHistoria(newstory):
@@ -246,6 +248,7 @@ def guardarHistoria(newstory):
     newstory['fecha'] = date.today()
     historias.append(newstory)
     #sesion_actual=cargar_ultima_sesion(current_user)
+    
     h=Historia(titulo=newstory['titulo'],
                autor=newstory['autor'],
                historia=newstory['historia'],
@@ -255,7 +258,10 @@ def guardarHistoria(newstory):
     if h.AIinspiration=="manual":
         h.AIinspiration=""
     else:
+        h.historia=moderation2(newstory['historia'])
         h.prompt=newstory['prompt']
+        if h.historia[0:2]=='**':
+            h.prompt+= '**FLAGGED** '+newstory['historia']
         h.tokens_usados=newstory['usage']["total_tokens"]
         h.prompt_tokens=newstory['usage']["prompt_tokens"]    
         current_user.tokens_usados += h.tokens_usados
@@ -265,7 +271,7 @@ def guardarHistoria(newstory):
     f = open("historias.pkl","wb")
     pickle.dump(historias,f)
     f.close()
-
+    return h
 ################################################################
 
 
@@ -661,11 +667,11 @@ def generarhistoria():
                 else:
                     result['titulo']=alargarHistoria.titulo+'+'
             result['AIinspiration']=openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
-            guardarHistoria(result)
+            h=guardarHistoria(result)
             if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
-                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=result)
+                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
             else:
-                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
+                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h)#result=result (old...)
         # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
     #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
         
@@ -739,11 +745,11 @@ def crearhistoria():
                   'autor':"openAI", 'usage':tokens_usados}
             result['titulo']=openAI_generar_titulo(result['historia'])
             result['AIinspiration']=str([story.titulo for story in checked ])
-            guardarHistoria(result)
+            h=guardarHistoria(result)
             if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
-                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=result)
+                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
             else:
-                return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=result, checked=checked)
+                return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=h, checked=checked)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
 
     #result = request.args.get("result")
@@ -819,15 +825,15 @@ def historiadepalabras():
                       'historia': story, 'autor':"openAI",
                       'usage':usage}
             result['titulo']=openAI_generar_titulo(result['historia'])
-            guardarHistoria(result)
+            h=guardarHistoria(result)
             if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
-                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=result)
+                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
             else:
-                return render_template("historiadepalabras.html", result=result)
+                return render_template("historiadepalabras.html", result=h)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
 
-    result = request.args.get("result")
-    return render_template("historiadepalabras.html", result=result)
+    #result = request.args.get("result")
+    return render_template("historiadepalabras.html")#, result=result)
 
 
 #Ejemplo 1: *Palabras principales: delincuencia, leyes, billetes, subsistir, acecho, sirena, salvado, despojado, pertenencias, Bogotá.
@@ -859,11 +865,11 @@ def alargarhistoria():
                           'autor':newautor, 'usage':usage}
                     result['titulo']=story.titulo+'+'
                     result['AIinspiration'] = "alargar historia" 
-                    guardarHistoria(result)
+                    h=guardarHistoria(result)
                     if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
-                        return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=result)
+                        return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
                     else:
-                        return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
+                        return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, result=h)
             else:
                 pass
         note="no se encontró la historia buscada "+titulo
