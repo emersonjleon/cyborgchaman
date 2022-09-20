@@ -190,6 +190,8 @@ class Email(db.Model):
     status = db.Column(db.String(120), nullable=False, server_default='')
     is_confirmed=db.Column(db.Boolean, default=False)
     user_id=db.Column(db.Integer, nullable=False)
+    def __repr__(self):
+        return f'<Historia: {self.email}>'  
 
 
 #################################3
