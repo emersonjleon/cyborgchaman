@@ -8,6 +8,24 @@
   </p>
 
 
+
+
+    {% if historias%}
+    <div class="leftalign">
+
+      <form action="/missesiones" method="post">
+	<input type="hidden" name="myaction" value="nuevasesion" />
+	<p>
+	  <input type="submit" text value="Crear nueva sesión" />
+	  
+	</p>
+        
+      </form>
+    </div>
+    {% endif %}
+
+  
+
   <h6>Sesión Actual</h6>
      <h4> {{current_user.sesion_actual().nombre}}</h4>
       <p> 
@@ -27,8 +45,9 @@
     <div>      
       <form action="/missesiones" method="post">
 	<input type="hidden" name="myaction" value="guardarhistorias" />
-	  <input type="submit"  text value="Guardar como" />
+	Guardar sesión como
 	  <input type="text"  name="sesionname" placeholder="nombre de la sesión" required   />
+	  <input type="submit"  text value="Guardar" />
       </form>
     </div>
 
@@ -36,19 +55,6 @@
 
     <h4>Mis sesiones</h4>
 
-    {% if historias%}
-    <div class="leftalign">
-
-      <form action="/missesiones" method="post">
-	<input type="hidden" name="myaction" value="nuevasesion" />
-	<p>
-	  <input type="submit" text value="Crear nueva sesión" />
-	  
-	</p>
-        
-      </form>
-    </div>
-    {% endif %}
 
     {% if sesiones%}
     
