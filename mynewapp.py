@@ -65,6 +65,15 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 app = Flask(__name__)
 app.config.from_object(__name__+'.ConfigClass')
 
+
+#userbabel=user_manager.babel
+babel = Babel(app)
+babel.BABEL_DEFAULT_LOCALE='es'
+babel.init_app(app)
+
+
+
+
 #app.config.from_pyfile('mysettings.cfg')
 # Initialize Flask-SQLAlchemy
 db = SQLAlchemy(app)
@@ -204,10 +213,6 @@ db.create_all()
 
 # Setup Flask-User and specify the User data-model
 user_manager = UserManager(app, db, User)
-#userbabel=user_manager.babel
-babel = Babel(app)
-babel.BABEL_DEFAULT_LOCALE='es'
-babel.init_app(app)
 
 # this line is inside user_manager
 #self.babel = app.extensions.get('babel', None)
@@ -577,24 +582,29 @@ def tokensemailrequest():
               user_id=current_user.id)
         db.session.add(new_email)
         db.session.commit()
-
         # current_user.myuseremail=f'TBC id[{new_email.id}:]'+ emailrecibido
         return render_template("emailrecibido.html", new_email=new_email)
     return render_template("tokensemailrequest.html")
 
 
+
+
+
+@app.route("/confirmemail", methods=("GET", "POST"))
 def confirm_email(email):
-    """desde python, from mynewapp import db, User, Email, confirm_email"""
-    user=User.query.filter_by(id=email.user_id).first()
-    user.email_confirmed_at=datetime.utcnow()
-    email.is_confirmed=True
-    email.status="confirmed"
-    user.myuseremail= email.email
-    db.session.commit()
+    """desde python, from mynewapp import db, User, Email, confirm_email. 
+    Use first: . venv/bin/activate   """
+    if email.is_confirmed == False:
+        user=User.query.filter_by(id=email.user_id).first()
+        user.email_confirmed_at=datetime.utcnow()
+        email.is_confirmed=True
+        email.status="confirmed"
+        user.myuseremail= email.email
+        db.session.commit()
 
 ########
 
-TOKENS_LIMIT=6000
+TOKENS_LIMIT=15000
 TOKENS_EMAIL_REQUEST=5000
 
 def openAI_completion(prompt, user, length=700, temp=0.8):
@@ -614,8 +624,27 @@ def openAI_completion(prompt, user, length=700, temp=0.8):
     return response.choices[0].text, response.usage
 
 
+TOKENS_TOP_WARNING=10000
+TOKENS_TOP_LIMIT=15000
 
-    
+
+@app.route("/tokenslimit", methods=("GET", "POST"))
+@login_required
+def tokenslimit():
+    if request.method == "POST":
+        emailrecibido= request.form["email"]
+        new_email=Email(email=emailrecibido, status="to be confirmed",
+              user_id=current_user.id)
+        db.session.add(new_email)
+        db.session.commit()
+        return render_template("emailrecibido.html", new_email=new_email)
+    return render_template("tokensemailrequest.html")
+
+
+
+
+
+
 
 #############################################
 
