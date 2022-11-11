@@ -606,26 +606,27 @@ def confirm_email(email):
 
 TOKENS_LIMIT=15000
 TOKENS_EMAIL_REQUEST=5000
+TOKENS_TOP_LIMIT=150000
 
-def openAI_completion(prompt, user, length=700, temp=0.8):
+def openAI_completion(prompt, user, length=700, temp=0.9):
     if user.tokens_usados>TOKENS_LIMIT and user.myuseremail=='':
         return "tokens limit", 0
+    elif user.tokens_usados>TOKENS_LIMIT:
+        return "top tokens limit", 0
     else:
         response = openai.Completion.create(
             model="text-davinci-002",
             prompt=prompt,
             temperature=temp,
             max_tokens=length,
-            presence_penalty=1.2,
-            frequency_penalty=0.7,
+            presence_penalty=0.95,
+            frequency_penalty=0.9,
             user=current_user.__repr__()
         )
         
     return response.choices[0].text, response.usage
 
 
-TOKENS_TOP_WARNING=10000
-TOKENS_TOP_LIMIT=15000
 
 
 @app.route("/tokenslimit", methods=("GET", "POST"))
