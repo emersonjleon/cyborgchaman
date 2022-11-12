@@ -1,8 +1,8 @@
-{% extends 'base0.html' %}
+{% extends 'base.html' %}
 
 {% block content0 %}
 {% from "flask_user/_macros.html" import render_field, render_submit_field %}
-<h4>{%trans%}Registrarse{%endtrans%}</h4>
+<h4>{%trans%}Register{%endtrans%}</h4>
 
 
 
@@ -20,7 +20,7 @@
                     <!--a href="{{ url_for('user.login') }}" tabindex='290'>
                         {%trans%}Already registered? Sign in.{%endtrans%}</a-->
 		  <a  href="{{ url_for('user.login') }}" tabindex='290'>
-                    {%trans%}¿Ya registrado? Sign in.{%endtrans%}</a>
+                    {%trans%}Already registered? Sign in.{%endtrans%}</a>
 		  </p>
                 {% endif %}
             </div>
