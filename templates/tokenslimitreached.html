@@ -1,0 +1,54 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+
+  {% if result %}
+    <div class="story">
+      <p> <b>{{ result.titulo }}</b></p>
+      <p> {{result.historia}}</p>
+      <p>{{ result.autor}} </p>
+      <div class='center'> <p>{{ result.AIinspiration}}</p> </div>
+    </div>
+  {% endif %}
+
+
+  
+
+</div>
+  <h4>Uso de Tokens</h4>
+    <div class=story>
+      
+      <p>
+   
+	Hola, <b>{{current_user.username }}</b>. has usado un total de <b>{{current_user.tokens_usados}}</b> tokens. Si ya superaste {{tokens_limit}} tokens, necesitas enviarnos 5 dolares para tener acceso a 500000 nuevos tokens. Para esto, escribenos a <b>elcyborgchaman@protonmail.com</b> para recibir las indicaciones de pago.
+</p>
+   <p>
+   
+	Esperamos que continues disfrutando nuestro servicio!
+      </p>
+    <div class="center">
+
+<!-- <form action="/requestemail" method="post"> -->
+<!--   <label for="email">Ingresa aquí tu correo electrónico:<br></label> -->
+<!--   <input type="email" id="email" name="email"><br> -->
+<!--   <input type="submit"> -->
+<!-- </form> -->
+  
+ 
+
+
+    </div>
+</div>
+    
+
+
+
+      
+    
+  
+
+
+
+{% endblock %}

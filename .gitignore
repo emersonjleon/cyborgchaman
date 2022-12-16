@@ -12,6 +12,8 @@ build/
 *.egg-info/
 .DS_STORE
 
+finetuning
+debbuging.py
 .env
 sesiones.pkl
 historias.pkl

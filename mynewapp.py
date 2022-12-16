@@ -604,18 +604,19 @@ def confirm_email(email):
 
 ########
 
-TOKENS_LIMIT=15000
-TOKENS_EMAIL_REQUEST=5000
-TOKENS_TOP_LIMIT=150000
+TOKENS_LIMIT=55000 #from here users without email cannot create more stories
+TOKENS_EMAIL_REQUEST=5000 #from here the email is requested
+TOKENS_TOP_LIMIT=150000 #from here the user cannot create more stories
 
 def openAI_completion(prompt, user, length=700, temp=0.9):
     if user.tokens_usados>TOKENS_LIMIT and user.myuseremail=='':
         return "tokens limit", 0
-    elif user.tokens_usados>TOKENS_LIMIT:
+        #{  "completion_tokens": 0,  "prompt_tokens": 0,"total_tokens": 0}
+    elif user.tokens_usados>TOKENS_TOP_LIMIT:
         return "top tokens limit", 0
     else:
         response = openai.Completion.create(
-            model="text-davinci-002",
+            model="text-davinci-003",
             prompt=prompt,
             temperature=temp,
             max_tokens=length,
@@ -623,12 +624,11 @@ def openAI_completion(prompt, user, length=700, temp=0.9):
             frequency_penalty=0.9,
             user=current_user.__repr__()
         )
-        
     return response.choices[0].text, response.usage
 
 
 
-
+#not used yet? this should contain a payment method...
 @app.route("/tokenslimit", methods=("GET", "POST"))
 @login_required
 def tokenslimit():
@@ -685,6 +685,9 @@ def generarhistoria():
         prompt, nuevahistoria, tokens = openAI_generar_historia(alargarHistoria, palabrasInspiradoras, historiasMarcadas, current_user)
         if nuevahistoria=='tokens limit':
             return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
+        elif nuevahistoria=='top tokens limit':
+            return render_template("tokenslimitreached.html", tokens_limit=TOKENS_TOP_LIMIT)
+        
         else:
             result = {'prompt':prompt, 'historia':nuevahistoria,
                       'autor':"openAI", 'usage':tokens}
@@ -774,6 +777,9 @@ def crearhistoria():
         prompt, nuevahistoria, tokens_usados = openAI_create_story(checked,current_user)
         if nuevahistoria=='tokens limit':
             return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
+        elif nuevahistoria=='top tokens limit':
+            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_TOP_LIMIT)
+            
         else:
             result = {'prompt':prompt, 'historia':nuevahistoria,
                   'autor':"openAI", 'usage':tokens_usados}
@@ -845,6 +851,9 @@ def historiadepalabras():
         story, usage= openAI_completion(myprompt, current_user)
         if story=='tokens limit':
             return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
+        elif story=='top tokens limit':
+            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_TOP_LIMIT)
+        
         else:
 
             # response = openai.Completion.create(
@@ -888,6 +897,9 @@ def alargarhistoria():
                 prompt, nuevaparte, usage = openAI_extend_story(story, current_user)
                 if nuevaparte=='tokens limit':
                     return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
+                elif nuevaparte=='top tokens limit':
+                    return render_template("tokensemailrequest.html", tokens_limit=TOKENS_TOP_LIMIT)
+        
                 else:
                     if story.autor[-6:]=='openAI':
                         newautor=story.autor
