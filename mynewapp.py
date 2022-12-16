@@ -616,7 +616,7 @@ def openAI_completion(prompt, user, length=700, temp=0.9):
         return "top tokens limit", 0
     else:
         response = openai.Completion.create(
-            model="text-davinci-003",
+            model="text-davinci-002",
             prompt=prompt,
             temperature=temp,
             max_tokens=length,
