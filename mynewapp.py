@@ -23,7 +23,7 @@ from flask_babelex import Babel
 
 from moderation import moderation2 #as moderation
 from myprompts import openAI_final_prompt, openAI_prompt_alargarconpalabras, generar_prompt_alargar_historia, generate_prompt_de_palabras, generar_prompt_crear_historias, historias0
-
+from generate_image import generate_image, image_prompt_from_story
 
 
 
@@ -691,24 +691,27 @@ def generarhistoria():
         else:
             result = {'prompt':prompt, 'historia':nuevahistoria,
                       'autor':"openAI", 'usage':tokens}
-            if alargarHistoria=="No alargar":
-                result['titulo']=openAI_generar_titulo(result['historia'])
-            else:
-                if alargarHistoria.autor[-6:]=='openAI':
-                    result['autor'] = alargarHistoria.autor
-                    result['titulo']=alargarHistoria.titulo
-                else:
-                    result['autor']=alargarHistoria.autor+' + openAI'
-                if alargarHistoria.autor[-1]=='+':
-                    result['titulo']=alargarHistoria.titulo
-                else:
-                    result['titulo']=alargarHistoria.titulo+'+'
+            result['titulo']=openAI_generar_titulo(result['historia'])
+            
+            #     if alargarHistoria.autor[-6:]=='openAI':
+            #         result['autor'] = alargarHistoria.autor
+            #         result['titulo']=alargarHistoria.titulo
+            #     else:
+            #         result['autor']=alargarHistoria.autor+' + openAI'
+            #     if alargarHistoria.autor[-1]=='+':
+            #         result['titulo']=alargarHistoria.titulo
+            #     else:
+            #         result['titulo']=alargarHistoria.titulo+'+'
             result['AIinspiration']=openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
             h=guardarHistoria(result)
             if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
                 return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
             else:
-                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h)#result=result (old...)
+                newprompt=image_prompt_from_story(result['historia'])
+                image, url=generate_image(newprompt+", matte painting trending on artstation")
+                print(url)
+    
+                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h, image_url=url)#result=result (old...)
         # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
     #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
         
