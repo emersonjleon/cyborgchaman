@@ -27,6 +27,7 @@
     background-size: cover;
 }
 
+/* ----------- HEADER ----------------- */
 
 
 .header{
@@ -49,6 +50,9 @@
 .header h3{
     font-size: 3vh;
 }
+
+/* ----------- HOME ----------------- */
+
 
 .home_info{
     /* border: 2px solid blueviolet; */
@@ -97,6 +101,27 @@
     /* height: 15vh; */
 }
 
+/* boton ouline   */
+.btn.btn-outline-custom {
+    color: var(--azul);
+    /* border-color: var(--azul); */
+    border: 3px solid var(--azul);
+    /* box-shadow: 1px 1px 1px 1px var(--azul); */
+}
+
+.btn.btn-outline-custom:hover {
+    color: #fff;
+    background-color: var(--azul);
+    border-color: var(--azul);
+    /* box-shadow: 1px 1px 1px 1px #fff; */
+
+}
+  
+
+/* ----------- MODAL ----------------- */
+
+
+
 .modal-dialog.modal-dialog-scrollable{
     width: 80%;
 }
@@ -133,21 +158,6 @@
     /* border: 3px solid #000000; */
 }
 
-/* boton ouline   */
-.btn.btn-outline-custom {
-    color: var(--azul);
-    /* border-color: var(--azul); */
-    border: 3px solid var(--azul);
-    /* box-shadow: 1px 1px 1px 1px var(--azul); */
-}
 
-.btn.btn-outline-custom:hover {
-    color: #fff;
-    background-color: var(--azul);
-    border-color: var(--azul);
-    /* box-shadow: 1px 1px 1px 1px #fff; */
-
-}
-  
   
   
