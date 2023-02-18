@@ -9,11 +9,20 @@
             cursor="default" />
             <h3>EL Cyborg Chamán</h3>
             <h4>Historias con Inteligencia Artificial</h4>
-            <button type="button" class="btn btn-outline-light">Más Info</button>
+            <button type="button" class="btn btn-outline-custom" data-bs-toggle="modal" data-bs-target="#exampleModal" > Más Info</button>
       </div>
-      
-      <div class="der_cont">
-                   <!-- <p>
+
+      <!-- Modal -->
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" id="moddal" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">El Cyborg Chamán</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p>
                   En esta página puedes escribir y utilizar la inteligencia artificial de <a href="https://openai.com/api">openAI<a/> para generar historias. Podemos usar nuestras propias palabras como inspiración, crear historias similares a las que ya ingresamos y alargar las historias existentes para ver cómo pueden continuar.
                   </p>
                   <p>
@@ -21,9 +30,19 @@
                   </p>
                   <p>
                         Este proyecto creativo interdisciplinar fue creado con el apoyo de <a href="https://idartes.gov.co" target="_blank">Idartes<a/>. Visita también nuestras páginas <a href="https://www.tercerpisodanza.com/" target="_blank">Tercer Piso Danza</a> y nuestra página de <a href="https://emersonjleon.github.io/emersonjleon/cyborg.html">Tecnología e Inteligencia Artificial</a>. Las imágenes de esta página también han sido generadas por la inteligencia artificial de <a href="https://beta.dreamstudio.ai/dream" target="_blank">Dream Studio</a>
-                  </p> -->
+                  </p>
+                  <br>
+                  <a href="/"> <img src="{{ url_for('static', filename='cyborgshaman.jpg') }}" width="40vh" height="40vh"
+                        cursor="default" style="margin: 0px 5px; border-radius: 8px;" /> </a>
+                </div>
+              </div>
+            </div>
+      </div>
+           
+
+
+      <div class="der_cont">
                   <div class="botones">
-                        <!-- <button type="button" class="btn btn-light btn-lg" href="/user/sign-in">Iniciar Sesión</button> -->
                         <a href="/user/sign-in" class="btn btn-light btn-lg" role="button" >Iniciar Sesión</a>
 
                         <br>
@@ -32,6 +51,13 @@
       </div>
 </div>
 
+<!-- <script>
+      const myModal = document.getElementById('modal')
+      const myInput = document.getElementById('masInfo')
 
+      myModal.addEventListener('shown.bs.modal', () => {
+      myInput.focus()
+      })
+</script> -->
 
 {% endblock %}
