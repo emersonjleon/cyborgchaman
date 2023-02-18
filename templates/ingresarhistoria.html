@@ -2,25 +2,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {% if result %}
-    <div class="story">
-      <p> <b>{{ result.titulo }}</b></p>
-      <p> {{result.historia}}</p>
-      <p>{{ result.autor}} </p>
-    </div>
-  {% endif %}
+<div class="box_cont">
+    <div class="box_user">
+      <div class="historia">
+        {% if result %}
+          <div class="story">
+            <p> <b>{{ result.titulo }}</b></p>
+            <p> {{result.historia}}</p>
+            <p>{{ result.autor}} </p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="crear_form">        
+          <h4>Ingresar historia</h4>
+          <p> Acá puedes escribir tu propia historia</p>
+          <form class="old" action="/ingresarhistoria" method="post">
+              <p> Título: <input type="text" name="titulo" placeholder="título de la historia" required /></p>
+              <textarea name="historia" placeholder="Escribe aquí tu historia." rows="12" required></textarea>
+              <p> Autor: <input type="text" name="autor" placeholder="nombre del autor" text value="{{current_user.username}}" required />
+              </p>
+              <!-- <input type="submit" text value="Ingresar historia" /> -->
+              <button class="btn btn-outline-custom" type="submit" >
+                Ingresar historia
+              </button>
+          </form>
+
+      </div>
+    </div>  
+</div>
   
 
 
-  <h4>Ingresar historia</h4>
-  <p> Acá puedes escribir tu propia historia</p>
-  <form class="old" action="/ingresarhistoria" method="post">
-      <p> Título: <input type="text" name="titulo" placeholder="título de la historia" required /></p>
-      <textarea name="historia" placeholder="Escribe aquí tu historia." rows="12" required></textarea>
-      <p> Autor: <input type="text" name="autor" placeholder="nombre del autor" text value="{{current_user.username}}" required />
-      </p>
-      <input type="submit" text value="Ingresar historia" />
-  </form>
   
   
 

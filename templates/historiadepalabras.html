@@ -3,33 +3,43 @@
 {% block content %}
 
 
-
-
-
-  {% if result %}
-    <div class="story">
-      <p> <b>{{ result.titulo }}</b></p>
-      <p> {{result.historia}}</p>
-      <p>{{ result.autor}} </p>
-      <p>{{ result.tokens_usados}} </p>
-      <div class='center'> <p>{{ result.AIinspiration}}</p> </div>
+<div class="box_cont">
+  <div class="box_user">
+    <div class="historia">
+      {% if result %}
+        <div class="story">
+          <p> <b>{{ result.titulo }}</b></p>
+          <p> {{result.historia}}</p>
+          <p>{{ result.autor}} </p>
+          <p>{{ result.tokens_usados}} </p>
+          <div class='center'> <p>{{ result.AIinspiration}}</p> </div>
+        </div>
+      {% endif %}
     </div>
-  {% endif %}
-
-    
-
-<h3>Crear historia de palabras</h3>
-<p> OpenAI creará una historia usando las palabras que ingreses.
-</p>
-
-<div>
-  <form class='old' action="/historiadepalabras" method="post">
-    <textarea name="story1" placeholder="Coloca algunas palabras inspiradoras aquí..." rows="2" required> </textarea>
-    <input type="submit" text value="Crear historia" />
-  </form>
+  
+  
+    <div class="crear_form">
+      <h3>Crear historia de palabras</h3>
+      <p> OpenAI creará una historia usando las palabras que ingreses.
+      </p>
+      
+      <div>
+        <form class='old' action="/historiadepalabras" method="post">
+          <textarea name="story1" placeholder="Coloca algunas palabras inspiradoras aquí..." rows="2" required> </textarea>
+          <br>
+          <!-- <input type="submit" text value="Crear historia" /> -->
+          <button class="btn btn-outline-custom" type="submit" >
+            Crear historia
+          </button>
+        </form>
+      </div>
+      <br>
+      <a href="/generarhistoria">Alargar con palabras</a>
+    </div>
+  </div>
 </div>
 
-      <a href="/generarhistoria">Alargar con palabras</a>
+
 
 
 </body>

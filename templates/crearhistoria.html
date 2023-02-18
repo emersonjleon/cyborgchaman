@@ -5,51 +5,64 @@
 
 
 
-  {% if result %}
-    <div class="story">
-      <p> <b>{{ result.titulo }}</b></p>
-      <p> {{result.historia}}</p>
-      <p>{{ result.autor}} </p>
-      <p>{{ result.tokens_usados}} </p>
-          </div>
-    {% endif %}
 
-    {% if checked %}
-    <div class='story'> (inspirada en:
-      {% for story in checked %}
-        {{story.titulo}};
-      {% endfor %}
-    )</div>
-  {% endif %}
-
-    
-
-  <h4>Crear historia</h4>
-  <form class="old" action="/crearhistoria" method="post">
-    <div class="alignleft">
-      <p>
-	openAI creará una nueva historia
-	{% if historias %}
-          a partir de los siguientes relatos:
-	{% endif %}
-      </p>
-
-      <!-- <p> <input type="button" class="check" value="check all" /> -->
-      <!-- 	 <br> -->
-      {% for post in historias %}
+<div class="box_cont">
+  <div class="box_user">
+    <div class="historia">
+      {% if result %}
+        <div class="story">
+          <p> <b>{{ result.titulo }}</b></p>
+          <p> {{result.historia}}</p>
+          <p>{{ result.autor}} </p>
+          <p>{{ result.tokens_usados}} </p>
+              </div>
+        {% endif %}
       
-	<input type="checkbox" id="{{post.titulo}}" name="{{post.titulo }}" value="True">
-	<label for="{{post.titulo }}"> 
-	<b>{{post.titulo }}</b>, de {{post.autor}}
-        </label> <br>
-      {% endfor %}
-      </p>
-      
+        {% if checked %}
+        <div class='story'> (inspirada en:
+          {% for story in checked %}
+            {{story.titulo}};
+          {% endfor %}
+        )</div>
+      {% endif %}
 
     </div>
 
-    <input type="submit" text value="Crear historia" />
-  </form>
+    <div class="crear_form">
+      <h4>Crear historia</h4>
+      <form class="old" action="/crearhistoria" method="post">
+        <div class="alignleft">
+          <p>
+      openAI creará una nueva historia
+      {% if historias %}
+              a partir de los siguientes relatos:
+      {% endif %}
+          </p>
+    
+          <!-- <p> <input type="button" class="check" value="check all" /> -->
+          <!-- 	 <br> -->
+          <div class="historias_opc">
+            {% for post in historias %}
+
+            <input type="checkbox" id="{{post.titulo}}" name="{{post.titulo }}" value="True">
+            <label for="{{post.titulo }}"> 
+            <b>{{post.titulo }}</b>, de {{post.autor}}
+                  </label> <br>
+                {% endfor %}
+              </p>
+          </div>
+          
+    
+        </div>
+        <br>
+        <button class="btn btn-outline-custom" type="submit" >
+          Crear historia
+        </button>
+        <!-- <input type="submit" text value="Crear historia" /> -->
+      </form>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
 

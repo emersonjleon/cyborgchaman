@@ -3,7 +3,7 @@
     padding:5vh 2vw;
     font-size: 1.3em;
 }
-.dashboard{
+.box_cont{
     /* border: 2px solid yellow; */
     height: 70vh;
     width: 100vw;
@@ -59,4 +59,43 @@
     /* box-shadow: -0.5px -0.5px 4px 4px rgba(255, 255, 255, 0.2); */
     /* box-shadow: -0.5px -0.5px 4px 4px var(--beige); */
     transform: scale(1.03);
+  }
+
+
+  /* --------------- CREAR HISTORIA ----------------- */
+  .box_user{
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-around;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    color: azure;
+  }
+  .historia{
+    background-color: bisque;
+    width: 30vw;
+    height: 50vh;
+    color: black;
+    overflow: scroll;
+
+    padding: 2vh 2vw;
+  }
+  .crear_form{
+    width: 40%;
+  }
+  .historias_opc{
+    /* background-color: bisque; */
+
+    width: 30vw;
+    height: 15vh;
+    overflow: scroll;
+    position: relative;
+  }
+
+  .crear_form textarea{
+    width: 100%;
+    height: 10vh;
   }
