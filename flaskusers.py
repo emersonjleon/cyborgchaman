@@ -80,9 +80,9 @@ def create_app():
     user_manager = UserManager(app, db, User)
 
     # The Home page is accessible to anyone
-    @app.route('/')
-    def home():
-        return render_template('home.html')
+    # @app.route('/')
+    # def home():
+    #     return render_template('home.html')
 
     @app.route('/oldhome')
     def home_page():

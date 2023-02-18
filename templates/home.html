@@ -3,61 +3,78 @@
 
 {% block content %}
 
-<div class="home_info">
-      <div class="izq_cont">
-            <img src="{{ url_for('static', filename='cyborgshaman.jpg') }}" width="100vh" height="100vh"
-            cursor="default" />
-            <h3>EL Cyborg Chamán</h3>
-            <h4>Historias con Inteligencia Artificial</h4>
-            <button type="button" class="btn btn-outline-custom" data-bs-toggle="modal" data-bs-target="#exampleModal" > Más Info</button>
-      </div>
-
-      <!-- Modal -->
-
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable" id="moddal" >
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">El Cyborg Chamán</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <p>
-                  En esta página puedes escribir y utilizar la inteligencia artificial de <a href="https://openai.com/api">openAI<a/> para generar historias. Podemos usar nuestras propias palabras como inspiración, crear historias similares a las que ya ingresamos y alargar las historias existentes para ver cómo pueden continuar.
-                  </p>
-                  <p>
-                        Estamos en un momento histórico, donde los computadores son capaces de entender el lenguaje que normalmente utilizamos y de escribir textos interesantes en menos de un segundo.   Esta tecnología está basada en los últimos adelantos de la programación y aprendizaje de máquinas inspirada en redes neuronales y las grandes bases de datos de internet. Cada historia es una co-creación con los algoritmos, donde nuestras historias anteriores influyen en el  estilo, vocabulario y los temas de contenidos generados.
-                  </p>
-                  <p>
-                        Este proyecto creativo interdisciplinar fue creado con el apoyo de <a href="https://idartes.gov.co" target="_blank">Idartes<a/>. Visita también nuestras páginas <a href="https://www.tercerpisodanza.com/" target="_blank">Tercer Piso Danza</a> y nuestra página de <a href="https://emersonjleon.github.io/emersonjleon/cyborg.html">Tecnología e Inteligencia Artificial</a>. Las imágenes de esta página también han sido generadas por la inteligencia artificial de <a href="https://beta.dreamstudio.ai/dream" target="_blank">Dream Studio</a>
-                  </p>
-                  <br>
-                  <a href="/"> <img src="{{ url_for('static', filename='cyborgshaman.jpg') }}" width="40vh" height="40vh"
-                        cursor="default" style="margin: 0px 5px; border-radius: 8px;" /> </a>
-                </div>
-              </div>
+{% if call_or_get(current_user.is_authenticated) %}
+      <div class="dashboard">
+            <div class="crear_opc">
+                        <div class="opc">
+                              <a href="/crearhistoria">Crear historias</a>
+                        </div>
+                        <div class="opc">
+                              <a href="/historiadepalabras">Historia de palabras</a>
+                        </div>
+                        <div class="opc">
+                              <a href="/ingresarhistoria">Ingresar historias</a>
+                        </div>
+                        <div class="opc">
+                              <a href="/alargarhistoria">Alargar historia</a>
+                        </div>
+                        <div class="opc">
+                              <a href="/leerhistorias">Leer historias</a>
+                        </div>
+                        <div class="opc">
+                              <a href="/missesiones">Mis Sesiones</a>
+                        </div>   
             </div>
       </div>
-           
+{%else%}
+      <div class="home_info">
+            <div class="izq_cont">
+                  <img src="{{ url_for('static', filename='cyborgshaman.jpg') }}" width="100vw" 
+                  cursor="default" />
+                  <h1>EL Cyborg Chamán</h1>
+                  <h2>Historias con Inteligencia Artificial</h2>
+                  <button type="button" class="btn btn-outline-custom" data-bs-toggle="modal" data-bs-target="#exampleModal" > 
+                        Más Información</button>
+            </div>
 
+            <!-- Modal -->
 
-      <div class="der_cont">
-                  <div class="botones">
-                        <a href="/user/sign-in" class="btn btn-light btn-lg" role="button" >Iniciar Sesión</a>
-
-                        <br>
-                        <h5>¿Aún no tienes una cuenta? <a href="/user/register"> Regístrate </a></h5>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-scrollable" id="moddal" >
+                  <div class="modal-content">
+                  <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">El Cyborg Chamán</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
+                  <div class="modal-body">
+                        <p>
+                        En esta página puedes escribir y utilizar la inteligencia artificial de <a href="https://openai.com/api">openAI<a/> para generar historias. Podemos usar nuestras propias palabras como inspiración, crear historias similares a las que ya ingresamos y alargar las historias existentes para ver cómo pueden continuar.
+                        </p>
+                        <p>
+                              Estamos en un momento histórico, donde los computadores son capaces de entender el lenguaje que normalmente utilizamos y de escribir textos interesantes en menos de un segundo.   Esta tecnología está basada en los últimos adelantos de la programación y aprendizaje de máquinas inspirada en redes neuronales y las grandes bases de datos de internet. Cada historia es una co-creación con los algoritmos, donde nuestras historias anteriores influyen en el  estilo, vocabulario y los temas de contenidos generados.
+                        </p>
+                        <p>
+                              Este proyecto creativo interdisciplinar fue creado con el apoyo de <a href="https://idartes.gov.co" target="_blank">Idartes<a/>. Visita también nuestras páginas <a href="https://www.tercerpisodanza.com/" target="_blank">Tercer Piso Danza</a> y nuestra página de <a href="https://emersonjleon.github.io/emersonjleon/cyborg.html">Tecnología e Inteligencia Artificial</a>. Las imágenes de esta página también han sido generadas por la inteligencia artificial de <a href="https://beta.dreamstudio.ai/dream" target="_blank">Dream Studio</a>
+                        </p>
+                        <br>
+                        <a href="/"> <img src="{{ url_for('static', filename='cyborgshaman.jpg') }}" width="40vh" height="40vh"
+                              cursor="default" style="margin: 0px 5px; border-radius: 8px;" /> </a>
+                  </div>
+                  </div>
+                  </div>
+            </div>
+            
+
+
+            <div class="der_cont">
+                        <div class="botones">
+                              <a href="/user/sign-in" class="btn btn-light btn-lg" role="button" >Iniciar Sesión</a>
+
+                              <br>
+                              <h5>¿Aún no tienes una cuenta? <a href="/user/register"> Regístrate </a></h5>
+                        </div>
+            </div>
       </div>
-</div>
-
-<!-- <script>
-      const myModal = document.getElementById('modal')
-      const myInput = document.getElementById('masInfo')
-
-      myModal.addEventListener('shown.bs.modal', () => {
-      myInput.focus()
-      })
-</script> -->
+{%endif%}
 
 {% endblock %}

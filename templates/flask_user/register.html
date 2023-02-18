@@ -20,7 +20,7 @@
                     <div class="col-xs-6 text-right">
                         {% if user_manager.USER_ENABLE_REGISTER %}
                         <h5 style="margin-bottom:1cm;">
-                            ¿Ya tienes una cuenta?
+                            ¿Ya tienes una cuenta? <br>
                             <a href="{{ url_for('user.login') }}" tabindex='290'>
                                 <!-- {%trans%}Already registered? Sign in.{%endtrans%} -->
                                 Inicia Sesión
@@ -34,12 +34,16 @@
                             <label for="{{ field.id }}" class="control-label">{{ field.label.text }}</label>
                         </div>
                     </div>
+
                     {{ field(class_='form-control', tabindex=210) }}
                     {% if field.errors %}
                     {% for e in field.errors %}
                     <p class="help-block">{{ e }}</p>
                     {% endfor %}
+                    {% else %}
+                    <p style="color: transparent ;"> hola </p>
                     {% endif %}
+                    
                 </div>
 
                 {% if user_manager.USER_ENABLE_EMAIL and user_manager.USER_ENABLE_USERNAME %}
@@ -51,11 +55,13 @@
                 {% if user_manager.USER_REQUIRE_RETYPE_PASSWORD %}
                 {{ render_field(form.retype_password, tabindex=240) }}
                 {% endif %}
+
                 <div class="cont_b">
                     <!-- {{ render_submit_field(form.submit, tabindex=280) }} -->
                     {{ form.submit(class_='btn btn-outline-custom') }} 
 
                 </div>
+
             </form>
         </div>
     </div>

@@ -37,9 +37,10 @@
     text-align: center;
     color: aliceblue;
     background-color:#41372e5e;
-    padding: 1vh 0px;   
+    padding: 1vh 0px;
     align-items: baseline;
     justify-content: center;
+    height: 7vh;
 }
 
 .header a {
@@ -48,8 +49,11 @@
 }
 
 .header h3{
-    font-size: 3vh;
+    font-size: 1.5em;
 }
+/* h3{
+    font: 1em;
+} */
 
 /* ----------- HOME ----------------- */
 
@@ -60,7 +64,7 @@
     /* width: 80%; */
     display: flex;
     text-align: center;
-    padding: 0px 20vh;
+    padding: 0px 10vw;     
     height: 65vh;
     justify-content: space-evenly;
     margin-top: 10vh;
@@ -80,8 +84,9 @@
     /* box-shadow: 2px 2px 2px 2px rgba(255, 255, 255, 0.2); */
     border-radius: 10px;
 }
-.izq_cont h4{
+.izq_cont h2{
     color:#999;
+    font-size: 1.5em;
 }
 .der_cont{
     /* border: 2px solid magenta; */

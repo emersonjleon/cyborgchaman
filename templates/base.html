@@ -5,24 +5,14 @@
 
   {% if call_or_get(current_user.is_authenticated) %}
 
+  <div class="perfil_info">
     <a href="{{ url_for('user.edit_user_profile') }}">{{ current_user.username or current_user.email }}</a>
     &nbsp; | &nbsp;
     <a href="{{ url_for('user.logout') }}">{%trans%}Sign out{%endtrans%}</a>
+  </div>
 
 
     <hr>
-    <div> 
-      
-      <a href="/ingresarhistoria">Ingresar historias</a>
-      <a href="/leerhistorias">Leer historias</a>
-      <br>
-      <a href="/crearhistoria">Crear historias</a>
-      <a href="/alargarhistoria">Alargar historia</a>
-      <br>
-      <a href="/historiadepalabras">Historia de palabras</a>
-      <a href="/missesiones">Mis Sesiones</a>
-    </div>
-
        
     
     {% if call_or_get(current_user.is_admin) %}
@@ -31,7 +21,7 @@
     
     {% endif %}
      
-  {% else %}
+    {% else %}
     <!-- <div>  -->
       <!-- <a href="/user/register">{%trans%}Register{%endtrans%}</a>
       &nbsp; | &nbsp;
@@ -40,14 +30,14 @@
     <!-- </div> -->
     <!--a href="{{ url_for('user.login') }}">{%trans%}Sign in{%endtrans%}</a-->
     
-  {% endif %}
-  <hr>
-
-  {% block content %}{% endblock %}
-
+    {% endif %}
+    <hr>
+    
+    {% block content %}{% endblock %}
+  
   
 {% endblock %}
 
-{% block script0 %}
+<!-- {% block script0 %}
   {% block script %}{% endblock %}
-{% endblock %}
+{% endblock %} -->

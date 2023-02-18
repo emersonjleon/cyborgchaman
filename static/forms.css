@@ -2,13 +2,20 @@
 
 .form_cont{
     /* border: 2px solid var(--azul); */
-    /* width: 80vh; */
-    /* text-align: center; */
+    
+    /* position: absolute; */
+
+    height: 93vh;
+    /* height: auto; */
+    /* padding: 5vh; */
+    /* margin: auto; */
+    /* padding: auto; */
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    height: 75vh;
+
 }
 .box{
     /* border: 2px solid var(--azul); */
@@ -26,18 +33,20 @@
 }
 .box h3{
     font-family: 'Oswald', sans-serif;
-    font-size: 6vh;
+    font-size: 3rem;
 }
 .box h5{
-    color: var(--gris)
+    color: var(--gris);
+    font-size: 1.5rem;
 }
 .box a{
+    font-size: 1.5rem;
     color: var(--azul)
 }
 .login{
     /* border: 2px solid blueviolet; */
-    width: 70vh;
-    padding: 0px 5vh;    
+    width: 35vw;
+    padding: 0px 3.5vw;    
     flex-direction: column;
     /* align-items: center; */
     justify-content: space-around;
@@ -46,7 +55,7 @@
     text-align: center;
 }
 .login p{
-    font-size: 2vh;
+    font-size: 0.8rem;
     /* color: var(--azul); */
     color: var(--naranja);
 }
@@ -54,7 +63,9 @@
     /* margin-top: 2vh; */
     text-align: center;
 }
-
+hr{
+ display: none;
+}
 
 
 /* ----------- REGISTRO ----------------- */

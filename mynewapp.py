@@ -210,7 +210,6 @@ class Email(db.Model):
 # Create all database tables
 db.create_all()
 
-
 # Setup Flask-User and specify the User data-model
 user_manager = UserManager(app, db, User)
 
@@ -224,7 +223,6 @@ user_manager = UserManager(app, db, User)
 @app.route('/')
 def home():
     return render_template('home.html')
-
 
 
 #load pickle
