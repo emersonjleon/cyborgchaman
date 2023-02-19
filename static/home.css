@@ -38,7 +38,7 @@
     color: aliceblue;
     background-color:#41372e5e;
     padding: 1vh 0px;
-    align-items: baseline;
+    align-items: center;
     justify-content: center;
     height: 7vh;
 }
@@ -49,7 +49,7 @@
 }
 
 .header h3{
-    font-size: 1.5em;
+    font-size: 4vh;
 }
 /* h3{
     font: 1em;
@@ -106,12 +106,14 @@
     /* height: 15vh; */
 }
 
-/* boton ouline   */
+/* botón ouline   */
 .btn.btn-outline-custom {
     color: var(--azul);
     /* border-color: var(--azul); */
     border: 3px solid var(--azul);
     /* box-shadow: 1px 1px 1px 1px var(--azul); */
+    font-size: 2vh;
+    /* hei: 10vw; */
 }
 
 .btn.btn-outline-custom:hover {
@@ -122,14 +124,21 @@
 
 }
   
+/* El otro botón */
 
+.btn.btn-light{
+    font-size: 3vh;
+}
 /* ----------- MODAL ----------------- */
 
-
-
-.modal-dialog.modal-dialog-scrollable{
-    width: 80%;
+.modal-content{
+    width: 100vw;
 }
+
+/* .modal-dialog.modal-dialog-scrollable{
+    width: 100vw;
+    border: 2px solid fuchsia;
+} */
 
 /* Personalizar el título del modal */
 .modal-header {
@@ -141,27 +150,14 @@
 
 /* Personalizar el cuerpo del modal */
 .modal-body {
-    background-color:#a4979738;
+    background-color:var(--beige);
     color: #000;
 
 }
 .modal-body a{
     color: var(--azul);    
 }
-/* Scrollbar */
-.modal-dialog.modal-dialog-scrollable ::-webkit-scrollbar {
-    width: 12px;
-}
-  
-.modal-dialog.modal-dialog-scrollable ::-webkit-scrollbar-track {
-    background: #00000070;
-}
-  
-.modal-dialog.modal-dialog-scrollable ::-webkit-scrollbar-thumb {
-    background-color: #00000090;
-    border-radius: 10px;
-    /* border: 3px solid #000000; */
-}
+
 
 
   

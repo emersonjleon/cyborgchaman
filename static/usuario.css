@@ -1,7 +1,7 @@
 .perfil_info{
     text-align: center;
     padding:5vh 2vw;
-    font-size: 1.3em;
+    font-size: 3vh;
 }
 .box_cont{
     /* border: 2px solid yellow; */
@@ -37,7 +37,7 @@
     z-index: 1;
 
     font-family: 'Oswald', sans-serif;
-    font-size: 2em;
+    font-size: 5vh;
     color: var(--gris);
     text-decoration: none;
     text-align: center;
@@ -62,7 +62,7 @@
   }
 
 
-  /* --------------- CREAR HISTORIA ----------------- */
+  /* ---------------- CREAR HISTORIA -------------------- */
   .box_user{
     display: flex;
     flex-direction: row-reverse;
@@ -79,7 +79,7 @@
     width: 30vw;
     height: 50vh;
     color: black;
-    overflow: scroll;
+    overflow-y: auto;
 
     padding: 2vh 2vw;
   }
@@ -91,7 +91,7 @@
 
     width: 30vw;
     height: 15vh;
-    overflow: scroll;
+    overflow-y: auto;
     position: relative;
   }
 
@@ -99,3 +99,106 @@
     width: 100%;
     height: 10vh;
   }
+
+  /* ------------------ LEER HISTORIAS -------------- */
+
+  .leer_cont{
+    /* border: 2px solid hotpink; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .historia_cont{
+    /* border: 2px solid hotpink; */
+    /* background-color:var(--beige); */
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    /* display: flex; */
+    width: 70vw;
+    color: azure;
+    padding: 3vh 3vw;
+    margin: 3vh 3vw;
+  }
+  .historia_cont p {
+    text-align: justify;
+    color: var(--gris);
+  }
+  .historia_cont h3 {
+    font-size: 4vh;
+    text-align: justify;
+    font-family: 'Oswald', sans-serif;
+  }
+  .historia_cont h5{
+    /* color: var(--gris); */
+    font-size: 2.3vh;
+  }
+
+  /* -------------------SESIONES--------------------- */
+.cont_grande{
+  /* border: 2px solid navy; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sesiones_cont{
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  display: flex;
+  width: 70vw;
+  height: 70vh;
+  flex-direction: column;
+  color: azure;
+  padding: 3vh 3vw;
+  align-items: center;
+}
+.cont_info_s{
+  display: flex;
+  padding-top: 2vh;
+}
+.sesion_actual{
+  height: 40vh;
+  width: 25vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  /* border: 2px solid navy; */
+}
+.mis_sesiones{
+  height: 55vh;
+  width: 30vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  /* border: 2px solid rgb(100, 128, 0); */
+  padding-left: 4vw;
+  margin-left: 1vw;
+  border-left: 2px solid var(--gris);
+}
+.lista_sesiones{
+  /* width: 20vw; */
+  height: 30vh;
+  overflow-y: auto;
+  position: relative;
+  /* border: 2px solid rgb(128, 0, 107); */
+  background-color: var(--beige);
+  color: black;
+  padding: 2vh ;
+  margin-bottom: 4vh;
+}
+.historias_sesiones{
+    width: 25vw;
+    overflow-y: auto;
+    position: relative;
+    height: 10vh;
+    /* border: 2px solid rgb(0, 128, 0); */
+
+}
+#texto{
+  color: var(--gris);
+  text-align: center;
+}
+
+/* -------------------MENSAJE TOKENS--------------------- */
+.tokentext p{
+  font-size: 2vh;
+}

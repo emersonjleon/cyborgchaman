@@ -2,49 +2,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>
 
-  {% if result %}
-    <div class="story">
-      <p> <b>{{ result.titulo }}</b></p>
-      <p> {{result.historia}}</p>
-      <p>{{ result.autor}} </p>
-      <div class='center'> <p>{{ result.AIinspiration}}</p> </div>
-    </div>
-  {% endif %}
-
-
-  
-
-</div>
-  <h4>Uso de Tokens</h4>
-    <div class=story>
+  <div class="box_cont">
+    <div class="box_user">
+      <div class="historia">
+        {% if result %}
+        <div class="story">
+          <p> <b>{{ result.titulo }}</b></p>
+          <p> {{result.historia}}</p>
+          <p>{{ result.autor}} </p>
+          <div class='center'> <p>{{ result.AIinspiration}}</p> </div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="crear_form">
+        <h4>Uso de Tokens</h4>
+        <div class=tokentext>
+          
+          <p>
+        
+        Hola, <b>{{current_user.username }}</b>. has usado un total de <b>{{current_user.tokens_usados}}</b> tokens. Si ya superaste {{tokens_limit}} tokens, necesitamos saber quien eres para poder seguir usando nuestro servicio de forma gratuita. Para esto, ingresa a continuación tu correo electrónico, te estaremos escribiendo pronto. (Si ya enviaste tu correo, no es necesario que lo vuelvas a ingresar.)
+            </p>
+          <div class="center">
+        
+        <form action="/requestemail" method="post">
+        <label for="email">Ingresa aquí tu correo electrónico:<br></label>
+        <input type="email" id="email" name="email"><br>
+        <button class="btn btn-outline-custom" type="submit" >
+          Crear historia
+        </button>
+        </form>
       
-      <p>
-   
-	Hola,<b>{{current_user.username }}</b>. has usado un total de <b>{{current_user.tokens_usados}}</b> tokens. Si ya superaste {{tokens_limit}} tokens, necesitamos saber quien eres para poder seguir usando nuestro servicio de forma gratuita. Para esto, ingresa a continuación tu correo electrónico, te estaremos escribiendo pronto. (Si ya enviaste tu correo, no es necesario que lo vuelvas a ingresar.)
-      </p>
-    <div class="center">
-
-<form action="/requestemail" method="post">
-  <label for="email">Ingresa aquí tu correo electrónico:<br></label>
-  <input type="email" id="email" name="email"><br>
-  <input type="submit">
-</form>
-  
- 
-
-
-    </div>
-</div>
-    
-
-
-
       
+      
+      
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
     
-  
-
-
-
 {% endblock %}

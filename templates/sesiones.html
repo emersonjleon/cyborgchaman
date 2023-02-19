@@ -2,110 +2,118 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>
-  <p>
-    Bienvenido, {{ current_user.username or current_user.email }}. Acá podrás encontrar tus historias y sesiones guardadas. 
-  </p>
+<div class="cont_grande">
+  <div class="sesiones_cont">
+  
+        <p id="texto">
+          Bienvenido, {{ current_user.username or current_user.email }}. Acá podrás encontrar tus historias y sesiones
+          guardadas.
+        </p>
+        <div class="cont_info_s">
+          <div class="sesion_actual">
+              <h3>Sesión Actual: {{current_user.sesion_actual().nombre}} </h3>
+              <!-- <h4> {{current_user.sesion_actual().nombre}}</h4> -->
+              <!-- <p>
+                {% for post in historias %}
+                <b>{{post.titulo }}</b>, de {{post.autor}} <br>
+                {% endfor %}
+                {% if historias %}
+            
+                {% else %}
+                Aun no hay historias aquí...
+                {% endif %}
+              </p> -->
+            
+              
+            <!-- </div> -->
+            
+            <div>
+              <form action="/missesiones" method="post">
+                <input type="hidden" name="myaction" value="guardarhistorias" />
+                Guardar sesión como:
+                <input type="text" name="sesionname" placeholder="nombre de la sesión" required />
+                <button class="btn btn-outline-custom" type="submit" >
+                  Guardar 
+                </button>
+              </form>
+            </div>
+            {% if historias%}
+            <div class="leftalign">
+          
+              <form action="/missesiones" method="post">
+                <input type="hidden" name="myaction" value="nuevasesion" />
+                <p>
+                  <button class="btn btn-light" type="submit" >
+                    Crear Nueva Sesión 
+                  </button>
+          
+                </p>
+          
+              </form>
+            </div>
+            {% endif %}
+    
+          </div>
+          <hr>
+          <div class="mis_sesiones">
+            <h4>Mis sesiones</h4>
+            
+            
+            {% if sesiones%}
+            
+            <form action="/missesiones" method="post">
+              <input type="hidden" name="myaction" value="cargarsesion" />
+              <div class=story>
+                
+                  <div class="lista_sesiones">
+                    {% for s in sesiones %}
+                    <p>
+                      <input type="radio" id="cargarsesion" name='cargarsesion' value="{{s.id }}">
+                
+                      <b>{{s.nombre}} </b>({{s.fecha}})
+                    </p>
+                    
+                    <!-- <div class="historias_sesiones">
+                      <p>
+                        {% for post in s.historias %}
+                        {{post.titulo }}, de {{post.autor}};
+                        <br>
+                        {% endfor %}
+                      </p>
+                    </div> -->
 
-
-
-
-    {% if historias%}
-    <div class="leftalign">
-
-      <form action="/missesiones" method="post">
-	<input type="hidden" name="myaction" value="nuevasesion" />
-	<p>
-	  <input type="submit" text value="Crear nueva sesión" />
-	  
-	</p>
+                    {% endfor %}
+                  </div>
+                
+                </div>
+                  <!-- <input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required /> -->
+                
+                  <!-- <input type="submit" text value="Cargar sesión" /> -->
+                  <button class="btn btn-light" type="submit" >
+                    Cargar Sesión 
+                  </button>
         
-      </form>
-    </div>
-    {% endif %}
-
-  
-
-  <h6>Sesión Actual</h6>
-     <h4> {{current_user.sesion_actual().nombre}}</h4>
-      <p> 
-	{% for post in historias %}
-          <b>{{post.titulo }}</b>, de {{post.autor}} <br>
-	  {% endfor %}
-  {% if historias %}
-
-  {% else %}
-           Aun no hay historias aquí...
-  {% endif %}
-      </p>
-
-
+                </form>
+                
+                <div class="center">
+                
+                  <hr>
+                  <!-- <a href="{{ url_for('editar_sesiones') }}">Editar sesiones</a> <br>    -->
+                  <!-- <a href="{{ url_for('user.edit_user_profile') }}"> Editar perfil de usuario</a> -->
+                  {% if nota %}
+                  <p> {{nota}}</p>
+                  {% endif %}
+                
+                </div>
+                
+                {% endif %}
+            
+            
+          </div>
+        </div>
+      
+  </div>
 </div>
-
-    <div>      
-      <form action="/missesiones" method="post">
-	<input type="hidden" name="myaction" value="guardarhistorias" />
-	Guardar sesión como
-	  <input type="text"  name="sesionname" placeholder="nombre de la sesión" required   />
-	  <input type="submit"  text value="Guardar" />
-      </form>
-    </div>
-
-
-
-    <h4>Mis sesiones</h4>
-
-
-    {% if sesiones%}
-    
-    <form action="/missesiones" method="post">
-	<input type="hidden" name="myaction" value="cargarsesion" />
-	<div class=story>
-
-	  {% for s in sesiones %}
-	  <p>
-	    <input type="radio" id="cargarsesion"
-		   name='cargarsesion' value="{{s.id }}" >
-	    
-	    <b>{{s.nombre}}  </b>({{s.fecha}})</p>
-	  <p>
-	    {% for post in s.historias %}
-	      {{post.titulo }}, de {{post.autor}};
-	    {% endfor %}
-	  </p>
-	  {% endfor %}
-	</div>
-
-	<!-- <input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required /> -->
-
-	<input type="submit" text value="Cargar sesión" />
-      
-    </div>
-    </form>
-
-    <div class="center">
-
-
-
-
-
-      
-      <hr>
-
-
-
-      <!-- <a href="{{ url_for('editar_sesiones') }}">Editar sesiones</a> <br>    -->
-      <a href="{{ url_for('user.edit_user_profile') }}"> Editar perfil de usuario</a>    
-      {% if nota %}
-          <p> {{nota}}</p>
-      {% endif %}
-    </div>
-    
-    {% endif %}
-      
-    
-  
-
 
 
 {% endblock %}
