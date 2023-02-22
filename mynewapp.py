@@ -710,6 +710,7 @@ def generarhistoria():
                 image, url=generate_image(newprompt+", matte painting trending on artstation")
                 print(url)
                 h.image_link=url
+                db.session.commit()
                 return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h, image_url=url)#result=result (old...)
         # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
     #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
