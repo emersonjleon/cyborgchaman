@@ -39,7 +39,7 @@ class ConfigClass(object):
 
     
     # Flask-SQLAlchemy settings
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'  # File-based SQL
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_backup.sqlite'  # File-based SQL
     # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     # SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:mysql0Secret@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
     
@@ -183,6 +183,7 @@ class Historia(db.Model):
     historia = db.Column(db.Text, nullable=False)
     fecha = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
+    image_link = db.Column(db.String(500), nullable=True)# This needs to be true later
     #story=db.Column(JSON, nullable=True)
     sesion_id = db.Column(db.Integer, db.ForeignKey('sesion.id'),
         nullable=False)
@@ -708,7 +709,7 @@ def generarhistoria():
                 newprompt=image_prompt_from_story(result['historia'])
                 image, url=generate_image(newprompt+", matte painting trending on artstation")
                 print(url)
-    
+                h.image_link=url
                 return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h, image_url=url)#result=result (old...)
         # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
     #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
