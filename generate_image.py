@@ -4,18 +4,53 @@
 import os,  requests
 import openai
 from dotenv import load_dotenv, find_dotenv
+from flask import url_for
+import os
+
+
+import requests
+
+def generate_image_name(historia):
+    # try:
+    #     image_link=historia.image_link
+    # except:
+    image_name=f'{historia.id}_{historia.sesion.user}_{historia.titulo}_000.jpg'
+    return image_name
+
+def store_image(image_url,image_name):
+    img_data = requests.get(image_url).content
+    with open(image_name, 'wb') as handler:
+        handler.write(img_data)
+    os.rename(image_name, f'/static/cyborg_images/{image_name}')
+    location=url_for('static', filename=f'/cyborg_images/{image_name}')
+    return location
+
 
 load_dotenv(find_dotenv())
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def generate_image(myprompt):
+def generate_image_from_prompt(myprompt):
     response = openai.Image.create(
         prompt=myprompt,
         n=1,
         size="512x512"
     )
     image_url = response['data'][0]['url']
+    print(image_url)
+    #store_image(image_url, image_location)
     return response, image_url
+
+
+def generate_image_from_story(historia):
+    newprompt=image_prompt_from_story(historia.historia)
+    image, temp_url=generate_image_from_prompt(newprompt+", matte painting trending on artstation")
+    image_name=generate_image_name(historia)
+    location=store_image(temp_url,image_name)
+    historia.image_link=location
+    print(location)
+
+
+
 
 
 def image_prompt_from_story(story,  length=700, temp=0.9):

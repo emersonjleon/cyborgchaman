@@ -23,7 +23,7 @@ from flask_babelex import Babel
 
 from moderation import moderation2 #as moderation
 from myprompts import openAI_final_prompt, openAI_prompt_alargarconpalabras, generar_prompt_alargar_historia, generate_prompt_de_palabras, generar_prompt_crear_historias, historias0
-from generate_image import generate_image, image_prompt_from_story
+from generate_image import generate_image_from_story
 
 
 
@@ -706,12 +706,10 @@ def generarhistoria():
             if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
                 return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
             else:
-                newprompt=image_prompt_from_story(result['historia'])
-                image, url=generate_image(newprompt+", matte painting trending on artstation")
-                print(url)
-                h.image_link=url
+                generate_image_from_story(h)
                 db.session.commit()
-                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h, image_url=url)#result=result (old...)
+
+                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h, image_url=h.image_link)#result=result (old...)
         # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
     #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
         
