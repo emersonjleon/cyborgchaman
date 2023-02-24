@@ -5,8 +5,9 @@ import os,  requests
 import openai
 from dotenv import load_dotenv, find_dotenv
 from flask import url_for
+from werkzeug.utils import secure_filename
 import os
-
+#from mynewapp import app
 
 import requests
 
@@ -19,10 +20,14 @@ def generate_image_name(historia):
 
 def store_image(image_url,image_name):
     img_data = requests.get(image_url).content
-    with open(image_name, 'wb') as handler:
+    filename=secure_filename(f'static/uploads/cyborg_images/{image_name}')
+    #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+         
+    with open(filename, 'wb') as handler:
         handler.write(img_data)
-    os.rename(image_name, f'/static/cyborg_images/{image_name}')
-    location=url_for('static', filename=f'/cyborg_images/{image_name}')
+        
+    # os.rename(image_name, f'/cyborg_images/{image_name}')
+    location=url_for('static', filename=f'uploads/cyborg_images/{image_name}')
     return location
 
 

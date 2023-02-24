@@ -64,7 +64,8 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # Create Flask app load app.config
 app = Flask(__name__)
 app.config.from_object(__name__+'.ConfigClass')
-
+UPLOAD_FOLDER = '/static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #userbabel=user_manager.babel
 babel = Babel(app)
