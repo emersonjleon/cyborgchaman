@@ -48,9 +48,9 @@ def generate_image_from_prompt(myprompt):
 
 
 def generate_image_from_story(historia):
-    #newprompt=image_prompt_from_story(historia.historia)
-    #image, temp_url=generate_image_from_prompt(newprompt+", matte painting trending on artstation")
-    image, temp_url=generate_image_from_prompt(historia.historia+", matte painting trending on artstation")
+    newprompt=image_prompt_from_story(historia.historia)
+    image, temp_url=generate_image_from_prompt(newprompt+", matte painting trending on artstation")
+    #image, temp_url=generate_image_from_prompt(historia.historia+", matte painting trending on artstation")
     image_name=generate_image_name(historia)
     location=store_image(temp_url,image_name)
     historia.image_link=location

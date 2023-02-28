@@ -710,7 +710,7 @@ def generarhistoria():
                 generate_image_from_story(h)
                 db.session.commit()
 
-                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h, image_url=h.image_link)#result=result (old...)
+                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h)#result=result (old...)
         # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
     #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
         
