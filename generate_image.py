@@ -15,20 +15,21 @@ def generate_image_name(historia):
     # try:
     #     image_link=historia.image_link
     # except:
-    image_name=f'{historia.id}_{historia.sesion.user}_{historia.titulo}_000.jpg'
+    image_name=secure_filename(f'{historia.id}_{historia.sesion.user}_{historia.titulo}_000.jpg')
     return image_name
 
 def store_image(image_url,image_name):
     img_data = requests.get(image_url).content
-    filename=secure_filename(f'static/uploads/cyborg_images/{image_name}')
+    
+    filename=f'./static/uploads/cyborg_images/{image_name}'
     #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
          
     with open(filename, 'wb') as handler:
         handler.write(img_data)
         
-    # os.rename(image_name, f'/cyborg_images/{image_name}')
     location=url_for('static', filename=f'uploads/cyborg_images/{image_name}')
-    return location
+    print(location)
+    return filename
 
 
 load_dotenv(find_dotenv())
@@ -47,8 +48,9 @@ def generate_image_from_prompt(myprompt):
 
 
 def generate_image_from_story(historia):
-    newprompt=image_prompt_from_story(historia.historia)
-    image, temp_url=generate_image_from_prompt(newprompt+", matte painting trending on artstation")
+    #newprompt=image_prompt_from_story(historia.historia)
+    #image, temp_url=generate_image_from_prompt(newprompt+", matte painting trending on artstation")
+    image, temp_url=generate_image_from_prompt(historia.historia+", matte painting trending on artstation")
     image_name=generate_image_name(historia)
     location=store_image(temp_url,image_name)
     historia.image_link=location
