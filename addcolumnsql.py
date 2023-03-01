@@ -27,15 +27,16 @@ print(insp.get_table_names())
 
 #Base = sqlalchemy.ext.declarative.declarative_base()
 
-column = sqlalchemy.Column('image_link', sqlalchemy.String(500), primary_key=False)
-column_name = column.compile(dialect=engine.dialect)
-column_type = column.type.compile(engine.dialect)
-engine.execute(f'ALTER TABLE historia ADD COLUMN {column_name} {column_type}')
+def addCol():
+    column = sqlalchemy.Column('image_link', sqlalchemy.String(500), primary_key=False)
+    column_name = column.compile(dialect=engine.dialect)
+    column_type = column.type.compile(engine.dialect)
+    engine.execute(f'ALTER TABLE historia ADD COLUMN {column_name} {column_type}')
 
 #ths has not yet worked...
 #engine.execute('alter table historia drop image_link')
 
-for col in insp.get_columns("historia"):
+for col in insp.get_columns("user"):
     print(col)
     
 # [SQL: ALTER TABLE historia ADD COLUMN prompt_tokens INTEGER NOT NULL]
