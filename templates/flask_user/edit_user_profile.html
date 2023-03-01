@@ -7,7 +7,10 @@
     <div class="box">
         
         <h3>{%trans%}User profile{%endtrans%}</h3>
-        <div class="login">
+
+
+
+	<div class="login">
             <form action="" method="POST" class="form" role="form">
                 {{ form.hidden_tag() }}
                 {% for field in form %}
@@ -33,6 +36,14 @@
         {% endif %}
 
     </div>    
+
+	{% if call_or_get(current_user.is_admin) %}
+	<div class="login">
+	  Administrador: <a href="/adm/usuarios">Usuarios</a> <a href="/adm/sesiones">Sesiones</a> <a href="/adm/historias">Historias</a>
+	  <hr>
+        </div>
+	{% endif %}
+
 </div>
 
 {% endblock %}
