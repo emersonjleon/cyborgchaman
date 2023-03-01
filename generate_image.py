@@ -20,6 +20,7 @@ def generate_image_name(historia):
 
 def store_image(image_url,image_name):
     img_data = requests.get(image_url).content
+    filenameO=f'./static/uploads/cyborg_images/{image_name}'
     
     filename=f'./cyborgchaman/static/uploads/cyborg_images/{image_name}'
     #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -29,7 +30,7 @@ def store_image(image_url,image_name):
         
     location=url_for('static', filename=f'uploads/cyborg_images/{image_name}')
     print(location)
-    return filename
+    return filenameO
 
 
 load_dotenv(find_dotenv())
