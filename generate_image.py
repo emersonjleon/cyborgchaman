@@ -20,17 +20,23 @@ def generate_image_name(historia):
 
 def store_image(image_url,image_name):
     img_data = requests.get(image_url).content
-    filenameO=f'./static/uploads/cyborg_images/{image_name}'
-    
+    filename0=f'./static/uploads/cyborg_images/{image_name}'
+
+
     filename=f'./cyborgchaman/static/uploads/cyborg_images/{image_name}'
     #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-         
-    with open(filename, 'wb') as handler:
-        handler.write(img_data)
-        
+
+    try:
+        with open(filename, 'wb') as handler:
+            handler.write(img_data)
+    except FileNotFoundError:
+        with open(filename0, 'wb') as handler:
+            handler.write(img_data)
+
+            
     location=url_for('static', filename=f'uploads/cyborg_images/{image_name}')
     print(location)
-    return filenameO
+    return filename0
 
 
 load_dotenv(find_dotenv())
