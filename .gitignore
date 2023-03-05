@@ -21,4 +21,4 @@ quickstart_app.sqlite
 *.sqlite
 emails.py
 addcolumnssql.py
-*.jpg
+static/uploads
