@@ -23,7 +23,7 @@ from flask_babelex import Babel
 
 from moderation import moderation2 #as moderation
 from myprompts import openAI_final_prompt, openAI_prompt_alargarconpalabras, generar_prompt_alargar_historia, generate_prompt_de_palabras, generar_prompt_crear_historias, historias0
-from generate_image import generate_image, image_prompt_from_story
+from generate_image import generate_image_from_story
 
 
 
@@ -39,7 +39,7 @@ class ConfigClass(object):
 
     
     # Flask-SQLAlchemy settings
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_app.sqlite'  # File-based SQL
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_backup.sqlite'  # File-based SQL
     # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     # SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:mysql0Secret@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
     
@@ -64,7 +64,8 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # Create Flask app load app.config
 app = Flask(__name__)
 app.config.from_object(__name__+'.ConfigClass')
-
+UPLOAD_FOLDER = '/static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #userbabel=user_manager.babel
 babel = Babel(app)
@@ -183,6 +184,7 @@ class Historia(db.Model):
     historia = db.Column(db.Text, nullable=False)
     fecha = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
+    image_link = db.Column(db.String(500), nullable=True)# This needs to be true later
     #story=db.Column(JSON, nullable=True)
     sesion_id = db.Column(db.Integer, db.ForeignKey('sesion.id'),
         nullable=False)
@@ -705,11 +707,10 @@ def generarhistoria():
             if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
                 return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
             else:
-                newprompt=image_prompt_from_story(result['historia'])
-                image, url=generate_image(newprompt+", matte painting trending on artstation")
-                print(url)
-    
-                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h, image_url=url)#result=result (old...)
+                generate_image_from_story(h)
+                db.session.commit()
+
+                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h)#result=result (old...)
         # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
     #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
         

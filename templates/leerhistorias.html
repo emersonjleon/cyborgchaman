@@ -11,6 +11,12 @@
       <div class="story">
         <h3> <b>{{ post.titulo }}</b></h3>
         <p> {{post.historia}}</p>
+          {% if post.image_link %}
+	    <div style="text-align: center;">
+	      <img style='height: 80%;' src={{post.image_link}}>
+	    </div>	      
+
+          {% endif %}        
 
           <h5>{{ post.autor}}, {{ post.fecha}} </h5>
           {% if post.AIinspiration %}

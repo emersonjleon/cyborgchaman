@@ -4,18 +4,67 @@
 import os,  requests
 import openai
 from dotenv import load_dotenv, find_dotenv
+from flask import url_for
+from werkzeug.utils import secure_filename
+import os
+#from mynewapp import app
+
+import requests
+
+def generate_image_name(historia):
+    # try:
+    #     image_link=historia.image_link
+    # except:
+    image_name=secure_filename(f'{historia.id}_{historia.sesion.user}_{historia.titulo}_000.jpg')
+    return image_name
+
+def store_image(image_url,image_name):
+    img_data = requests.get(image_url).content
+    filename0=f'./static/uploads/cyborg_images/{image_name}'
+
+
+    filename=f'./cyborgchaman/static/uploads/cyborg_images/{image_name}'
+    #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+    try:
+        with open(filename, 'wb') as handler:
+            handler.write(img_data)
+    except FileNotFoundError:
+        with open(filename0, 'wb') as handler:
+            handler.write(img_data)
+
+            
+    location=url_for('static', filename=f'uploads/cyborg_images/{image_name}')
+    print(location)
+    return filename0
+
 
 load_dotenv(find_dotenv())
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def generate_image(myprompt):
+def generate_image_from_prompt(myprompt):
     response = openai.Image.create(
         prompt=myprompt,
         n=1,
         size="512x512"
     )
     image_url = response['data'][0]['url']
+    print(image_url)
+    #store_image(image_url, image_location)
     return response, image_url
+
+
+def generate_image_from_story(historia):
+    newprompt=image_prompt_from_story(historia.historia)
+    image, temp_url=generate_image_from_prompt(newprompt+", matte painting trending on artstation")
+    #image, temp_url=generate_image_from_prompt(historia.historia+", matte painting trending on artstation")
+    image_name=generate_image_name(historia)
+    location=store_image(temp_url,image_name)
+    historia.image_link=location
+    print(location)
+
+
+
 
 
 def image_prompt_from_story(story,  length=700, temp=0.9):

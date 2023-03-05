@@ -20,3 +20,5 @@ historias.pkl
 quickstart_app.sqlite
 *.sqlite
 emails.py
+addcolumnssql.py
+static/uploads

@@ -4,6 +4,8 @@
 {% block content %}
 
 
+
+
 <div class="box_cont">
   <div class="box_user">
     <div class="historia">
@@ -13,15 +15,19 @@
         <p> {{result.historia}}</p>
         <p>{{ result.autor}} </p>
         <p>{{ result.tokens_usados}} </p>
+      
+        {% if result.AIinspiration %}
+          <div class='story'> 
+            {{ result.AIinspiration }};
+          </div>
+        {% endif %}
+        {% if result.image_link %}
+	  <div style="text-align: center; object-fit: contain">
+	    <img style='height: 100%; width: 100%; object-fit: contain' src={{result.image_link}}>
+	  </div>
+        {% endif %}
       </div>
 
-      {% if result.AIinspiration %}
-      <div class='story'> (
-        {{ result.AIinspiration }};
-        )</div>
-      <img src={{image_url}}>
-
-      {% endif %}
       {% endif %}
     </div>
 
@@ -62,7 +68,7 @@
         </div>
         <br>
         <button class="btn btn-outline-custom" type="submit">
-          Ingresar historia
+          Generar historia
         </button>
     </div>
 
@@ -102,5 +108,25 @@
 
 <!-- <input type="submit" text value="Crear historia" /> -->
 </form>
+
+      
+      <div class="box_cont">
+            <div class="crear_opc">
+                        <div class="opc">
+                              <a href="/crearhistoria">Crear historias</a>
+                        </div>
+                        <div class="opc">
+                              <a href="/historiadepalabras">Historia de palabras</a>
+                        </div>
+                        <div class="opc">
+                              <a href="/alargarhistoria">Alargar historia</a>
+                        </div>
+                        <!-- <div class="opc"> -->
+                        <!--       <a href="/generarhistoria">Alargar con palabras</a> -->
+                        <!-- </div> -->
+
+            </div>
+      </div>
+
 
 {% endblock %}
