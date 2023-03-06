@@ -83,6 +83,7 @@
     justify-content: space-around;
     /* box-shadow: 2px 2px 2px 2px rgba(255, 255, 255, 0.2); */
     border-radius: 10px;
+    padding: 1vh 1vw;
 }
 .izq_cont h2{
     color:#999;
@@ -158,7 +159,51 @@
     color: var(--azul);    
 }
 
+/* ----------------------------------------------------- */
+/* ---------------CSS DISPOSITIVOS MOVILES-------------- */
+/* ----------------------------------------------------- */
 
-
+@media (max-width: 768px) {
+    .home_info{
+        border: 2px solid blueviolet;
+        
+        flex-direction: column;
+        height: 80vh;
+        padding: 0px 0px;  
+        align-items: center;
+        justify-content: space-around;
+        /* display: flex;
+        text-align: center;
+        padding: 0px 10vw;     
+        height: 65vh;
+        justify-content: space-evenly;
+        margin-top: 10vh; */
+    }
+    .home_info img{
+        height: 10vh;
+        width: auto;
+    }
+    .izq_cont{
+        border: 2px solid blue;
+        width: 80%;
+        height: 50vh;
+    }
+    .izq_cont h2{
+        color:#999;
+        font-size: 1em;
+    }
+    .izq_cont h1{
+        /* color:#999; */
+        font-size: 1.5em;
+    }
+    .der_cont{
+        border: 2px solid magenta;
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+    }
+  }
   
   
