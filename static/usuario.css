@@ -208,6 +208,41 @@
   text-align: center;
 }
 
+/* ------------OPCIONES GENERAR HISTORIAS (TEMPORAL)------------- */
+.box_cont2{
+  /* width: 100vw; */
+  /* border: 2px solid gold; */
+  display: flex;
+  justify-content: center;
+
+}
+.generar_opc{
+  display: flex;
+  /* border: 2px solid maroon; */
+  width: 60%;
+  align-items: center;
+  justify-content: space-around;
+}
+.opc2{
+  background-color: rgba(0, 0, 0, 0.7);
+  /* border-radius: 10px; */
+}
+.opc2 a{
+  text-decoration: none;
+  color: black;
+  font-size: 1.3rem;
+  padding: 1vh 1vw;
+  margin: 1vh 1vw;
+  color: var(--gris);
+}
+
+.opc2 a:hover {
+  /* text-decoration: none; */
+  color: var(--azul);
+  /* font-size: 1.5rem; */
+}
+
+
 /* -------------------MENSAJE TOKENS--------------------- */
 .tokentext p{
   font-size: 2vh;
