@@ -83,10 +83,12 @@ hr{
 /* ----------------------------------------------------- */
 
 @media (max-width: 768px) {
-
+    .form_cont2{
+        height: 80vh;
+    }
     .box{
         width: 80%;
-        height: 85%;
+        /* height: 85%; */
     } 
     .login{
         /* border: 2px solid blueviolet; */
