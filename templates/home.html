@@ -4,20 +4,20 @@
 {% block content %}
 
 {% if call_or_get(current_user.is_authenticated) %}
-      <div class="box_cont">
+      <div class="box_cont" id="dashboard">
             <div class="crear_opc">
-                        <div class="opc">
-                              <a href="/ingresarhistoria">Ingresar historias</a>
-                        </div>
-                        <div class="opc">
-                              <a href="/generarhistoria">Generar historias</a>
-                        </div>
-                        <div class="opc">
-                              <a href="/leerhistorias">Leer historias</a>
-                        </div>
-                        <div class="opc">
-                              <a href="/missesiones">Mis Sesiones</a>
-                        </div>   
+                  <div class="opc">
+                        <a href="/ingresarhistoria">Ingresar historias</a>
+                  </div>
+                  <div class="opc">
+                        <a href="/generarhistoria">Generar historias</a>
+                  </div>
+                  <div class="opc">
+                        <a href="/leerhistorias">Leer historias</a>
+                  </div>
+                  <div class="opc">
+                        <a href="/missesiones">Mis Sesiones</a>
+                  </div>   
             </div>
       </div>
 {%else%}

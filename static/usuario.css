@@ -258,12 +258,76 @@
 /* ----------------------------------------------------- */
 
 @media (max-width: 768px) {
-
+  /* -- opciones dashboard -- */
   .opc{
-      width: 85vw;
-      height: 10vh;
+    width: 85vw;
+    height: 10vh;
   }
+
+  /* -- Leer Historia -- */
   .historia_cont{
     width: 85vw;
   }
+  /* -- Dashboard -- */
+  #dashboard{
+    padding: 1vh 15vw 5vh 15vw;
+    height: 70vh;
+
+  }
+
+  /* -- formato crear historias -- */
+  
+  .box_cont{
+    /* border: 2px solid yellow; */
+    height: auto;
+    width: 100vw;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+  }
+  .box_user{
+    flex-direction: column-reverse;
+    width: 90vw;
+  }
+  .historia{
+    display: none;
+    /* background-color: bisque;
+    width: 30vw;
+    height: 50vh;
+    color: black;
+    overflow-y: auto;
+
+    padding: 2vh 2vw; */
+  }
+  .crear_form{
+    height: auto;
+    width: 85%;
+    padding: 2vh 0px;
+  }
+  .historias_opc{
+    /* border: 2px solid yellow; */
+    /* background-color: bisque; */
+
+    width: 100%;
+    height: 25vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .crear_form textarea{
+    width: 100%;
+    height: 10vh;
+  }
+
+  /* -- OPCIONES GENERAR HISTORIAS (TEMPORAL)-- */
+
+.generar_opc{
+  flex-direction: column;
+  margin-top: 2vh;
+}
+.opc2{
+  background-color: rgba(0, 0, 0, 0.7);
+  margin: 1vh;
+  /* border-radius: 10px; */
+}
 }
