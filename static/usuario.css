@@ -263,7 +263,7 @@
 /* ----------------------------------------------------- */
 
 @media (max-width: 768px) {
-  /* -- opciones dashboard -- */
+  /* ------------------------ opciones dashboard -- */
   .perfil_info{
     padding: 3vh 2vw;
   }
@@ -272,18 +272,18 @@
     height: 10vh;
   }
 
-  /* -- Leer Historia -- */
+  /* ---------------------- Leer Historia -- */
   .historia_cont{
     width: 85vw;
   }
-  /* -- Dashboard -- */
+  /* ---------------------- Dashboard -- */
   #dashboard{
     padding: 1vh 15vw 5vh 15vw;
     height: 70vh;
 
   }
 
-  /* -- formato crear historias -- */
+  /* ----------------------- formato crear historias -- */
   
   .box_cont{
     /* border: 2px solid yellow; */
@@ -320,9 +320,28 @@
     position: relative;
   }
 
+ /* ------------------- SESIONES */
+.sesiones_cont{
+  height: auto;
+  width: 90vw;
 
-
-  /* -- OPCIONES GENERAR HISTORIAS (TEMPORAL)-- */
+}
+.cont_info_s{
+  flex-direction: column;
+  /* padding: 0px; */
+  width: 100%;
+}
+.sesion_actual{
+  width: 100%;
+}
+.mis_sesiones{
+  width: 100%;
+  padding-left: 0vw;
+  margin-left: 0vw;
+  border-left: none;
+  border-top: 2px solid var(--gris);
+}
+/* ------------ OPCIONES GENERAR HISTORIAS (TEMPORAL)-- */
 
 .generar_opc{
   flex-direction: column;
