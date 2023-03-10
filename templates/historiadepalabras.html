@@ -5,8 +5,8 @@
 
 <div class="box_cont">
   <div class="box_user">
+    {% if result %}
     <div class="historia">
-      {% if result %}
         <div class="story">
           <p> <b>{{ result.titulo }}</b></p>
           <p> {{result.historia}}</p>
@@ -14,8 +14,8 @@
           <p>{{ result.tokens_usados}} </p>
           <div class='center'> <p>{{ result.AIinspiration}}</p> </div>
         </div>
+      </div>
       {% endif %}
-    </div>
   
   
     <div class="crear_form">

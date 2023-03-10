@@ -8,28 +8,31 @@
 
 <div class="box_cont">
   <div class="box_user">
-    <div class="historia">
-      {% if result %}
-      <div class="story">
-        <p> <b>{{ result.titulo }}</b></p>
-        <p> {{result.historia}}</p>
-        <p>{{ result.autor}} </p>
-        <p>{{ result.tokens_usados}} </p>
-      
-        {% if result.AIinspiration %}
-          <div class='story'> 
-            {{ result.AIinspiration }};
-          </div>
-        {% endif %}
-        {% if result.image_link %}
-	  <div style="text-align: center; object-fit: contain">
-	    <img style='height: 100%; width: 100%; object-fit: contain' src={{result.image_link}}>
-	  </div>
-        {% endif %}
-      </div>
 
+
+      {% if result %}
+        <div class="historia">
+              <div class="story">
+                <p> <b>{{ result.titulo }}</b></p>
+                <p> {{result.historia}}</p>
+                <p>{{ result.autor}} </p>
+                <p>{{ result.tokens_usados}} </p>
+              
+                {% if result.AIinspiration %}
+                  <div class='story'> 
+                    {{ result.AIinspiration }};
+                  </div>
+                {% endif %}
+                {% if result.image_link %}
+            <div style="text-align: center; object-fit: contain">
+              <img style='height: 100%; width: 100%; object-fit: contain' src={{result.image_link}}>
+            </div>
+                {% endif %}
+              </div>
+    
+        </div>
       {% endif %}
-    </div>
+
 
     <div class="crear_form">
 
@@ -113,7 +116,7 @@
       <div class="box_cont2">
             <div class="generar_opc">
                         <div class="opc2">
-                              <a href="/crearhistoria">Crear historias</a>
+                              <a href="/crearhistoria">Crear historia</a>
                         </div>
                         <div class="opc2">
                               <a href="/historiadepalabras">Historia de palabras</a>

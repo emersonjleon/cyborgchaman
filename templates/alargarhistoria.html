@@ -9,18 +9,20 @@
   <div class="box_cont">
     <div class="box_user">
 
-      <div class="historia">
+
         {% if result %}
-          <div class="story">
-            <p> <b>{{ result.titulo }}</b></p>
-            <p> {{result.historia}}</p>
-            <p>{{ result.autor}} </p>
-             <p>{{ result.tokens_usados}} </p>
-           
+        <div class="historia">
+            <div class="story">
+              <p> <b>{{ result.titulo }}</b></p>
+              <p> {{result.historia}}</p>
+              <p>{{ result.autor}} </p>
+               <p>{{ result.tokens_usados}} </p>
+             
+            </div>
+        
           </div>
-      
-        {% endif %}
-      </div>
+          {% endif %}
+
     
       <div class="crear_form">
         <h4>Alargar historia</h4>
