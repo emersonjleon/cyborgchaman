@@ -201,6 +201,10 @@ class Email(db.Model):
     status = db.Column(db.String(120), nullable=False, server_default='')
     is_confirmed=db.Column(db.Boolean, default=False)
     user_id=db.Column(db.Integer, nullable=False)
+    def user(self):
+        self.user=User.query.filter_by(id=self.user_id)[0]
+        return self.user
+    
     def __repr__(self):
         return f'<Historia: {self.email}>'  
 

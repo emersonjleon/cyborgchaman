@@ -1,4 +1,4 @@
-from mynewapp import db, User, Sesion, Historia
+from app import db, User, Sesion, Historia
 
 s=Sesion(nombre='Hello Python!')
 db.create_all()
