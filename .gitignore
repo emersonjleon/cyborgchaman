@@ -18,6 +18,7 @@ debbuging.py
 sesiones.pkl
 historias.pkl
 quickstart_app.sqlite
+quickstart_backup.sqlite
 *.sqlite
 emails.py
 addcolumnssql.py
