@@ -22,4 +22,5 @@ quickstart_backup.sqlite
 *.sqlite
 emails.py
 addcolumnssql.py
-static/uploads
+static/uploads/
+*.jpg
