@@ -14,6 +14,11 @@
           <div class='center'> <p>{{ result.AIinspiration}}</p> </div>
         </div>
         {% endif %}
+	{% if result.image_link %}
+            <div style="text-align: center; object-fit: contain">
+              <img style='height: 100%; width: 100%; object-fit: contain' src={{result.image_link}}>
+            </div>
+        {% endif %}
       </div>
       <div class="crear_form">
         <h4>Uso de Tokens</h4>

@@ -603,7 +603,7 @@ def confirm_email(email):
 ########
 
 TOKENS_LIMIT=55000 #from here users without email cannot create more stories
-TOKENS_EMAIL_REQUEST=5000 #from here the email is requested
+TOKENS_EMAIL_REQUEST=15000 #from here the email is requested
 TOKENS_TOP_LIMIT=150000 #from here the user cannot create more stories
 
 def openAI_completion(prompt, user, length=700, temp=0.9):
@@ -614,7 +614,7 @@ def openAI_completion(prompt, user, length=700, temp=0.9):
         return "top tokens limit", 0
     else:
         response = openai.Completion.create(
-            model="text-davinci-002",
+            model="text-davinci-003",
             prompt=prompt,
             temperature=temp,
             max_tokens=length,
@@ -735,13 +735,13 @@ def openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcada
     if alargarHistoria == "No alargar":
         alargartext=""
     else:
-        alargartext='extensión '#de la historia "{alargarHistoria.titulo}". '
+        alargartext=f'Extensión de la historia "{alargarHistoria.titulo}". '
     if len(historiasMarcadas)>0:
         historiasjoin='", "'.join([post.titulo for post in historiasMarcadas])
         historiastext= f' se tuvieron en cuenta las historias "{historiasjoin}")'
     else:
         historiastext=""
-    return f'{alargartext}inspirada en las palabras: {palabrasInspiradoras};{historiastext}'
+    return f'{alargartext} Inspirada en las palabras: {palabrasInspiradoras}.'
 
 
 

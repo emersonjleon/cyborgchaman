@@ -1,0 +1,90 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+
+  <div class="box_cont">
+    <div class="box_user">
+
+
+        {% if result %}
+        <div class="historia">
+            <div class="story">
+              <p> <b>{{ result.titulo }}</b></p>
+              <p> {{result.historia}}</p>
+              <p>{{ result.autor}} </p>
+               <p>{{ result.tokens_usados}} </p>
+             
+            </div>
+        
+          </div>
+          {% endif %}
+
+    
+      <div class="crear_form">
+        <h4>Alargar historia</h4>
+        <form class="old" action="/alargarhistoria" method="post">
+          <div class="alignleft">
+              {% if historias %}
+          <p>
+            openAI continuará y alargará la siguiente historia:
+          <p>
+            <div class="historias_opc">
+    
+              {% for post in historias %}
+                    <input type="radio" id="alargarhistoria"
+               name='alargarhistoria' value="{{post.titulo }}" checked>
+              <label for="alargarhistoria"> 
+                <b>{{post.titulo }}</b>, de {{post.autor}}
+                    </label> <br>
+              {% endfor %}
+            </div>
+          </p>
+      
+      
+        {% else %}
+          <p>
+            No hay historias aquí...
+          </p>
+        {% endif %}
+      </div>
+    
+         
+          
+      <button class="btn btn-outline-custom" type="submit" >
+        Alargar historia
+      </button>
+        <!-- <input type="submit" text value="Alargar historia" /> -->
+        </div>
+    </div>
+  </div>
+
+  </form>
+
+  
+  <div class="box_cont2">
+    <div class="generar_opc">
+                <div class="opc2">
+                      <a href="/generarhistoria">Generar historia</a>
+                </div>
+                <div class="opc2">
+                      <a href="/crearhistoria">Crear Historia</a>
+                </div>
+                <div class="opc2">
+                      <a href="/historiadepalabras">Historia de palabras</a>
+                </div>
+    </div>
+  </div>
+
+
+    
+ {% if note %}
+    <div>
+      {{ note}}
+    </div>
+  {% endif %}
+
+{% endblock %}

@@ -36,16 +36,19 @@
 
     <div class="crear_form">
 
-      <h4>Alargar historia</h4>
+      <h4>Generar historia</h4>
       <form class="old" action="/generarhistoria" method="post">
 
         <div class="alignleft">
           <p>
-            OpenAI continuará y alargará la siguiente historia:
-          <p>
+            <input type="radio" id="alargarhistoria" name='alargarhistoria' value="No alargar" checked>
+            <label for="alargarhistoria">
+              openAI creará una nueva historia
+              <p>
 
               <div class="historias_opc">
-            
+                o continuará y alargará la siguiente historia:
+
                 {% if historias %}
                 <p>
                 <p>
@@ -56,21 +59,19 @@
                   </label> <br>
                   {% endfor %}
                 </p>
-		{% else %}
-		(aún no hay historias aquí)
                 {% endif %}
               </div>
         </div>
 
         <div>
-          <p> usando como guía las siguientes palabras 
+          <p> usando como guía las palabras que ingreses aquí
           </p>
           <textarea name="palabrasInspiradoras" placeholder="Coloca algunas palabras inspiradoras aquí..."
             rows="3"></textarea>
         </div>
         <br>
         <button class="btn btn-outline-custom" type="submit">
-          Alargar historia
+          Generar historia
         </button>
     </div>
 
@@ -111,20 +112,20 @@
 <!-- <input type="submit" text value="Crear historia" /> -->
 </form>
 
-<div class="box_cont2">
-  <div class="generar_opc">
-              <div class="opc2">
-                    <a href="/generarhistoria">Generar historia</a>
-              </div>
-              <div class="opc2">
-                    <a href="/alargarhistoria">Alargar historia</a>
-              </div>
-              <div class="opc2">
-                    <a href="/crearhistoria">Basado en historias</a>
-              </div>
-  </div>
-</div>
       
+      <div class="box_cont2">
+            <div class="generar_opc">
+                        <div class="opc2">
+                              <a href="/crearhistoria">Crear historia</a>
+                        </div>
+                        <div class="opc2">
+                              <a href="/historiadepalabras">Historia de palabras</a>
+                        </div>
+                        <div class="opc2">
+                              <a href="/alargarhistoria">Alargar historia</a>
+                        </div>
+            </div>
+      </div>
 
 
 {% endblock %}
