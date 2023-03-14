@@ -784,11 +784,14 @@ def crearhistoria():
             result = {'prompt':prompt, 'historia':nuevahistoria,
                   'autor':"openAI", 'usage':tokens_usados}
             result['titulo']=openAI_generar_titulo(result['historia'])
-            result['AIinspiration']=str([story.titulo for story in checked ])
+            result['AIinspiration']='Inspirada en '+", ".join([story.titulo for story in checked ])
             h=guardarHistoria(result)
             if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
                 return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
             else:
+                generate_image_from_story(h)
+                db.session.commit()
+
                 return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=h, checked=checked)
     #return redirect(url_for("crearhistoria", result=response.choices[0].text))
 

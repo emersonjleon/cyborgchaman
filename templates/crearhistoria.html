@@ -10,23 +10,38 @@
   <div class="box_user">
 
       {% if result %}
-      <div class="historia">
-          <div class="story">
-            <p> <b>{{ result.titulo }}</b></p>
-            <p> {{result.historia}}</p>
-            <p>{{ result.autor}} </p>
-            <p>{{ result.tokens_usados}} </p>
-                </div>
-          {% endif %}
-        
-          {% if checked %}
-          <div class='story'> (inspirada en:
-            {% for story in checked %}
-              {{story.titulo}};
-            {% endfor %}
-          )</div>
-      </div>
+        <div class="historia">
+              <div class="story">
+                <p> <b>{{ result.titulo }}</b></p>
+                <p> {{result.historia}}</p>
+                <p>{{ result.autor}} </p>
+                <p>{{ result.tokens_usados}} </p>
+              
+                {% if result.image_link %}
+		  <div style="text-align: center; object-fit: contain">
+		    <img style='height: 100%; width: 100%; object-fit: contain' src={{result.image_link}}>
+		  </div>
+                {% endif %}
+	      
+	      {% if result.AIinspiration %}
+                    {{ result.AIinspiration }}
+              {% endif %}
+              </div>
+
+        </div>
       {% endif %}
+
+
+
+	  
+      <!--  {% if checked %} -->
+      <!--     <div class='story'> (inspirada en: -->
+      <!--       {% for story in checked %} -->
+      <!--         {{story.titulo}}; -->
+      <!--       {% endfor %} -->
+      <!--     )</div> -->
+      <!-- </div> -->
+      <!-- {% endif %} -->
 
 
 
@@ -80,6 +95,8 @@
               </div>
   </div>
 </div>
+
+
 
 {% endblock %}
 
