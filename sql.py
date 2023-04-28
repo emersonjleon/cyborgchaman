@@ -18,7 +18,7 @@ h.sesion.historias
 # db.session.commit(s)
 
 #######################################
->>> from mynewapp import db, User, Sesion, Historia
+>>> from app import db, User, Sesion, Historia
 >>> User.query.all()
 [<User 'emerson'>]
 >>> Sesion.query.all()

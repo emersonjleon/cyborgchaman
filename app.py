@@ -39,7 +39,7 @@ class ConfigClass(object):
 
     
     # Flask-SQLAlchemy settings
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart_backup.sqlite'  # File-based SQL
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quickstart.sqlite'  # File-based SQL
     # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     # SQLALCHEMY_DATABASE_URI =f'mysql+pymysql://elcyborgchaman:mysql0Secret@elcyborgchaman.mysql.pythonanywhere-services.com/elcyborgchaman$default'
     
@@ -137,11 +137,8 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f'<User {self.username} >'
 
+    ### self.sesiones as backref from Sesion.user
 
-# user_sessions = db.Table('usersessions', 
-#     db.Column('sesion_id', db.Integer, db.ForeignKey('sesion.id'), primary_key=True),
-#     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
-# )
 
 
     
@@ -170,7 +167,60 @@ class Sesion(db.Model):
     def __repr__(self):
         return f'<Sesion {self.nombre} id {self.id}>' 
 
+# Tablas para datos de colecciones:
+# para publicar una historia en una coleccion    
+histcolec = db.Table('histcolec',
+                db.Column('collection_id', db.Integer, db.ForeignKey('collection.id'), primary_key=True),
+                db.Column('historia_id', db.Integer, db.ForeignKey('historia.id'), primary_key=True))
 
+
+
+memberscol = db.Table('memberscol',
+                db.Column('collection_id', db.Integer, db.ForeignKey('collection.id'), primary_key=True),
+                db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True))
+
+admincol = db.Table('admincol',
+                db.Column('collection_id', db.Integer, db.ForeignKey('collection.id'), primary_key=True),
+                db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True))
+
+    
+class Collection(db.Model):
+    #__tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50), nullable=False)
+    fecha = db.Column(db.DateTime, nullable=False,
+        default=datetime.utcnow)
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+       nullable=False)
+    parent_id = db.Column(db.Integer, nullable=False)
+    
+    historias = db.relationship('Historia', secondary=histcolec, lazy='subquery',
+                                backref=db.backref('en_colecciones', lazy=True))
+
+    #admins can invite members, invite admins, change is_public, can_write
+    admins = db.relationship('User', secondary=admincol, lazy='subquery',
+        backref=db.backref('is_admin_of', lazy=True))
+
+    members = db.relationship('User', secondary=memberscol, lazy='subquery',
+        backref=db.backref('is_member_of', lazy=True))
+
+    
+    # can_write in ['only members', 'only admin', 'anyone']
+    can_write = db.Column(db.String(50), nullable=False, default='only admin')
+
+    #usuario_id=db.Column(db.Integer,nullable=True)#my manually created user id.
+
+    is_public=db.Column(db.Boolean, default=False)
+    # if is_public==True: todos los usuarios pueden leer las historias.
+    # else: solo miembros.
+
+    #historias (backref)
+
+    def __repr__(self):
+        return f'<Colección {self.nombre} id {self.id}>' 
+
+
+    
 
 class Historia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
