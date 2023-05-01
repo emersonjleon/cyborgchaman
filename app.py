@@ -109,6 +109,11 @@ class User(db.Model, UserMixin):
     # User information
     first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
     last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
+
+    def mis_historias(self):
+        nombre=f'Historias de {self.username} {self.id}'
+        return Collection.query.filter_by(nombre=nombre).one()
+
     sesion_actual_id=db.Column(db.Integer, nullable=False, default=-111)
     #-111= no sesion created
 
@@ -615,8 +620,16 @@ def ingresarhistoria():
 @app.route("/leerhistorias", methods=("GET", "POST"))
 @login_required
 def leerhistorias():
-    return render_template("leerhistorias.html", historias=current_user.sesion_actual().historias)
-    
+    # return render_template("leerhistorias.html", historias=current_user.sesion_actual().historias)
+    return render_template("leerhistorias.html", historias=current_user.mis_historias().historias)
+
+
+public=Collection.query.filter_by(id=2).one()
+@app.route("/leerhistorias/public", methods=("GET", "POST"))
+@login_required
+def leerhistoriaspublic():
+    return render_template("leerhistorias.html", historias=public.historias)
+
 
 
 

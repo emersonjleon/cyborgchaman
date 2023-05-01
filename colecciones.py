@@ -40,13 +40,17 @@ def generar_colecciones_por_usuario():
 if __name__=='__main__':
     db.create_all()
     me=User.query.all()[0]
-    generar_coleccion_mainroot()
+    #generar_coleccion_mainroot()
     mainroot=Collection.query.all()[0]
-    generar_coleccion_public()
-    generar_colecciones_por_usuario()
+    #generar_coleccion_public()
+    #generar_colecciones_por_usuario()
     
     for colec in Collection.query.all():
         print(f'nombre: {colec.nombre}')
         print(f'admins: {[user.username for user in colec.admins]}')
         #print(colec.admins)
         print(colec.historias)
+
+                              
+
+        #return Collection.query.filter_by_name'Historias de {user.username} {user.id}'
