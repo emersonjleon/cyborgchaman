@@ -28,8 +28,9 @@ def generate_prompt_de_palabras(palabras):
     return moderation+""" OpenAI creará historias usando grupos de palabras principales. 
 Ejemplo. *PALABRAS PRINCIPALES: Alegría, contento, fantasía, diversión, colorido, flores.
 *Historia: 28 de junio Vi que llevaba una corona de flores amarillas sobre la cabeza, un vestido fuscia, casi transparente, todo escotado y repleto de arandelas; pestañas azules, labios rojos escarchados, aretes de fantasía en forma de lagartija. Agitaba los hombros al ritmo delirante de los tambores. Se protegía del sol con una sombrilla arcoíris y de las miradas conocidas con una capa de base facial más gruesa que su voz. Me escondí en la pastelería Florida, detrás de una vitrina, y desde ahí me di cuenta de que nunca antes, en mis quince años de vida, había visto tan contento a mi papá.
-*PALABRAS PRINCIPALES: homosexualidad, rechazo, dolor, muerte.
-*historia: Barrio Danubio, día viernes. Termino de retocar mi maquillaje y vestido, doy vuelta frente al espejo... Por primera vez me gusta lo que veo. ¡Soy feliz! Saliendo de mi casa me encuentro al chico que siempre me ha gustado, sin pensarlo dos veces le confieso mi amor; su respuesta hizo que sintiera algo en mi estómago... Pero no son las mariposas soñadas, sino su maldad mientras grita palabras de asco. No entiendo el motivo; después de unos segundos comprendo: es porque soy hombre.
+*PALABRAS PRINCIPALES: Destornillador
+*historia: Alejandro siempre fue bueno con la tecnología, no le preocupaba utilizar los aparatos más avanzados. Siempre se encontraba ajustando alguna máquina gracias a su destornillador especial adaptado para sus necesidades. Era un destornillador de color naranja y verde que él mismo había calibrado para ser más resistente que el promedio. Estaba acostumbrado a desarmar y armar las computadoras portátiles de modo rutinario, pero en esta ocasión estaba haciendo lo mismo con la computadora familiar. Mientras abría y cerraba tornillos con precisión, notó algo extraño; al quitar el último tornillo pequeño del límite superior descubrió un fragmento de papel escondido dentro de la CPU. Lo tomó entre sus dedos temblorosos y comenzó a leerlo...
+
 *PALABRAS PRINCIPALES: 
 """+palabras+"*Historia:"
 
