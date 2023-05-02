@@ -9,8 +9,6 @@ def generar_coleccion_mainroot():
     mainroot.admins.append(me)
     db.session.commit()
     
-#hist=Historia.query.all()[-1]
-# mainroot.historias.append(hist)
 
 #if mainroot.nombre=='mainroot':
 def generar_coleccion_public():
@@ -43,6 +41,12 @@ if __name__=='__main__':
     #generar_coleccion_mainroot()
     mainroot=Collection.query.all()[0]
     #generar_coleccion_public()
+
+    hist=Historia.query.all()[-1]
+    public=Collection.query.all()[1]
+    public.historias.append(hist)
+    db.session.commit()
+    
     #generar_colecciones_por_usuario()
     
     for colec in Collection.query.all():

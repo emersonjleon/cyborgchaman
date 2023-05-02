@@ -246,8 +246,8 @@ class Historia(db.Model):
     sesion = db.relationship('Sesion',
         backref=db.backref('historias', lazy=True))
 
-    def __repr__(self):
-        return '<Historia: %r>' % self.titulo
+    # def __repr__(self):
+    #     return '<Historia: %r>' % self.titulo
 
 
 class Email(db.Model):
@@ -617,6 +617,11 @@ def ingresarhistoria():
 
 
 
+
+
+
+
+#####################################
 @app.route("/leerhistorias", methods=("GET", "POST"))
 @login_required
 def leerhistorias():
@@ -624,8 +629,41 @@ def leerhistorias():
     return render_template("leerhistorias.html", historias=current_user.mis_historias().historias)
 
 
-public=Collection.query.filter_by(id=2).one()
-@app.route("/leerhistorias/public", methods=("GET", "POST"))
+@app.route("/story/<string:storyid>", methods=("GET", "POST"))
+@login_required
+def editarhistoria(storyid):
+    if True: #AUthorizations!!!!
+        #storyid= request.form["historiaId"]
+        historia=Historia.query.filter_by(id=int(storyid)-23500).first_or_404()
+        
+
+        return render_template("editarhistoria.html", post=historia)
+    return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+
+
+
+
+@app.route("/publicarhistoria", methods=("GET", "POST"))
+@login_required
+def publicarhistoria():
+    public=Collection.query.filter_by(id=2).one()
+    if request.method == "POST":
+    # return render_template("leerhistorias.html", historias=current_user.sesion_actual().historias)
+        storyid= request.form["historiaId"]
+        historia=Historia.query.filter_by(id=int(storyid)).first_or_404()
+        
+
+        public.historias.append(historia)
+        db.session.commit()
+
+    return render_template("leerhistorias.html", historias=public.historias)
+        
+
+
+@app.route("/historiaspublicadas", methods=("GET", "POST"))
 @login_required
 def leerhistoriaspublic():
     return render_template("leerhistorias.html", historias=public.historias)

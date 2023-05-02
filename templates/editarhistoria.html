@@ -6,14 +6,13 @@
 <div class="leer_cont">
   <!-- <h2>Tus historias</h2> -->
 
-    {% for post in historias %}
     <div class="historia_cont">
       <div class="story">
         <h3> <b>{{ post.titulo }}</b></h3>
         <p> {{post.historia}}</p>
           {% if post.image_link %}
 	    <div style="text-align: center;">
-	      <img src={{post.image_link}}>
+	      <img src="../{{post.image_link}}">
 	    </div>	      
 
           {% endif %}        
@@ -23,29 +22,30 @@
             <h5>({{ post.AIinspiration }})</h5> 
           {% endif %}        
       </div>
-	    
-      <div>
-	    
-	    <form class="old" action="/publicarhistoria" method="post">
-	      <input type="hidden" id="historiaId" name="historiaId" value="{{post.id}}">
-              <button class="btn btn-outline-custom" type="submit">
-		Publicar
-              </button>
-	    </form>
-      </div>
-      <div>
-	<a href="story/{{ post.id+23500 }}" class="btn btn-outline-custom">Editar Historia </a>
-      </div>
+      
+      <form class="old" action="/publicarhistoria" method="post">
+	<input type="hidden" id="historiaId" name="historiaId" value="{{post.id}}">
+        <button class="btn btn-outline-custom" type="submit">
+          publicar
+        </button>
+      </form>
 
     </div>
-    {% endfor %}
 
 
   {% if historias %}
   {% else %}
-  <div> Aún no hay historias aquí...</div>
+  <!-- <div> Aún no hay historias aquí...</div> -->
   {% endif %}
 </div>
+
+<script>
+  if('speechSynthesis' in window){
+	console.log("Web Speech API supported!")
+} else {
+	console.log("Web Speech API not supported :-(")   
+}
+</script>
 
 
   <!--form action="/leerhistorias/" method="post">

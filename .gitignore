@@ -24,3 +24,4 @@ emails.py
 addcolumnssql.py
 static/uploads/
 *.jpg
+readaudio.py
