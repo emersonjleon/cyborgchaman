@@ -1,6 +1,6 @@
 import sqlalchemy
 import sqlalchemy.ext.declarative
-from app import app, db, User, Sesion, Historia, Collection
+from app import app, db, User, Sesion, Historia, Collection, histcolec
 
 
 #primera colección y una historia
@@ -29,7 +29,14 @@ def generar_colecciones_por_usuario():
                 usercolec.historias.append(hist)
         db.session.commit()
 
-# for user in User.query.all():
+
+def publicar_historia(hist, colec):
+    colec.historias.append(hist)
+    
+    db.session.commit()
+
+
+        # for user in User.query.all():
 #     print(user)
     
     
@@ -37,24 +44,32 @@ def generar_colecciones_por_usuario():
 
 if __name__=='__main__':
     db.create_all()
+
     me=User.query.all()[0]
     #generar_coleccion_mainroot()
     mainroot=Collection.query.all()[0]
     #generar_coleccion_public()
-
-    hist=Historia.query.all()[-1]
     public=Collection.query.all()[1]
-    public.historias.append(hist)
+
+    #generar_colecciones_por_usuario()
+
+
+    #hist=Historia.query.all()[-1]
+    #public.historias.append(hist)
     db.session.commit()
     
-    #generar_colecciones_por_usuario()
+    
     
     for colec in Collection.query.all():
         print(f'nombre: {colec.nombre}')
         print(f'admins: {[user.username for user in colec.admins]}')
         #print(colec.admins)
-        print(colec.historias)
+        print(type(colec.historias))
+        for hist in colec.historias:
+            print(hist)
 
-                              
+    for row in histcolec:
+        print(row)
+        print(type(row))
 
         #return Collection.query.filter_by_name'Historias de {user.username} {user.id}'

@@ -6,7 +6,8 @@
 <div class="leer_cont">
   <!-- <h2>Tus historias</h2> -->
 
-    {% for post in historias %}
+  {{historias}}
+  {% for post in historias %}
     <div class="historia_cont">
       <div class="story">
         <h3> <b>{{ post.titulo }}</b></h3>

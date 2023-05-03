@@ -174,9 +174,12 @@ class Sesion(db.Model):
 
 # Tablas para datos de colecciones:
 # para publicar una historia en una coleccion    
-histcolec = db.Table('histcolec',
-                db.Column('collection_id', db.Integer, db.ForeignKey('collection.id'), primary_key=True),
-                db.Column('historia_id', db.Integer, db.ForeignKey('historia.id'), primary_key=True))
+histcolec = db.Table(
+    'histcolec',
+    db.Column('collection_id', db.Integer, db.ForeignKey('collection.id'), primary_key=True),
+    db.Column('historia_id', db.Integer, db.ForeignKey('historia.id'), primary_key=True),
+    db.Column('weight', db.Integer) # used to sort collections
+    )
 
 
 
@@ -200,7 +203,8 @@ class Collection(db.Model):
     parent_id = db.Column(db.Integer, nullable=False)
     
     historias = db.relationship('Historia', secondary=histcolec, lazy='subquery',
-                                backref=db.backref('en_colecciones', lazy=True))
+                                backref=db.backref('en_colecciones', lazy=True ),
+                                order_by=[histcolec.c.weight])
 
     #admins can invite members, invite admins, change is_public, can_write
     admins = db.relationship('User', secondary=admincol, lazy='subquery',
@@ -655,11 +659,12 @@ def publicarhistoria():
         storyid= request.form["historiaId"]
         historia=Historia.query.filter_by(id=int(storyid)).first_or_404()
         
-
+        #publicar_historia(historia,public)
         public.historias.append(historia)
         db.session.commit()
-
-    return render_template("leerhistorias.html", historias=public.historias)
+    histlist= public.historias
+    print(histlist)
+    return render_template("leerhistorias.html", historias= histlist)
         
 
 
