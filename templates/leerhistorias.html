@@ -6,7 +6,7 @@
 <div class="leer_cont">
   <!-- <h2>Tus historias</h2> -->
 
-  {% for post in historias %}
+  {% for post in historias |sort (attribute="weight") %}
     <div class="historia_cont">
       <div class="story">
         <h3> <b>{{ post.titulo }}</b></h3>
@@ -41,8 +41,7 @@
     {% endfor %}
 
 
-  {% if historias %}
-  {% else %}
+  {% if historias|length ==0 %}
   <div> Aún no hay historias aquí...</div>
   {% endif %}
 </div>

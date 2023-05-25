@@ -1,0 +1,80 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="cont_grande">
+  <div class="sesiones_cont">
+  
+    <p id="texto">
+
+    </p>
+    <div class="cont_info_s">
+      <div class="sesion_actual">
+	<h3>{{coleccion.nombre}}</h3>
+
+
+            
+            
+            
+                
+        <div class="lista_colecciones">
+          {% for his in coleccion.historias %}
+          <p>
+           <form action="/editarcoleccion" method="post">
+
+	    <input type="radio" id="his_id" name='his_id' value="{{his.id }}">
+	    {{his.titulo}} 
+     		  <input type="hidden" name="action" value="remove_story" />
+		  
+		  
+
+
+	   {% endfor %}
+		  <button class="btn btn-outline-custom" type="submit" >
+		    Retirar  
+		  </button>
+	
+	   </form>
+	   
+          {% for his in current_user.mis_historias().historias %}
+
+	   {% if his in coleccion.historias %}
+                
+             {% else %}
+		{{his.titulo}} 
+		
+		<form action="/leerhistorias" method="post">
+		  <input type="hidden" name="action" value="add_story" />
+		  <input type="hidden" name="his_id" value="{{his.id}}" />
+		  <button class="btn btn-outline-custom red" type="submit" >
+		    Agregar  
+		  </button>
+		</form>
+                
+		{% endif %}
+	      </p>
+		    
+          {% endfor %}
+        </div>
+                
+                  <!-- <input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required /> -->
+                
+                  <!-- <input type="submit" text value="Cargar sesión" /> -->
+        
+
+	  </div>
+	
+        <!-- <hr> -->
+        
+	        
+            
+            
+          </div>
+	  
+  
+      
+  </div>
+</div>
+
+
+{% endblock %}

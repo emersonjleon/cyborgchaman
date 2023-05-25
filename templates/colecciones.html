@@ -1,0 +1,95 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="cont_grande">
+  <div class="sesiones_cont">
+  
+    <p id="texto">
+      Bienvenido, {{ current_user.username or current_user.email }}. Acá podrás crear nuevas colecciones de historias, o editar y publicar las existente.
+    </p>
+    <div class="cont_info_s">
+      <div class="sesion_actual">
+	<h4>Mis colecciones</h4>
+
+
+            
+            
+            
+                
+        <div class="lista_colecciones">
+          {% for col in current_user.is_member_of %}
+              <p>
+                <input type="radio" id="col_id" name='col_id' value="{{col.id }}">
+                
+                <b>{{col.nombre}} </b>
+		<form action="/leerhistorias" method="post">
+		  <input type="hidden" name="col_id" value="{{col.id}}" />
+		  <button class="btn btn-light" type="submit" >
+		    Leer  
+		  </button>
+		</form>
+
+		
+                {% if current_user in col.admins %}
+                <form action="/editarcoleccion" method="post">
+		  <input type="hidden" name="action" value="get" />
+		  <input type="hidden" name="col_id" value="{{col.id}}" />
+		  <button class="btn btn-outline-custom" type="submit" >
+		    Editar/Publicar  
+		  </button>
+		</form>
+
+	      </p>
+		
+		{% endif %}
+
+          {% endfor %}
+        </div>
+                
+                  <!-- <input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required /> -->
+                
+                  <!-- <input type="submit" text value="Cargar sesión" /> -->
+        
+
+	  </div>
+	
+        <!-- <hr> -->
+        
+	<div class="mis_sesiones">
+	  <div class="center">
+	       
+              <h3>Crear nueva colección</h3>
+              
+            <div>
+	      <hr>
+            
+	      <form action="/colecciones" method="post">
+                <input type="hidden" name="myaction" value="nuevacoleccion" />
+                <input type="text" name="colectionname" placeholder="nombre de la colección" required />
+                <button class="btn btn-outline-custom" type="submit" >
+                  Crear 
+                </button>
+              </form>
+            </div>
+            
+          </div>
+
+                
+                
+                  <!-- <a href="{{ url_for('editar_sesiones') }}">Editar sesiones</a> <br>    -->
+                  <!-- <a href="{{ url_for('user.edit_user_profile') }}"> Editar perfil de usuario</a> -->
+                
+                </div>
+                
+            
+            
+          </div>
+	  
+  
+      
+  </div>
+</div>
+
+
+{% endblock %}

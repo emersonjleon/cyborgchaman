@@ -181,6 +181,13 @@ histcolec = db.Table(
     db.Column('weight', db.Integer) # used to sort collections
     )
 
+# allpublications = db.Table(
+#     'allpublications',
+#     db.Column('collection_id', db.Integer, db.ForeignKey('collection.id'), primary_key=True),
+#     db.Column('publication_id', db.Integer, db.ForeignKey('historia.id'), primary_key=True),
+
+#     )
+
 
 
 memberscol = db.Table('memberscol',
@@ -191,16 +198,68 @@ admincol = db.Table('admincol',
                 db.Column('collection_id', db.Integer, db.ForeignKey('collection.id'), primary_key=True),
                 db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True))
 
+
+
+# class Publication(db.Model):
+#     #__tablename__ = 'users'
+#     id = db.Column(db.Integer, primary_key=True)
+    
+#     fecha = db.Column(db.DateTime, nullable=False,
+#         default=datetime.utcnow)
+#     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+#        nullable=False)
+#     collection_id = db.Column(db.Integer, nullable=False)
+#     object_id = db.Column(db.Integer, nullable=False)
+#     object_type = db.Column(db.String(50), nullable=False)
+#     def get_object(self):
+#         pass
+
+    
     
 class Collection(db.Model):
     #__tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
+    # Collection(nombre=f'name', parent_id=mainroot.id, creator_id=0)
     nombre = db.Column(db.String(50), nullable=False)
     fecha = db.Column(db.DateTime, nullable=False,
         default=datetime.utcnow)
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'),
        nullable=False)
     parent_id = db.Column(db.Integer, nullable=False)
+    # historiasstr = db.Column(db.String(5000), nullable=False, default='')
+    number_of_publications=db.Column(db.Integer, nullable=False, default=0)
+    
+    def add_historia(self, historia):
+        #max_weight = db.session.query(func.max(histcolec.c.weight)).filter_by(collection_id=self.id).scalar()
+        # if max_weight is None:
+        #     weight = 0
+        # else:
+        #     weight = max_weight + 1
+
+        # Append the historia to the collection with the calculated weight value
+        self.historias.append(historia)
+        db.session.execute(histcolec.update().where(histcolec.c.collection_id == self.id).where(histcolec.c.historia_id == historia.id).values(weight=self.number_of_publications))
+        # insert a new row:
+        #db.session.execute(histcolec.insert().values(collection_id=self.id, historia_id=historia.id, weight=self.number_of_publications))
+        #plain sqlalchemy style:
+        #histcolec.insert().values(collection_id=self.id, historia_id=historia.id, weight=self.number_of_publications).execute()
+        self.number_of_publications+=1
+        db.session.commit()
+    # def historiaslist(self):
+    #     try:
+    #         return self.historiasstr.split(',')
+    #     except:
+    #         return self.cargar_ultima_sesion()
+
+
+    # publications = db.relationship('Publication', secondary=allpublications, lazy='subquery',
+    #                             backref=db.backref('en_colecciones', lazy=True ),
+    #                             order_by=[histcolec.c.weight])
+
+
+
+
+    
     
     historias = db.relationship('Historia', secondary=histcolec, lazy='subquery',
                                 backref=db.backref('en_colecciones', lazy=True ),
@@ -228,6 +287,13 @@ class Collection(db.Model):
     def __repr__(self):
         return f'<Colección {self.nombre} id {self.id}>' 
 
+    def add_member(self, user):
+        self.members.append(user)
+        db.session.commit()
+
+    def add_admin(self, user):
+        self.admins.append(user)
+        db.session.commit()
 
     
 
@@ -379,7 +445,44 @@ def guardarSesion(sesion,nombre):
 #     pickle.dump(historias,f)
 #     f.close()
 
-    
+@app.route("/editarcoleccion", methods=("GET", "POST"))
+@login_required    # User must be authenticated
+def editarcoleccion():
+    if request.method == "POST":
+        col_id = request.form["col_id"]
+        coleccion=Collection.query.filter_by(id=int(col_id)).first_or_404()
+        myaction = request.form["action"]
+        ##################
+        if myaction == "retirarhistorias":  
+            return render_template("colecciones.html", coleccion=coleccion)
+
+    return render_template("editarcoleccion.html", coleccion=coleccion)
+
+
+@app.route("/colecciones", methods=("GET", "POST"))
+@login_required    # User must be authenticated
+def colecciones():
+    #global historias
+    if request.method == "POST":
+        myaction = request.form["myaction"]
+        ###############
+        if myaction == "nuevacoleccion": 
+            collectionname = request.form["colectionname"]
+            newcolec=Collection(nombre=collectionname,
+                                parent_id=current_user.mis_historias().id,
+                                creator_id=current_user.id)
+            newcolec.add_admin(current_user)
+            newcolec.add_member(current_user)
+            
+            colecciones=current_user.is_member_of
+            return render_template("colecciones.html", colecciones=colecciones)
+    colecciones=current_user.is_member_of
+    return render_template("colecciones.html",  colecciones=colecciones)
+
+
+
+
+
 
 
 
@@ -629,9 +732,12 @@ def ingresarhistoria():
 @app.route("/leerhistorias", methods=("GET", "POST"))
 @login_required
 def leerhistorias():
-    # return render_template("leerhistorias.html", historias=current_user.sesion_actual().historias)
-    return render_template("leerhistorias.html", historias=current_user.mis_historias().historias)
+    if request.method == "POST":
+        col_id= request.form["col_id"]
+        coleccion=Collection.query.filter_by(id=int(col_id)).first_or_404()
+        return render_template("leerhistorias.html", historias=list(coleccion.historias))
 
+    return render_template("leerhistorias.html", historias=list(current_user.mis_historias().historias))
 
 @app.route("/story/<string:storyid>", methods=("GET", "POST"))
 @login_required
@@ -660,11 +766,10 @@ def publicarhistoria():
         historia=Historia.query.filter_by(id=int(storyid)).first_or_404()
         
         #publicar_historia(historia,public)
-        public.historias.append(historia)
-        db.session.commit()
+        public.add_historia(historia)
     histlist= public.historias
     print(histlist)
-    return render_template("leerhistorias.html", historias= histlist)
+    return render_template("leerhistorias.html", historias= list(histlist))
         
 
 

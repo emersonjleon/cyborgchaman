@@ -25,3 +25,4 @@ addcolumnssql.py
 static/uploads/
 *.jpg
 readaudio.py
+agenda/
