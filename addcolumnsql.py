@@ -9,7 +9,6 @@ import sqlalchemy.ext.declarative
 #help(insp)
 
 #this worked fine but created a numeric column instead of string field
-#engine.execute('alter table historia add column image_link String')
 
 #ths has not yet worked...
 #engine.execute('alter table historia drop image_link')
@@ -25,18 +24,27 @@ if __name__=='__main__':
     #This is useful to inspect the database
     from sqlalchemy import create_engine, inspect
     
-    engine = create_engine("sqlite:///quickstart_app.sqlite")
+    engine = create_engine("sqlite:///quickstart.sqlite")
     insp = inspect(engine)
-    print(insp.get_table_names())
-
-    # This is one table in our engine
-    table_name='historia'
     
-    # This is the column we want to add: 
-    column = sqlalchemy.Column('image_link', sqlalchemy.String(500), primary_key=False)
+    print("table names:", insp.get_table_names())
+
+    # # This is one table in our engine
+    # table_name='historia'#first use
+    
+    
+    # # This is the column we want to add: 
+    # column = sqlalchemy.Column('image_link', sqlalchemy.String(500), primary_key=False)
+
+    table_name= 'user'
+    column = sqlalchemy.Column('mis_historias_id', sqlalchemy.Integer)
     # Here we add it:
     addColumn(column, engine, table_name)
 
+
+    #engine.execute('alter table user add column mis_historias_id String')
+
+    
     # Here we check that everything went fine
     for col in insp.get_columns(table_name):
         print(col)

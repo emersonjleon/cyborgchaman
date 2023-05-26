@@ -3,6 +3,23 @@
 
 {% block content %}
 
+
+
+  <div class="box_cont2">
+    <div class="generar_opc">
+      <div class="opc2">
+	<a href="/leerhistorias">Todas mis historias</a>
+      </div>
+      <div class="opc2">
+	<a href="/publicaciones">Publicaciones</a>
+      </div>
+      <div class="opc2">
+	<a href="/colecciones">Colecciones</a>
+      </div>
+    </div>
+  </div>
+
+
 <div class="leer_cont">
   <!-- <h2>Tus historias</h2> -->
 
@@ -34,16 +51,21 @@
 	    </form>
       </div>
       <div>
-	<a href="story/{{ post.id+23500 }}" class="btn btn-outline-custom">Editar Historia </a>
+	<a href="editarhistoria/{{ post.id+23500 }}" class="btn btn-outline-custom">Editar Historia </a>
       </div>
 
+      {% if historias|length ==0 %}
+      <div class="historia_cont">
+	<div> Aún no hay historias aquí...</div>
+      </div>
+      {% endif %}
+
+
+      
     </div>
     {% endfor %}
 
 
-  {% if historias|length ==0 %}
-  <div> Aún no hay historias aquí...</div>
-  {% endif %}
 </div>
 
 

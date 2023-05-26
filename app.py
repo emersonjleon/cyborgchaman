@@ -109,10 +109,25 @@ class User(db.Model, UserMixin):
     # User information
     first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
     last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
-
+    mis_historias_id=db.Column(db.Integer, default = -1)
+    
     def mis_historias(self):
-        nombre=f'Historias de {self.username} {self.id}'
-        return Collection.query.filter_by(nombre=nombre).one()
+        try:
+            if self.mis_historias_id > 0:
+                return Collection.query.filter_by(id=self.mis_historias_id).one()
+        except : # sqlalchemy.exc.NoResultFound:
+            ## acá se crea por primera vez la coleccion con todas las historias
+            usercolec=Collection(nombre=f'Historias de {self.username}', parent_id=1, creator_id=0)
+            usercolec.admins.append(self)
+            usercolec.members.append(self)
+            usercolec.can_write='only admins'
+            db.session.commit()
+
+            self.mis_historias_id = usercolec.id
+            db.session.commit()
+
+            return usercolec
+        
 
     sesion_actual_id=db.Column(db.Integer, nullable=False, default=-111)
     #-111= no sesion created
@@ -449,12 +464,34 @@ def guardarSesion(sesion,nombre):
 @login_required    # User must be authenticated
 def editarcoleccion():
     if request.method == "POST":
+        myaction = request.form["action"]
         col_id = request.form["col_id"]
         coleccion=Collection.query.filter_by(id=int(col_id)).first_or_404()
-        myaction = request.form["action"]
-        ##################
-        if myaction == "retirarhistorias":  
+        if myaction == "retirar_historia":  
+            his_id = request.form["his_id"]
+            #remove!!!
             return render_template("colecciones.html", coleccion=coleccion)
+        ##################
+        if myaction == "agregar_historias":  
+            checked=[]
+            for historia in current_user.mis_historias():
+                try:
+                    # only valid for checked items.
+                    tit=request.form[historia.titulo]
+                except KeyError:
+                    pass
+                    #unchecked.append(historia)
+                else:
+                    # execute if no exception
+                    checked.append(historia)
+            for id in checked:
+                pass
+                ## add!!!
+            return render_template("colecciones.html", coleccion=coleccion)
+        ##################
+        
+            
+
 
     return render_template("editarcoleccion.html", coleccion=coleccion)
 
@@ -739,23 +776,8 @@ def leerhistorias():
 
     return render_template("leerhistorias.html", historias=list(current_user.mis_historias().historias))
 
-@app.route("/story/<string:storyid>", methods=("GET", "POST"))
-@login_required
-def editarhistoria(storyid):
-    if True: #AUthorizations!!!!
-        #storyid= request.form["historiaId"]
-        historia=Historia.query.filter_by(id=int(storyid)-23500).first_or_404()
-        
 
-        return render_template("editarhistoria.html", post=historia)
-    return render_template_string("""{% extends "base.html" %}
-        {% block content %}
-        El usuario no está autorizado para ver esta página...
-        {% endblock %}""")
-
-
-
-
+##################################
 @app.route("/publicarhistoria", methods=("GET", "POST"))
 @login_required
 def publicarhistoria():
@@ -771,12 +793,34 @@ def publicarhistoria():
     print(histlist)
     return render_template("leerhistorias.html", historias= list(histlist))
         
+########################
 
-
-@app.route("/historiaspublicadas", methods=("GET", "POST"))
-@login_required
+@app.route("/publicaciones", methods=("GET", "POST"))
+#@login_required
 def leerhistoriaspublic():
-    return render_template("leerhistorias.html", historias=public.historias)
+    public=Collection.query.filter_by(id=2).one()
+    
+    return render_template("leerhistorias.html", historias=list(reversed(public.historias)))
+#######################################
+
+
+
+@app.route("/editarhistoria/<string:storyid>", methods=("GET", "POST"))
+@login_required
+def editarhistoria(storyid):
+    if True: #AUthorizations!!!!
+        #storyid= request.form["historiaId"]
+        historia=Historia.query.filter_by(id=int(storyid)-23500).first_or_404()
+        
+        # edit later: add generar nueva imagen, corregir texto manualmente, publicar, agregar como extensión de otra historia.
+        
+        return render_template("editarhistoria.html", post=historia)
+    return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+
+
 
 
 
@@ -964,7 +1008,7 @@ def openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcada
 
 
 
-
+# generar historia basada en otras historias
 ###################################################
 @app.route("/crearhistoria", methods=("GET", "POST"))
 @login_required
