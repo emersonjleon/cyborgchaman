@@ -19,19 +19,17 @@
                 
         <div class="lista_colecciones">
           {% for col in current_user.is_member_of %}
-              <p>
-                <input type="radio" id="col_id" name='col_id' value="{{col.id }}">
+              
                 
-                <b>{{col.nombre}} </b>
-		<form action="/leerhistorias" method="post">
+          {{col.nombre}}
+	  <form action="/leerhistorias" method="post">
 		  <input type="hidden" name="col_id" value="{{col.id}}" />
 		  <button class="btn btn-light" type="submit" >
 		    Leer  
 		  </button>
 		</form>
 
-		
-                {% if current_user in col.admins %}
+                {% if col.can_write=="only members" or current_user in col.admins  %}
                 <form action="/editarcoleccion" method="post">
 		  <input type="hidden" name="action" value="get" />
 		  <input type="hidden" name="col_id" value="{{col.id}}" />
@@ -39,13 +37,23 @@
 		    Editar/Publicar  
 		  </button>
 		</form>
-
-	      </p>
+		{% else %}
+		<form action="/colecciones" method="post">
+		  <input type="hidden" name="action" value="unsubscribe" />
+		  <input type="hidden" name="col_id" value="{{col.id}}" />
+		  <a type="submit" >
+		    Unsubscribe ##  
+		  </button>
+		</form>
+		
 		
 		{% endif %}
 
           {% endfor %}
-        </div>
+
+
+
+	</div>
                 
                   <!-- <input type="text" name="cargarsesion" placeholder="Nombre de la sesión" required /> -->
                 

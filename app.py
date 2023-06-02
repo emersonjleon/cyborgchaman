@@ -113,7 +113,7 @@ class User(db.Model, UserMixin):
     
     def mis_historias(self):
         try:
-            if self.mis_historias_id > 0:
+            # if self.mis_historias_id > 0:
                 return Collection.query.filter_by(id=self.mis_historias_id).one()
         except : # sqlalchemy.exc.NoResultFound:
             ## acá se crea por primera vez la coleccion con todas las historias
@@ -241,45 +241,25 @@ class Collection(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'),
        nullable=False)
     parent_id = db.Column(db.Integer, nullable=False)
-    # historiasstr = db.Column(db.String(5000), nullable=False, default='')
     number_of_publications=db.Column(db.Integer, nullable=False, default=0)
-    
-    def add_historia(self, historia):
-        #max_weight = db.session.query(func.max(histcolec.c.weight)).filter_by(collection_id=self.id).scalar()
-        # if max_weight is None:
-        #     weight = 0
-        # else:
-        #     weight = max_weight + 1
-
-        # Append the historia to the collection with the calculated weight value
-        self.historias.append(historia)
-        db.session.execute(histcolec.update().where(histcolec.c.collection_id == self.id).where(histcolec.c.historia_id == historia.id).values(weight=self.number_of_publications))
-        # insert a new row:
-        #db.session.execute(histcolec.insert().values(collection_id=self.id, historia_id=historia.id, weight=self.number_of_publications))
-        #plain sqlalchemy style:
-        #histcolec.insert().values(collection_id=self.id, historia_id=historia.id, weight=self.number_of_publications).execute()
-        self.number_of_publications+=1
-        db.session.commit()
-    # def historiaslist(self):
-    #     try:
-    #         return self.historiasstr.split(',')
-    #     except:
-    #         return self.cargar_ultima_sesion()
-
-
-    # publications = db.relationship('Publication', secondary=allpublications, lazy='subquery',
-    #                             backref=db.backref('en_colecciones', lazy=True ),
-    #                             order_by=[histcolec.c.weight])
-
-
-
-
-    
-    
     historias = db.relationship('Historia', secondary=histcolec, lazy='subquery',
                                 backref=db.backref('en_colecciones', lazy=True ),
                                 order_by=[histcolec.c.weight])
-
+    
+    def add_historia(self, historia):
+        self.historias.append(historia)
+        db.session.execute(histcolec.update().where(histcolec.c.collection_id == self.id).where(histcolec.c.historia_id == historia.id).values(weight=self.number_of_publications))
+        self.number_of_publications+=1
+        db.session.commit()
+    
+    def remove_historia(self, historia):
+        if historia in self.historias:
+            self.historias.remove(historia)
+            # db.session.execute(histcolec.delete()
+            #                    .where(histcolec.c.collection_id == self.id)
+            #                    .where(histcolec.c.historia_id == historia.id))
+            self.number_of_publications -= 1
+            db.session.commit()
     #admins can invite members, invite admins, change is_public, can_write
     admins = db.relationship('User', secondary=admincol, lazy='subquery',
         backref=db.backref('is_admin_of', lazy=True))
@@ -406,6 +386,7 @@ def guardarHistoria(newstory):
                fecha = newstory['datetime'],
                AIinspiration = newstory['AIinspiration'],
                sesion=current_user.sesion_actual())
+    
     if h.AIinspiration=="manual":
         h.AIinspiration=""
     else:
@@ -417,8 +398,11 @@ def guardarHistoria(newstory):
         h.tokens_usados=newstory['usage']["total_tokens"]
         h.prompt_tokens=newstory['usage']["prompt_tokens"]    
         current_user.tokens_usados += h.tokens_usados
-        
     db.session.add(h)
+    db.session.commit()
+    # print("########################", current_user.mis_historias())
+
+    current_user.mis_historias().add_historia(h)    
     db.session.commit()
     # f = open("historias.pkl","wb")
     # pickle.dump(historias,f)
@@ -459,8 +443,8 @@ def guardarSesion(sesion,nombre):
 #     f = open("historias.pkl","wb")
 #     pickle.dump(historias,f)
 #     f.close()
-
 @app.route("/editarcoleccion", methods=("GET", "POST"))
+#@app.route("/editarcoleccion/<string:colection_code>", methods=("GET", "POST"))
 @login_required    # User must be authenticated
 def editarcoleccion():
     if request.method == "POST":
@@ -468,32 +452,41 @@ def editarcoleccion():
         col_id = request.form["col_id"]
         coleccion=Collection.query.filter_by(id=int(col_id)).first_or_404()
         if myaction == "retirar_historia":  
-            his_id = request.form["his_id"]
-            #remove!!!
-            return render_template("colecciones.html", coleccion=coleccion)
+            his_id = request.form["hist_id"]
+            hist=Historia.query.filter_by(id=int(his_id)).first_or_404()
+            coleccion.remove_historia(hist)
+            return render_template("editarcoleccion.html", coleccion=coleccion)
         ##################
         if myaction == "agregar_historias":  
             checked=[]
-            for historia in current_user.mis_historias():
+            for historia in current_user.mis_historias().historias:
                 try:
                     # only valid for checked items.
-                    tit=request.form[historia.titulo]
+                    tit=request.form[str(historia.id)]
                 except KeyError:
-                    pass
+                    print(historia)
                     #unchecked.append(historia)
                 else:
                     # execute if no exception
                     checked.append(historia)
-            for id in checked:
-                pass
+            for hist in checked:
+                coleccion.add_historia(hist)
                 ## add!!!
-            return render_template("colecciones.html", coleccion=coleccion)
+            return render_template("editarcoleccion.html", coleccion=coleccion)
         ##################
+        if myaction == "publicar":
+            users=list(User.query.all())
+            return render_template("publicarcoleccion.html",
+                                   coleccion=coleccion,
+                                   users=users)
         
-            
-
-
     return render_template("editarcoleccion.html", coleccion=coleccion)
+
+
+
+
+
+
 
 
 @app.route("/colecciones", methods=("GET", "POST"))

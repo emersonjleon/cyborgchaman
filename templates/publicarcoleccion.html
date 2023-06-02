@@ -19,34 +19,40 @@
 
             
             
-                
-        <div class="lista_colecciones">
-          <form action="/editarcoleccion" method="post">
-     	    <input type="hidden" name="action" value="retirar_historia" />
-	    <input type="hidden" name="col_id" value="{{coleccion.id}}" />
-
-	    {% for hist in coleccion.historias %}
-	    <input type="radio" id="hist_id" name='hist_id' value="{{hist.id }}">
-	    {{hist.titulo}}, by {{hist.autor}}  <br>
+        <b>Administradores</b>
 	
-	    {% endfor %}
+        <div class="lista_colecciones">
+
+	  {% for admin in coleccion.admins %}
 	    
-	    {% if coleccion.historias|length==0 %}
-	    Aún no hay historias aquí...
-	    {% else%}
-	    <button class="btn btn-outline-custom" type="submit" >
-	      Retirar historia
+	    {{admin.nombre}}  <br>
+	
+	  {% endfor %}
+
+          <b>Miembros</b>
+	    
+          <form action="/editarcoleccion" method="post">
+	    <input type="hidden" name="col_id" value="{{coleccion.id}}" />
+	    {% for member in coleccion.members %}
+	      {% if member not in coleccion.admins %}
+                <input type="radio" id="member_id" name='member_id' value="{{member.id }}">		{{member.nombre}}  <br>
+	      {% endif %}
+            {% endfor %}
+	    <button class="btn btn-outline-custom" type="submit" name="action" value="retirar_miembro">
+	      Retirar miembro
 	    </button>
-	    {% endif %}
+	    <button class="btn btn-light" type="submit" name="action" value="agregar_admin">
+	      Agregar administrador
+	    </button>
+	    
 	  </form>
 
 	</div>
 
 	<p>
-	  <form action="/editarcoleccion" method="post">
-	    <input type="hidden" name="action" value="publicar" />
-	    
+	<form action="/publicarcoleccion" method="post">
 	  <input type="hidden" name="col_id" value="{{coleccion.id}}" />
+	  <input type="hidden" name="action" value="publicar" />
 	  <button class="btn btn-light" type="submit" >
 	    Publicar colección  
 	  </button>
@@ -58,35 +64,31 @@
 
 
 	<div class="mis_sesiones">
-	<h3>Agregar historias</h3>
+	<h3>Agregar miembros</h3>
 
 	  <div class="story">
           <form action="/editarcoleccion" method="post">
-     	    <input type="hidden" name="action" value="agregar_historias" />
+     	    <input type="hidden" name="action" value="agregar_miembros" />
 	    <input type="hidden" name="col_id" value="{{coleccion.id}}" />
 	  
-          {% for his in current_user.mis_historias().historias %}
+            {% for user in users %}
 
-	    {% if his in coleccion.historias %}
-                <!-- {{his.titulo}}  <br> -->
+	    {% if user in coleccion.members %}
+               
             {% else %}
-            <input type="checkbox" id="{{his.id}}" name="{{his.id }}" value="True">
-            <label for="{{his.id }}"> 
-	      {{his.titulo}} <br>
+            <input type="checkbox" id="{{user.id}}" name="{{user.id }}" value="True">
+            <label for="{{user.id }}"> 
+	      {{user.titulo}} <br>
 		
-	      {% endif %}
+	    {% endif %}
 		    
-              {% endfor %}
+            {% endfor %}
 
 	      
-	      {% if current_user.mis_historias().historias|length==0 %}
-	      No tienes historias para agregar...
-	    {% else%}
 	      <button class="btn btn-outline-custom red" type="submit" >
-		Agregar  
+		Agregar miembros
 	      </button>
-	    {% endif %}
-		
+	
 	  </form>
           
 	

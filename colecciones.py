@@ -75,12 +75,7 @@ def print_collections():
 
 def print_user_info():    
     for user in User.query.all():
-        """this patch might cause troubles in case two users have the same username.  I will just outcomment it now, but need to be uncommented later"""
-        if user.mis_historias_id==None:
-            usercolec=Collection.query.filter_by(nombre=f'Historias de {user.username}')[0]
-            user.mis_historias_id = usercolec.id
-            db.session.commit()
-            print(  f'{user.id}:   {user.username}, mis historias id {user.mis_historias_id}')
+        print(  f'{user.id}:   {user.username}, mis historias id {user.mis_historias_id}')
 
 
 def update_user_info():    
@@ -106,3 +101,9 @@ if __name__=='__main__':
     print_user_info()    
     #update_user_info()    
      
+    # colecvato=Collection.query.filter_by(nombre=f'Historias de Vato')[0]
+    # vato=colecvato.admins[0]
+    # for hist in vato.sesion_actual().historias:
+    #     print(hist.titulo)
+    #     colecvato.historias.append(hist)
+    # db.session.commit()
