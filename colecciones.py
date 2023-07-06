@@ -93,13 +93,13 @@ if __name__=='__main__':
 
     me=User.query.all()[0]
     
-    #generar_todo()
+    generar_todo()
     mainroot=Collection.query.all()[0]
     public=Collection.query.all()[1]
 
     print_collections()
     print_user_info()    
-    #update_user_info()    
+    update_user_info()    
      
     # colecvato=Collection.query.filter_by(nombre=f'Historias de Vato')[0]
     # vato=colecvato.admins[0]
