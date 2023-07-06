@@ -22,20 +22,28 @@
             <h5>({{ post.AIinspiration }})</h5> 
           {% endif %}        
       </div>
+
+      <form class="old" action="/requestalargarhistoria" method="post">
+	<input type="hidden" id="historiaId" name="historiaId" value="{{post.id}}">
+        <button class="btn btn-outline-custom" type="submit">
+          Alargar Historia
+        </button>
+      </form>
       
       <form class="old" action="/publicarhistoria" method="post">
 	<input type="hidden" id="historiaId" name="historiaId" value="{{post.id}}">
         <button class="btn btn-outline-custom" type="submit">
-          publicar
+          Publicar
         </button>
       </form>
 
+      
     </div>
 
 
   {% if historias %}
   {% else %}
-  <!-- <div> Aún no hay historias aquí...</div> -->
+    <div> Aún no hay historias aquí...</div>
   {% endif %}
 </div>
 

@@ -29,20 +29,21 @@
         <h3> <b>{{ post.titulo }}</b></h3>
           {% if post.image_link %}
 	    <div style="text-align: center;">
-	      <img src='.{{post.image_link}}' style="width:100px;height:100px;">
+	      <img src='.{{post.image_link}}'>
 	      <!-- {{post.image_link}} -->
 	    </div>	      
 
           {% endif %}        
         <p>
 
-	  {% if post.historia|length >220 %}
+	  {% if preview and post.historia|length >220 %}
   	    {{ post.historia[0:220] }}...
-	    <a href="{{ url_for('leerhistoria', storyid=post.id+23500 ) }}" class="btn btn-outline-custom">Leer Historia </a>
+
+	  <a href="{{ url_for('leerhistoria', storyid=post.id+23500 ) }}" class="btn btn-outline-custom">Leer Historia </a>
+
 	  {% else %}
 	    {{ post.historia }}
 	  {% endif %}
-
 
 
 	</p>

@@ -153,6 +153,7 @@
   }
 
   /* -------------------SESIONES--------------------- */
+  /* tambien usado para colecciones */
 .cont_grande{
   /* border: 2px solid navy; */
   display: flex;
@@ -175,13 +176,20 @@
   padding-top: 2vh;
 }
 .sesion_actual{
-  height: 40vh;
+  height: 50vh;
+  /* overflow: scroll; */
   width: 25vw;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   /* border: 2px solid navy; */
 }
+.coleccion_scroll{
+  height: 30vh;
+  overflow-y: scroll;
+}
+
+
 .mis_sesiones{
   height: 55vh;
   width: 30vw;
@@ -324,7 +332,6 @@
 .sesiones_cont{
   height: auto;
   width: 90vw;
-
 }
 .cont_info_s{
   flex-direction: column;

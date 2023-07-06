@@ -20,16 +20,17 @@
             
             
                 
-        <div class="lista_colecciones">
+        <div class="lista_colecciones" >
           <form action="/editarcoleccion" method="post">
      	    <input type="hidden" name="action" value="retirar_historia" />
 	    <input type="hidden" name="col_id" value="{{coleccion.id}}" />
-
-	    {% for hist in coleccion.historias %}
-	    <input type="radio" id="hist_id" name='hist_id' value="{{hist.id }}">
-	    {{hist.titulo}}, by {{hist.autor}}  <br>
+	    <div class="coleccion_scroll">
+	    
+	      {% for hist in coleccion.historias %}
+		 <input type="radio" id="hist_id" name='hist_id' value="{{hist.id }}">		 {{hist.titulo}}, by {{hist.autor}}  <br>
 	
-	    {% endfor %}
+	      {% endfor %}
+	    </div>
 	    
 	    {% if coleccion.historias|length==0 %}
 	    Aún no hay historias aquí...
@@ -64,7 +65,10 @@
           <form action="/editarcoleccion" method="post">
      	    <input type="hidden" name="action" value="agregar_historias" />
 	    <input type="hidden" name="col_id" value="{{coleccion.id}}" />
-	  
+
+
+	    <div class="coleccion_scroll">
+	    
           {% for his in current_user.mis_historias().historias %}
 
 	    {% if his in coleccion.historias %}
@@ -78,7 +82,7 @@
 		    
               {% endfor %}
 
-	      
+	      </div>
 	      {% if current_user.mis_historias().historias|length==0 %}
 	      No tienes historias para agregar...
 	    {% else%}

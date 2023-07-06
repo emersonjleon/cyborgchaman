@@ -1,3 +1,9 @@
+#+begin_src python
+"""
+* Main menu
+*** Headings
+"""
+
 # This file contains an example Flask-User application.
 # To keep the example simple, we are applying some unusual techniques:
 # - Placing everything in one file
@@ -5,6 +11,8 @@
 # - Using string-based templates (instead of file-based templates)
 #####
 # need: pip install email_validator, Flask-User and others from cyborgchaman
+
+
 
 import os
 import openai
@@ -25,6 +33,10 @@ from moderation import moderation2 #as moderation
 from myprompts import openAI_final_prompt, openAI_prompt_alargarconpalabras, generar_prompt_alargar_historia, generate_prompt_de_palabras, generar_prompt_crear_historias, historias0
 from generate_image import generate_image_from_story
 
+
+"""
+*** class config
+"""
 
 
 # Class-based application configuration
@@ -52,6 +64,14 @@ class ConfigClass(object):
     USER_ENABLE_USERNAME = True    # Enable username authentication
     USER_REQUIRE_RETYPE_PASSWORD = True    # Simplify register form
 
+
+"""
+*** basic setup
+"""
+
+"""
+*** keys
+"""
 
 
 load_dotenv(find_dotenv())
@@ -87,8 +107,11 @@ db = SQLAlchemy(app)
 # migrate2 = Migrate(app, db)
 
 
+"""
+** Mis Clases
+*** User
+"""
 
-################## Mis Clases
 
 # Define the User data-model.
 # NB: Make sure to add flask_user UserMixin !!!
@@ -160,6 +183,9 @@ class User(db.Model, UserMixin):
     ### self.sesiones as backref from Sesion.user
 
 
+"""
+*** Sesion (deprecated)
+"""
 
     
 
@@ -203,6 +229,9 @@ histcolec = db.Table(
 
 #     )
 
+"""
+*** Collection
+"""
 
 
 memberscol = db.Table('memberscol',
@@ -290,7 +319,10 @@ class Collection(db.Model):
         self.admins.append(user)
         db.session.commit()
 
-    
+"""
+*** Historia
+"""
+
 
 class Historia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -314,6 +346,10 @@ class Historia(db.Model):
     # def __repr__(self):
     #     return '<Historia: %r>' % self.titulo
 
+"""
+*** Email
+"""
+
 
 class Email(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -331,6 +367,10 @@ class Email(db.Model):
 
 #################################3
 
+"""
+** Main code
+*** Basics
+"""
 
 
 # Create all database tables
@@ -371,6 +411,11 @@ def home():
 
 
 ######## Usar sql aquí, y usuarios para cada sesión
+
+"""
+*** Guardar Historia
+"""
+
 
     
 ## incluye db y pickle
@@ -443,6 +488,15 @@ def guardarSesion(sesion,nombre):
 #     f = open("historias.pkl","wb")
 #     pickle.dump(historias,f)
 #     f.close()
+
+
+
+
+"""
+*** Colecciones
+"""
+
+
 @app.route("/editarcoleccion", methods=("GET", "POST"))
 #@app.route("/editarcoleccion/<string:colection_code>", methods=("GET", "POST"))
 @login_required    # User must be authenticated
@@ -514,6 +568,10 @@ def colecciones():
 
 
 
+
+"""
+*** Mis Sesiones (deprecated)
+"""
 
 
 
@@ -627,6 +685,534 @@ def editar_sesiones():
 
 
 
+"""
+*** Ingresar Historia
+"""
+
+
+
+
+
+
+
+@app.route("/ingresarhistoria", methods=("GET", "POST"))
+@login_required
+def ingresarhistoria():
+    if request.method == "POST":
+        nuevahistoria={}
+        nuevahistoria['autor'] = request.form["autor"]
+        nuevahistoria['titulo'] = request.form["titulo"]
+        nuevahistoria['historia'] = request.form["historia"]
+        nuevahistoria['AIinspiration'] = "manual"
+        
+        guardarHistoria(nuevahistoria)
+        #result = request.args.get("result")
+    
+        return render_template("ingresarhistoria.html",
+                               result=nuevahistoria)
+    return render_template("ingresarhistoria.html")
+
+
+
+
+
+
+
+"""
+*** Leer Historias
+"""
+
+
+#####################################
+@app.route("/leerhistorias", methods=("GET", "POST"))
+@login_required
+def leerhistorias():
+    if request.method == "POST":
+        col_id= request.form["col_id"]
+        #coleccion=Collection.query.filter_by(id=int(col_id)).first_or_404()
+        return redirect(url_for("leercoleccion", colectionidx=int(col_id)+42300))
+
+    return render_template("leerhistorias.html", historias=list(current_user.mis_historias().historias))
+
+#####################
+@app.route("/leerhistorias/<int:colectionidx>", methods=("GET", "POST"))
+@login_required
+def leercoleccion(colectionidx):
+    col_id= colectionidx-42300
+    coleccion=Collection.query.filter_by(id=int(col_id)).first_or_404()
+    return render_template("leercoleccion.html", historias=list(coleccion.historias))
+
+
+
+
+
+
+
+@app.route("/leerhistoria/<int:storyid>", methods=("GET", "POST"))
+@login_required
+def leerhistoria(storyid):
+    historia=Historia.query.filter_by(id=int(storyid)-23500).first_or_404()
+    if True: #current_user==historia.author: #AUthorizations!!!!
+        #storyid= request.form["historiaId"]
+        
+        
+        # edit later: add generar nueva imagen, corregir texto manualmente, publicar, agregar como extensión de otra historia.
+        
+        return render_template("verhistoria.html", post=historia)
+    return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+
+
+
+
+"""
+*** publicar Historia
+"""
+
+
+
+
+##################################
+@app.route("/publicarhistoria", methods=(["POST"]))
+@login_required
+def publicarhistoria():
+    public=Collection.query.filter_by(id=2).one()
+    #if request.method == "POST":
+    # return render_template("leerhistorias.html", historias=current_user.sesion_actual().historias)
+    storyid= request.form["historiaId"]
+    historia=Historia.query.filter_by(id=int(storyid)).first_or_404()
+        
+    #publicar_historia(historia,public)
+    public.add_historia(historia)
+    return redirect(url_for("leerpublicaciones"))
+
+########################
+
+@app.route("/leerhistorias/publicaciones", methods=("GET", "POST"))
+#@login_required
+def leerpublicaciones():
+    public=Collection.query.filter_by(id=2).one()
+    
+    return render_template("leerhistorias.html", historias=list(reversed(public.historias)))
+#######################################
+
+
+
+
+
+"""
+*** Emails
+"""
+
+
+
+
+#############
+@app.route("/requestemail", methods=("GET", "POST"))
+@login_required
+def tokensemailrequest():
+    if request.method == "POST":
+        emailrecibido= request.form["email"]
+        new_email=Email(email=emailrecibido, status="to be confirmed",
+              user_id=current_user.id)
+        db.session.add(new_email)
+        db.session.commit()
+        # current_user.myuseremail=f'TBC id[{new_email.id}:]'+ emailrecibido
+        return render_template("emailrecibido.html", new_email=new_email)
+    return render_template("tokensemailrequest.html")
+
+
+
+
+
+@app.route("/confirmemail", methods=("GET", "POST"))
+def confirm_email(email):
+    """desde python, from mynewapp import db, User, Email, confirm_email. 
+    Use first: . venv/bin/activate   """
+    if email.is_confirmed == False:
+        user=User.query.filter_by(id=email.user_id).first()
+        user.email_confirmed_at=datetime.utcnow()
+        email.is_confirmed=True
+        email.status="confirmed"
+        user.myuseremail= email.email
+        db.session.commit()
+
+########
+
+
+"""
+** Generador de Historias
+*** openAI completion
+"""
+
+
+TOKENS_LIMIT=55000 #from here users without email cannot create more stories
+TOKENS_EMAIL_REQUEST=15000 #from here the email is requested
+TOKENS_TOP_LIMIT=150000 #from here the user cannot create more stories
+
+def openAI_completion(prompt, user, length=700, temp=0.9):
+    if user.tokens_usados>TOKENS_LIMIT and user.myuseremail=='':
+        return "tokens limit", 0
+        #{  "completion_tokens": 0,  "prompt_tokens": 0,"total_tokens": 0}
+    elif user.tokens_usados>TOKENS_TOP_LIMIT:
+        return "top tokens limit", 0
+    else:
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            temperature=temp,
+            max_tokens=length,
+            presence_penalty=0.95,
+            frequency_penalty=0.9,
+            user=current_user.__repr__()
+        )
+    return response.choices[0].text, response.usage
+
+
+
+#not used yet? this should contain a payment method...
+@app.route("/tokenslimit", methods=("GET", "POST"))
+@login_required
+def tokenslimit():
+    if request.method == "POST":
+        emailrecibido= request.form["email"]
+        new_email=Email(email=emailrecibido, status="to be confirmed",
+              user_id=current_user.id)
+        db.session.add(new_email)
+        db.session.commit()
+        return render_template("emailrecibido.html", new_email=new_email)
+    return render_template("tokensemailrequest.html")
+
+
+
+
+
+
+"""
+*** generar historia
+"""
+
+
+
+#############################################
+
+    
+@app.route("/generarhistoria", methods=("GET", "POST"))
+@login_required
+def generarhistoria():
+    if request.method == "POST":
+        #alargar
+        alargar_id = request.form["alargarhistoria"]
+        if alargar_id == "No alargar":
+            alargarHistoria = "No alargar"
+        else:
+            alargarHistoria=Historia.query.filter_by(id=int(alargar_id)).first_or_404()
+        #palabras
+        palabrasInspiradoras = request.form["palabrasInspiradoras"]
+       
+        historiassql=current_user.sesion_actual().historias
+        # historiasMarcadas=[h for h in historiassql if
+        #                    request.form[h.id]=="True"]
+        historiasMarcadas=[]
+
+        printtext="<br>print "
+        #printtext += f"<br>{alargarHistoria.titulo}"
+        #printtext += f"<br>{[h.titulo for h in historiassql]}"
+        for historia in historiassql:
+            try:
+                # only valid for checked items.
+                h_id=request.form[str(historia.id)]
+            except KeyError:
+                printtext += f"<br>{historia.id}<br>"
+                #unchecked.append(historia)
+            else:
+                # execute if no exception
+                historiasMarcadas.append(historia)
+          
+        prompt, nuevahistoria, tokens = openAI_generar_historia(alargarHistoria, palabrasInspiradoras, historiasMarcadas, current_user)
+        if nuevahistoria=='tokens limit':
+            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
+        elif nuevahistoria=='top tokens limit':
+            return render_template("tokenslimitreached.html", tokens_limit=TOKENS_TOP_LIMIT)
+        
+        else:
+            result = {'prompt':prompt, 'historia':nuevahistoria,
+                      'autor':"openAI", 'usage':tokens}
+            result['titulo']=openAI_generar_titulo(result['historia'])
+            
+            #     if alargarHistoria.autor[-6:]=='openAI':
+            #         result['autor'] = alargarHistoria.autor
+            #         result['titulo']=alargarHistoria.titulo
+            #     else:
+            #         result['autor']=alargarHistoria.autor+' + openAI'
+            #     if alargarHistoria.autor[-1]=='+':
+            #         result['titulo']=alargarHistoria.titulo
+            #     else:
+            #         result['titulo']=alargarHistoria.titulo+'+'
+            result['AIinspiration']=openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
+            h=guardarHistoria(result)
+            if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
+                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
+            else:
+                generate_image_from_story(h)
+                db.session.commit()
+                return redirect(url_for("leerhistoria", storyid= h.id+23500 ))
+    return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias)
+
+
+def openAI_generar_historia(alargar, palabras, historias, user):
+    #prompt=openAI_final_prompt(alargar, palabras, historias)
+    prompt=openAI_prompt_alargarconpalabras(alargar, palabras)
+    story, usage= openAI_completion(prompt, user)
+    return prompt, story, usage 
+
+
+
+
+
+
+####################################################
+"""
+*** inspiracion
+"""
+
+
+def openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas):
+    #AIinspiration
+    if alargarHistoria == "No alargar":
+        alargartext=""
+    else:
+        alargartext=f'Extensión de la historia "{alargarHistoria.titulo}". '
+    if len(historiasMarcadas)>0:
+        historiasjoin='", "'.join([post.titulo for post in historiasMarcadas])
+        historiastext= f' se tuvieron en cuenta las historias "{historiasjoin}")'
+    else:
+        historiastext=""
+    return f'{alargartext} Inspirada en las palabras: {palabrasInspiradoras}.'
+
+
+
+
+
+    
+
+
+
+"""
+***  historia basada en historias
+"""
+
+
+# generar historia basada en otras historias
+###################################################
+@app.route("/crearhistoria", methods=("GET", "POST"))
+@login_required
+def crearhistoria():
+    if request.method == "POST":
+        checked=[]
+        #unchecked=[]
+        historiassql=current_user.sesion_actual().historias
+        for historia in historiassql:
+            try:
+                # only valid for checked items.
+                tit=request.form[historia.titulo]
+
+            except KeyError:
+                pass
+                #unchecked.append(historia)
+            else:
+                # execute if no exception
+                checked.append(historia)
+            
+        prompt, nuevahistoria, tokens_usados = openAI_create_story(checked,current_user)
+        if nuevahistoria=='tokens limit':
+            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
+        elif nuevahistoria=='top tokens limit':
+            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_TOP_LIMIT)
+            
+        else:
+            result = {'prompt':prompt, 'historia':nuevahistoria,
+                  'autor':"openAI", 'usage':tokens_usados}
+            result['titulo']=openAI_generar_titulo(result['historia'])
+            result['AIinspiration']='Inspirada en '+", ".join([story.titulo for story in checked ])
+            h=guardarHistoria(result)
+            if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
+                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
+            else:
+                generate_image_from_story(h)
+                db.session.commit()
+
+                return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=h, checked=checked)
+    #return redirect(url_for("crearhistoria", result=response.choices[0].text))
+
+    #result = request.args.get("result")
+    return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias)
+
+
+
+def openAI_create_story(historias, user):
+    if len(historias)<2:
+        hist=historias+historias0
+    prompt=generar_prompt_crear_historias(historias)
+    story, usage= openAI_completion(prompt, user)
+    return prompt, story, usage 
+
+
+
+
+
+
+"""
+*** titulo
+"""
+
+
+
+
+
+##################################3
+def openAI_generar_titulo(historia):
+    """Usando openAI generamos el título de una historia"""
+    titleprompt=f"""Determine el título de las  siguientes historias. *cuento: Un domingo soleado, cuya fecha no recuerdo, me
+alisté para trabajar. Mi madre me dio la bendición
+y me dirigí hacia la misa de doce en la iglesia
+del 20 de Julio. Al llegar observé que la iglesia
+estaba repleta y comencé a rezar. Pedí por un
+día a la mano de Dios y que este me protegiera.
+De repente comenzó la misa. El padre salió y
+empezaron las alabanzas. Casi al instante, mi jefe
+me llamó para que me afanara por empezar mi
+labor. Mirando a la figura de Cristo, pedí perdón,
+le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
+*cuento:{historia}. Título del cuento:"""
+    title = openai.Completion.create(
+        model="text-davinci-002",
+        prompt=titleprompt,
+        temperature=0.6,
+        max_tokens=20
+    )
+    return title.choices[0].text
+
+
+
+##################################
+
+
+"""
+***  historia de palabras
+"""
+
+
+@app.route("/historiadepalabras", methods=("GET", "POST"))
+@login_required
+def historiadepalabras():
+    if request.method == "POST":
+        palabras = request.form["story1"]
+        myprompt=generate_prompt_de_palabras(palabras)
+        ## cambiado recientemente
+        story, usage= openAI_completion(myprompt, current_user)
+        if story=='tokens limit':
+            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
+        elif story=='top tokens limit':
+            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_TOP_LIMIT)
+        
+        else:
+
+            # response = openai.Completion.create(
+            #     model="text-davinci-002",
+            #     prompt=myprompt,
+            #     temperature=0.6,
+            #     max_tokens=800
+            # )
+            # story=response.choices[0].text
+        
+            result = {'AIinspiration':palabras, 'prompt':myprompt,
+                      'historia': story, 'autor':"GPT3",
+                      'usage':usage}
+            result['titulo']=openAI_generar_titulo(result['historia'])
+            h=guardarHistoria(result)
+            if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
+                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
+            else:
+                return render_template("historiadepalabras.html", result=h)
+    #return redirect(url_for("crearhistoria", result=response.choices[0].text))
+
+    #result = request.args.get("result")
+    return render_template("historiadepalabras.html")#, result=result)
+
+
+#Ejemplo 1: *Palabras principales: delincuencia, leyes, billetes, subsistir, acecho, sirena, salvado, despojado, pertenencias, Bogotá.
+#*Historia: La delincuencia Todos los días corro por miedo a que me cojan. Al igual que muchos, lo hago incumpliendo leyes, por conseguir billetes, todo por subsistir. Acecho a las personas de aquí, todos me odian por el trabajo que tengo, no saben lo que siento al cometer este hecho, me atormenta la sirena que a veces me viene persiguiendo. De todas las que me he salvado orando por un santo, el cual me está cobijando y no me ha desamparado. He despojado a muchos de sus pertenencias, las cuales utilizo para llevar de comer a mi familia en mi Bogotá.
+
+"""
+***  alargar historia
+"""
+
+    
+
+#########alargarhistoria##############
+@app.route("/alargarhistoria", methods=("GET", "POST"))
+@login_required
+def alargarhistoria():
+    if request.method == "POST":
+        titulo=request.form['alargarhistoria']
+        historiassql=current_user.sesion_actual().historias
+        for story in historiassql:
+            if story.titulo==titulo:
+                prompt, nuevaparte, usage = openAI_extend_story(story, current_user)
+                if nuevaparte=='tokens limit':
+                    return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
+                elif nuevaparte=='top tokens limit':
+                    return render_template("tokensemailrequest.html", tokens_limit=TOKENS_TOP_LIMIT)
+        
+                else:
+                    if story.autor[-6:]=='openAI':
+                        newautor=story.autor
+                    else:
+                        newautor=story.autor+' + openAI'
+                    historiaalargada=story.historia+""" *** """+nuevaparte
+                    result = {'prompt':prompt,
+                          'historia':historiaalargada,
+                          'autor':newautor, 'usage':usage}
+                    result['titulo']=story.titulo+'+'
+                    result['AIinspiration'] = "alargar historia" 
+                    h=guardarHistoria(result)
+                    if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
+                        return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
+                    else:
+                        return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, result=h)
+            else:
+                pass
+        note="no se encontró la historia buscada "+titulo
+        return redirect(url_for("leerhistoria", storyid=h.id+23500))
+    
+    return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias)
+
+
+
+
+
+
+
+
+
+
+
+
+
+def openAI_extend_story(story, user):
+    prompt=generar_prompt_alargar_historia(story)
+    newstory, usage= openAI_completion(prompt, user)
+    return prompt, newstory, usage
+
+
+
+"""
+** Admin
+"""
+
 
 #######################
 #Administrador
@@ -728,471 +1314,12 @@ def mostrar_historia(storyid):
 
 
 
-
-
-
-
-
-@app.route("/ingresarhistoria", methods=("GET", "POST"))
-@login_required
-def ingresarhistoria():
-    if request.method == "POST":
-        nuevahistoria={}
-        nuevahistoria['autor'] = request.form["autor"]
-        nuevahistoria['titulo'] = request.form["titulo"]
-        nuevahistoria['historia'] = request.form["historia"]
-        nuevahistoria['AIinspiration'] = "manual"
-        
-        guardarHistoria(nuevahistoria)
-        #result = request.args.get("result")
-    
-        return render_template("ingresarhistoria.html",
-                               result=nuevahistoria)
-    return render_template("ingresarhistoria.html")
-
-
-
-
-
-
-
-
-
-#####################################
-@app.route("/leerhistorias", methods=("GET", "POST"))
-@login_required
-def leerhistorias():
-    if request.method == "POST":
-        col_id= request.form["col_id"]
-        coleccion=Collection.query.filter_by(id=int(col_id)).first_or_404()
-        return render_template("leerhistorias.html", historias=list(coleccion.historias))
-
-    return render_template("leerhistorias.html", historias=list(current_user.mis_historias().historias))
-
-
-##################################
-@app.route("/publicarhistoria", methods=("GET", "POST"))
-@login_required
-def publicarhistoria():
-    public=Collection.query.filter_by(id=2).one()
-    if request.method == "POST":
-    # return render_template("leerhistorias.html", historias=current_user.sesion_actual().historias)
-        storyid= request.form["historiaId"]
-        historia=Historia.query.filter_by(id=int(storyid)).first_or_404()
-        
-        #publicar_historia(historia,public)
-        public.add_historia(historia)
-    histlist= public.historias
-    print(histlist)
-    return render_template("leerhistorias.html", historias= list(histlist))
-        
-########################
-
-@app.route("/publicaciones", methods=("GET", "POST"))
-#@login_required
-def leerhistoriaspublic():
-    public=Collection.query.filter_by(id=2).one()
-    
-    return render_template("leerhistorias.html", historias=list(reversed(public.historias)))
-#######################################
-
-
-
-@app.route("/editarhistoria/<string:storyid>", methods=("GET", "POST"))
-@login_required
-def editarhistoria(storyid):
-    if True: #AUthorizations!!!!
-        #storyid= request.form["historiaId"]
-        historia=Historia.query.filter_by(id=int(storyid)-23500).first_or_404()
-        
-        # edit later: add generar nueva imagen, corregir texto manualmente, publicar, agregar como extensión de otra historia.
-        
-        return render_template("editarhistoria.html", post=historia)
-    return render_template_string("""{% extends "base.html" %}
-        {% block content %}
-        El usuario no está autorizado para ver esta página...
-        {% endblock %}""")
-
-
-
-
-
-
-#############
-@app.route("/requestemail", methods=("GET", "POST"))
-@login_required
-def tokensemailrequest():
-    if request.method == "POST":
-        emailrecibido= request.form["email"]
-        new_email=Email(email=emailrecibido, status="to be confirmed",
-              user_id=current_user.id)
-        db.session.add(new_email)
-        db.session.commit()
-        # current_user.myuseremail=f'TBC id[{new_email.id}:]'+ emailrecibido
-        return render_template("emailrecibido.html", new_email=new_email)
-    return render_template("tokensemailrequest.html")
-
-
-
-
-
-@app.route("/confirmemail", methods=("GET", "POST"))
-def confirm_email(email):
-    """desde python, from mynewapp import db, User, Email, confirm_email. 
-    Use first: . venv/bin/activate   """
-    if email.is_confirmed == False:
-        user=User.query.filter_by(id=email.user_id).first()
-        user.email_confirmed_at=datetime.utcnow()
-        email.is_confirmed=True
-        email.status="confirmed"
-        user.myuseremail= email.email
-        db.session.commit()
-
-########
-
-TOKENS_LIMIT=55000 #from here users without email cannot create more stories
-TOKENS_EMAIL_REQUEST=15000 #from here the email is requested
-TOKENS_TOP_LIMIT=150000 #from here the user cannot create more stories
-
-def openAI_completion(prompt, user, length=700, temp=0.9):
-    if user.tokens_usados>TOKENS_LIMIT and user.myuseremail=='':
-        return "tokens limit", 0
-        #{  "completion_tokens": 0,  "prompt_tokens": 0,"total_tokens": 0}
-    elif user.tokens_usados>TOKENS_TOP_LIMIT:
-        return "top tokens limit", 0
-    else:
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=prompt,
-            temperature=temp,
-            max_tokens=length,
-            presence_penalty=0.95,
-            frequency_penalty=0.9,
-            user=current_user.__repr__()
-        )
-    return response.choices[0].text, response.usage
-
-
-
-#not used yet? this should contain a payment method...
-@app.route("/tokenslimit", methods=("GET", "POST"))
-@login_required
-def tokenslimit():
-    if request.method == "POST":
-        emailrecibido= request.form["email"]
-        new_email=Email(email=emailrecibido, status="to be confirmed",
-              user_id=current_user.id)
-        db.session.add(new_email)
-        db.session.commit()
-        return render_template("emailrecibido.html", new_email=new_email)
-    return render_template("tokensemailrequest.html")
-
-
-
-
-
-
-
-#############################################
-
-    
-@app.route("/generarhistoria", methods=("GET", "POST"))
-@login_required
-def generarhistoria():
-    if request.method == "POST":
-        #alargar
-        alargar_id = request.form["alargarhistoria"]
-        if alargar_id == "No alargar":
-            alargarHistoria = "No alargar"
-        else:
-            alargarHistoria=Historia.query.filter_by(id=int(alargar_id)).first_or_404()
-        #palabras
-        palabrasInspiradoras = request.form["palabrasInspiradoras"]
-       
-        historiassql=current_user.sesion_actual().historias
-        # historiasMarcadas=[h for h in historiassql if
-        #                    request.form[h.id]=="True"]
-        historiasMarcadas=[]
-
-        printtext="<br>print "
-        #printtext += f"<br>{alargarHistoria.titulo}"
-        #printtext += f"<br>{[h.titulo for h in historiassql]}"
-        for historia in historiassql:
-            try:
-                # only valid for checked items.
-                h_id=request.form[str(historia.id)]
-            except KeyError:
-                printtext += f"<br>{historia.id}<br>"
-                #unchecked.append(historia)
-            else:
-                # execute if no exception
-                historiasMarcadas.append(historia)
-          
-        prompt, nuevahistoria, tokens = openAI_generar_historia(alargarHistoria, palabrasInspiradoras, historiasMarcadas, current_user)
-        if nuevahistoria=='tokens limit':
-            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
-        elif nuevahistoria=='top tokens limit':
-            return render_template("tokenslimitreached.html", tokens_limit=TOKENS_TOP_LIMIT)
-        
-        else:
-            result = {'prompt':prompt, 'historia':nuevahistoria,
-                      'autor':"openAI", 'usage':tokens}
-            result['titulo']=openAI_generar_titulo(result['historia'])
-            
-            #     if alargarHistoria.autor[-6:]=='openAI':
-            #         result['autor'] = alargarHistoria.autor
-            #         result['titulo']=alargarHistoria.titulo
-            #     else:
-            #         result['autor']=alargarHistoria.autor+' + openAI'
-            #     if alargarHistoria.autor[-1]=='+':
-            #         result['titulo']=alargarHistoria.titulo
-            #     else:
-            #         result['titulo']=alargarHistoria.titulo+'+'
-            result['AIinspiration']=openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)
-            h=guardarHistoria(result)
-            if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
-                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
-            else:
-                generate_image_from_story(h)
-                db.session.commit()
-
-                return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=h)#result=result (old...)
-        # return openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas)#+printtext
-    #render_template("generarhistoria.html", historias=current_user.sesion_actual().historias, result=result)
-        
-
-    #result = request.args.get("result")
-    return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias)
-
-
-def openAI_generar_historia(alargar, palabras, historias, user):
-    #prompt=openAI_final_prompt(alargar, palabras, historias)
-    prompt=openAI_prompt_alargarconpalabras(alargar, palabras)
-    story, usage= openAI_completion(prompt, user)
-    return prompt, story, usage 
-
-
-
-
-
-
-####################################################
-
-def openAI_AIinspiration(alargarHistoria, palabrasInspiradoras, historiasMarcadas):
-    #AIinspiration
-    if alargarHistoria == "No alargar":
-        alargartext=""
-    else:
-        alargartext=f'Extensión de la historia "{alargarHistoria.titulo}". '
-    if len(historiasMarcadas)>0:
-        historiasjoin='", "'.join([post.titulo for post in historiasMarcadas])
-        historiastext= f' se tuvieron en cuenta las historias "{historiasjoin}")'
-    else:
-        historiastext=""
-    return f'{alargartext} Inspirada en las palabras: {palabrasInspiradoras}.'
-
-
-
-
-
-    
-
-
-
-
-
-# generar historia basada en otras historias
-###################################################
-@app.route("/crearhistoria", methods=("GET", "POST"))
-@login_required
-def crearhistoria():
-    if request.method == "POST":
-        checked=[]
-        #unchecked=[]
-        historiassql=current_user.sesion_actual().historias
-        for historia in historiassql:
-            try:
-                # only valid for checked items.
-                tit=request.form[historia.titulo]
-
-            except KeyError:
-                pass
-                #unchecked.append(historia)
-            else:
-                # execute if no exception
-                checked.append(historia)
-            
-        prompt, nuevahistoria, tokens_usados = openAI_create_story(checked,current_user)
-        if nuevahistoria=='tokens limit':
-            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
-        elif nuevahistoria=='top tokens limit':
-            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_TOP_LIMIT)
-            
-        else:
-            result = {'prompt':prompt, 'historia':nuevahistoria,
-                  'autor':"openAI", 'usage':tokens_usados}
-            result['titulo']=openAI_generar_titulo(result['historia'])
-            result['AIinspiration']='Inspirada en '+", ".join([story.titulo for story in checked ])
-            h=guardarHistoria(result)
-            if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
-                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
-            else:
-                generate_image_from_story(h)
-                db.session.commit()
-
-                return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=h, checked=checked)
-    #return redirect(url_for("crearhistoria", result=response.choices[0].text))
-
-    #result = request.args.get("result")
-    return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias)
-
-
-
-def openAI_create_story(historias, user):
-    if len(historias)<2:
-        hist=historias+historias0
-    prompt=generar_prompt_crear_historias(historias)
-    story, usage= openAI_completion(prompt, user)
-    return prompt, story, usage 
-
-
-
-
-
-
-
-
-
-
-
-##################################3
-def openAI_generar_titulo(historia):
-    """Usando openAI generamos el título de una historia"""
-    titleprompt=f"""Determine el título de las  siguientes historias. *cuento: Un domingo soleado, cuya fecha no recuerdo, me
-alisté para trabajar. Mi madre me dio la bendición
-y me dirigí hacia la misa de doce en la iglesia
-del 20 de Julio. Al llegar observé que la iglesia
-estaba repleta y comencé a rezar. Pedí por un
-día a la mano de Dios y que este me protegiera.
-De repente comenzó la misa. El padre salió y
-empezaron las alabanzas. Casi al instante, mi jefe
-me llamó para que me afanara por empezar mi
-labor. Mirando a la figura de Cristo, pedí perdón,
-le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
-*cuento:{historia}. Título del cuento:"""
-    title = openai.Completion.create(
-        model="text-davinci-002",
-        prompt=titleprompt,
-        temperature=0.6,
-        max_tokens=20
-    )
-    return title.choices[0].text
-
-
-
-##################################
-
-@app.route("/historiadepalabras", methods=("GET", "POST"))
-@login_required
-def historiadepalabras():
-    if request.method == "POST":
-        palabras = request.form["story1"]
-        myprompt=generate_prompt_de_palabras(palabras)
-        ## cambiado recientemente
-        story, usage= openAI_completion(myprompt, current_user)
-        if story=='tokens limit':
-            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
-        elif story=='top tokens limit':
-            return render_template("tokensemailrequest.html", tokens_limit=TOKENS_TOP_LIMIT)
-        
-        else:
-
-            # response = openai.Completion.create(
-            #     model="text-davinci-002",
-            #     prompt=myprompt,
-            #     temperature=0.6,
-            #     max_tokens=800
-            # )
-            # story=response.choices[0].text
-        
-            result = {'AIinspiration':palabras, 'prompt':myprompt,
-                      'historia': story, 'autor':"openAI",
-                      'usage':usage}
-            result['titulo']=openAI_generar_titulo(result['historia'])
-            h=guardarHistoria(result)
-            if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
-                return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
-            else:
-                return render_template("historiadepalabras.html", result=h)
-    #return redirect(url_for("crearhistoria", result=response.choices[0].text))
-
-    #result = request.args.get("result")
-    return render_template("historiadepalabras.html")#, result=result)
-
-
-#Ejemplo 1: *Palabras principales: delincuencia, leyes, billetes, subsistir, acecho, sirena, salvado, despojado, pertenencias, Bogotá.
-#*Historia: La delincuencia Todos los días corro por miedo a que me cojan. Al igual que muchos, lo hago incumpliendo leyes, por conseguir billetes, todo por subsistir. Acecho a las personas de aquí, todos me odian por el trabajo que tengo, no saben lo que siento al cometer este hecho, me atormenta la sirena que a veces me viene persiguiendo. De todas las que me he salvado orando por un santo, el cual me está cobijando y no me ha desamparado. He despojado a muchos de sus pertenencias, las cuales utilizo para llevar de comer a mi familia en mi Bogotá.
-
-
-    
-
-#########alargarhistoria##############
-@app.route("/alargarhistoria", methods=("GET", "POST"))
-@login_required
-def alargarhistoria():
-    if request.method == "POST":
-        titulo=request.form['alargarhistoria']
-        historiassql=current_user.sesion_actual().historias
-        for story in historiassql:
-            if story.titulo==titulo:
-                prompt, nuevaparte, usage = openAI_extend_story(story, current_user)
-                if nuevaparte=='tokens limit':
-                    return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT)
-                elif nuevaparte=='top tokens limit':
-                    return render_template("tokensemailrequest.html", tokens_limit=TOKENS_TOP_LIMIT)
-        
-                else:
-                    if story.autor[-6:]=='openAI':
-                        newautor=story.autor
-                    else:
-                        newautor=story.autor+' + openAI'
-                    historiaalargada=story.historia+""" *** """+nuevaparte
-                    result = {'prompt':prompt,
-                          'historia':historiaalargada,
-                          'autor':newautor, 'usage':usage}
-                    result['titulo']=story.titulo+'+'
-                    result['AIinspiration'] = "alargar historia" 
-                    h=guardarHistoria(result)
-                    if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
-                        return render_template("tokensemailrequest.html", tokens_limit=TOKENS_LIMIT, result=h)
-                    else:
-                        return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, result=h)
-            else:
-                pass
-        note="no se encontró la historia buscada "+titulo
-        return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias, note=note)
-    return render_template("alargarhistoria.html", historias=current_user.sesion_actual().historias)
-
-
-
-
-
-
-
-
-
-
-
-
-
-def openAI_extend_story(story, user):
-    prompt=generar_prompt_alargar_historia(story)
-    newstory, usage= openAI_completion(prompt, user)
-    return prompt, newstory, usage
-
-
+"""
+** final
+"""
 
 
 
 if __name__=='__main__':
     app.run(host='0.0.0.0', port=4000, debug=True)
+#+end_src python
