@@ -24,7 +24,7 @@ if __name__=='__main__':
     #This is useful to inspect the database
     from sqlalchemy import create_engine, inspect
     
-    engine = create_engine("sqlite:///quickstart.sqlite")
+    engine = create_engine("sqlite:///quickstart_app.sqlite")
     insp = inspect(engine)
     
     print("table names:", insp.get_table_names())
