@@ -901,7 +901,7 @@ def tokenslimit():
 
 def generar_autor(user, aihelp='+GPT3'):
     if user.first_name:
-        return user.firts_name+user.last_name+aihelp
+        return user.first_name+user.last_name+aihelp
     else:
         return user.username+aihelp
 
