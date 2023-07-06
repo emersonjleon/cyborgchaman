@@ -31,7 +31,7 @@ from flask_login import current_user
 from flask_babelex import Babel
 
 from moderation import moderation2 #as moderation
-from myprompts import openAI_prompt_alargarconpalabras, generar_prompt_alargar_historia, generate_prompt_de_palabras, generar_prompt_crear_historias, historias0
+from myprompts import openAI_final_prompt, openAI_prompt_alargarconpalabras, generar_prompt_alargar_historia, generate_prompt_de_palabras, generar_prompt_crear_historias, historias0
 from generate_image import generate_image_from_story
 
 
@@ -496,15 +496,9 @@ def guardarSesion(sesion,nombre):
 """
 *** Colecciones
 """
-@app.route("/editarcoleccion/<int:col_idx>", methods=(["GET"]) )
-#@app.route("/editarcoleccion/<string:colection_code>", methods=("GET", "POST"))
-@login_required    # User must be authenticated
-def editarcoleccionpage(col_idx):
-    coleccion=Collection.query.filter_by(id=int(col_idx)-42300).first_or_404()
-    return render_template("editarcoleccion.html", coleccion=coleccion)
 
 
-@app.route("/editarcoleccion", methods=( ["POST"]))
+@app.route("/editarcoleccion", methods=("GET", "POST"))
 #@app.route("/editarcoleccion/<string:colection_code>", methods=("GET", "POST"))
 @login_required    # User must be authenticated
 def editarcoleccion():
@@ -516,8 +510,7 @@ def editarcoleccion():
             his_id = request.form["hist_id"]
             hist=Historia.query.filter_by(id=int(his_id)).first_or_404()
             coleccion.remove_historia(hist)
-            return redirect(url_for("editarcoleccionpage", col_idx=int(col_id)+42300))               
-            
+            return render_template("editarcoleccion.html", coleccion=coleccion)
         ##################
         if myaction == "agregar_historias":  
             checked=[]
@@ -534,16 +527,16 @@ def editarcoleccion():
             for hist in checked:
                 coleccion.add_historia(hist)
                 ## add!!!
-            #return render_template("editarcoleccion.html", coleccion=coleccion)
-            return redirect(url_for("editarcoleccionpage", col_idx=int(col_id)+42300))               
+            return render_template("editarcoleccion.html", coleccion=coleccion)
         ##################
         if myaction == "publicar":
             users=list(User.query.all())
             return render_template("publicarcoleccion.html",
                                    coleccion=coleccion,
                                    users=users)
-        return redirect(url_for("editarcoleccionpage", col_idx=int(col_id)+42300))               
-    
+        
+    return render_template("editarcoleccion.html", coleccion=coleccion)
+
 
 
 
@@ -567,7 +560,7 @@ def colecciones():
             newcolec.add_member(current_user)
             
             colecciones=current_user.is_member_of
-            return redirect(url_for("colecciones"))
+            return render_template("colecciones.html", colecciones=colecciones)
     colecciones=current_user.is_member_of
     return render_template("colecciones.html",  colecciones=colecciones)
 
@@ -743,12 +736,12 @@ def leerhistorias():
     return render_template("leerhistorias.html", historias=list(current_user.mis_historias().historias))
 
 #####################
-@app.route("/leercoleccion/<int:colectionidx>", methods=("GET", "POST"))
+@app.route("/leerhistorias/<int:colectionidx>", methods=("GET", "POST"))
 @login_required
 def leercoleccion(colectionidx):
     col_id= colectionidx-42300
     coleccion=Collection.query.filter_by(id=int(col_id)).first_or_404()
-    return render_template("leercoleccion.html", coleccion=coleccion)
+    return render_template("leercoleccion.html", historias=list(coleccion.historias))
 
 
 
@@ -760,8 +753,7 @@ def leercoleccion(colectionidx):
 @login_required
 def leerhistoria(storyid):
     historia=Historia.query.filter_by(id=int(storyid)-23500).first_or_404()
-    public=Collection.query.filter_by(id=2).one()
-    if historia in public.historias or current_user.id==historia.sesion.user_id: #AUthorizations!!!!
+    if True: #current_user==historia.author: #AUthorizations!!!!
         #storyid= request.form["historiaId"]
         
         
@@ -895,55 +887,6 @@ def tokenslimit():
     return render_template("tokensemailrequest.html")
 
 
-"""
-*** titulo y autor
-"""
-
-def generar_autor(user, aihelp='+GPT3'):
-    if user.first_name:
-        return user.firts_name+user.last_name+aihelp
-    else:
-        return user.username+aihelp
-
-
-
-##################################3
-def openAI_generar_titulo(historia):
-    """Usando openAI generamos el título de una historia"""
-    titleprompt=f"""Escriba el título de la  siguiente historia (en el idioma de la historia). 
-*historia:{historia}. *Título:"""
-    title = openai.Completion.create(
-        model="text-babbage-001", #gpt-3.5-turbo-instruct
-        prompt=titleprompt,
-        temperature=0.8,
-        max_tokens=20
-    )
-    return title.choices[0].text
-
-##################################3
-def bk_openAI_generar_titulo(historia):
-    """Usando openAI generamos el título de una historia"""
-    titleprompt=f"""Determine el título de las  siguientes historias. *cuento: Un domingo soleado, cuya fecha no recuerdo, me
-alisté para trabajar. Mi madre me dio la bendición
-y me dirigí hacia la misa de doce en la iglesia
-del 20 de Julio. Al llegar observé que la iglesia
-estaba repleta y comencé a rezar. Pedí por un
-día a la mano de Dios y que este me protegiera.
-De repente comenzó la misa. El padre salió y
-empezaron las alabanzas. Casi al instante, mi jefe
-me llamó para que me afanara por empezar mi
-labor. Mirando a la figura de Cristo, pedí perdón,
-le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
-*cuento:{historia}. Título del cuento:"""
-    title = openai.Completion.create(
-        model="text-davinci-002",
-        prompt=titleprompt,
-        temperature=0.8,
-        max_tokens=20
-    )
-    return title.choices[0].text
-
-
 
 
 
@@ -955,8 +898,6 @@ le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
 
 
 #############################################
-
-
 
     
 @app.route("/generarhistoria", methods=("GET", "POST"))
@@ -999,7 +940,7 @@ def generarhistoria():
         
         else:
             result = {'prompt':prompt, 'historia':nuevahistoria,
-                      'autor':generar_autor(current_user), 'usage':tokens}
+                      'autor':"openAI", 'usage':tokens}
             result['titulo']=openAI_generar_titulo(result['historia'])
             
             #     if alargarHistoria.autor[-6:]=='openAI':
@@ -1094,7 +1035,7 @@ def crearhistoria():
             
         else:
             result = {'prompt':prompt, 'historia':nuevahistoria,
-                      'autor':generar_autor(current_user), 'usage':tokens_usados}
+                  'autor':"openAI", 'usage':tokens_usados}
             result['titulo']=openAI_generar_titulo(result['historia'])
             result['AIinspiration']='Inspirada en '+", ".join([story.titulo for story in checked ])
             h=guardarHistoria(result)
@@ -1104,8 +1045,8 @@ def crearhistoria():
                 generate_image_from_story(h)
                 db.session.commit()
 
-                #return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=h, checked=checked)
-                return redirect(url_for("leerhistoria", storyid=h.id+23500))
+                return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias, result=h, checked=checked)
+    #return redirect(url_for("crearhistoria", result=response.choices[0].text))
 
     #result = request.args.get("result")
     return render_template("crearhistoria.html", historias=current_user.sesion_actual().historias)
@@ -1113,8 +1054,8 @@ def crearhistoria():
 
 
 def openAI_create_story(historias, user):
-    # if len(historias)<1:
-    #     hist=historias+historias0
+    if len(historias)<2:
+        hist=historias+historias0
     prompt=generar_prompt_crear_historias(historias)
     story, usage= openAI_completion(prompt, user)
     return prompt, story, usage 
@@ -1122,6 +1063,38 @@ def openAI_create_story(historias, user):
 
 
 
+
+
+"""
+*** titulo
+"""
+
+
+
+
+
+##################################3
+def openAI_generar_titulo(historia):
+    """Usando openAI generamos el título de una historia"""
+    titleprompt=f"""Determine el título de las  siguientes historias. *cuento: Un domingo soleado, cuya fecha no recuerdo, me
+alisté para trabajar. Mi madre me dio la bendición
+y me dirigí hacia la misa de doce en la iglesia
+del 20 de Julio. Al llegar observé que la iglesia
+estaba repleta y comencé a rezar. Pedí por un
+día a la mano de Dios y que este me protegiera.
+De repente comenzó la misa. El padre salió y
+empezaron las alabanzas. Casi al instante, mi jefe
+me llamó para que me afanara por empezar mi
+labor. Mirando a la figura de Cristo, pedí perdón,
+le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
+*cuento:{historia}. Título del cuento:"""
+    title = openai.Completion.create(
+        model="text-davinci-002",
+        prompt=titleprompt,
+        temperature=0.6,
+        max_tokens=20
+    )
+    return title.choices[0].text
 
 
 
@@ -1157,9 +1130,8 @@ def historiadepalabras():
             # story=response.choices[0].text
         
             result = {'AIinspiration':palabras, 'prompt':myprompt,
-                      'historia': story, 
+                      'historia': story, 'autor':"GPT3",
                       'usage':usage}
-            result['autor']= generar_autor(current_user)
             result['titulo']=openAI_generar_titulo(result['historia'])
             h=guardarHistoria(result)
             if current_user.myuseremail=='' and current_user.tokens_usados>TOKENS_EMAIL_REQUEST:
@@ -1178,20 +1150,10 @@ def historiadepalabras():
 """
 ***  alargar historia
 """
+
+    
+
 #########alargarhistoria##############
-####alargar con palabras
-@app.route("/alargarhistoria/<int:idx>", methods=("GET", "POST"))
-@login_required
-def requestalargarhistoria(idx):
-    if request.method == "POST":
-        return redirect(url_for("requestalargarhistoria",idx=idx))
-    alargarHistoria=Historia.query.filter_by(id=idx-23500).first_or_404()
-    return render_template("alargarhistoria.html", historias=[alargarHistoria])
-
-
-
-
-
 @app.route("/alargarhistoria", methods=("GET", "POST"))
 @login_required
 def alargarhistoria():

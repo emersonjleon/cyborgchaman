@@ -19,11 +19,12 @@
     </div>
   </div>
 
-
+  {% if coleccion.is_public or current_user in coleccion.members %}
+  
 <div class="leer_cont">
   <!-- <h2>Tus historias</h2> -->
 
-  {% for post in historias |sort (attribute="weight") %}
+  {% for post in coleccion.historias |sort (attribute="weight") %}
     <div class="historia_cont">
       <div class="story">
         <h3> <b>{{ post.titulo }}</b></h3>
@@ -66,7 +67,7 @@
       <div>
       </div>
 
-      {% if historias|length ==0 %}
+      {% if coleccion.historias|length ==0 %}
       <div class="historia_cont">
 	<div> Aún no hay historias aquí...</div>
       </div>
@@ -77,6 +78,22 @@
     </div>
     {% endfor %}
 
+    {% else %}
+      No estás autorizado para ver esta página...
+    {% endif%}
+    <!-- # verbose -->
+    {% if True and current_user.is_admin %}
+    <p>
+      {{coleccion}};
+      admins {{coleccion.admins}};
+      members {{coleccion.members}};
+      who can write? {{coleccion.can_write}};
+      is public? {{coleccion.is_public}};
+      creator id {{coleccion.creator_id}};
+      
+      visitor{{current_user}}
+    </p>
+    {% endif %}
 
 </div>
 

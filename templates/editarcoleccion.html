@@ -7,7 +7,7 @@
   
     <div class="cont_info_s">
       <div class="sesion_actual">
-
+  {% if coleccion.is_public or current_user in coleccion.members %}
 	<h3>{{coleccion.nombre}}
         <form action="/leerhistorias" method="post">
 	  <input type="hidden" name="col_id" value="{{coleccion.id}}" />
@@ -30,11 +30,13 @@
 		 <input type="radio" id="hist_id" name='hist_id' value="{{hist.id }}">		 {{hist.titulo}}, by {{hist.autor}}  <br>
 	
 	      {% endfor %}
-	    </div>
 	    
 	    {% if coleccion.historias|length==0 %}
 	    Aún no hay historias aquí...
+	    </div>
+
 	    {% else%}
+	    </div>
 	    <button class="btn btn-outline-custom" type="submit" >
 	      Retirar historia
 	    </button>
@@ -43,16 +45,16 @@
 
 	</div>
 
-	<p>
-	  <form action="/editarcoleccion" method="post">
-	    <input type="hidden" name="action" value="publicar" />
+	<!-- <p> -->
+	<!--   <form action="/editarcoleccion" method="post"> -->
+	<!--     <input type="hidden" name="action" value="publicar" /> -->
 	    
-	  <input type="hidden" name="col_id" value="{{coleccion.id}}" />
-	  <button class="btn btn-light" type="submit" >
-	    Publicar colección  
-	  </button>
-	</form>
-	</p>
+	<!--   <input type="hidden" name="col_id" value="{{coleccion.id}}" /> -->
+	<!--   <button class="btn btn-light" type="submit" > -->
+	<!--     Publicar colección   -->
+	<!--   </button> -->
+	<!-- </form> -->
+	<!-- </p> -->
 
 </div>
 
@@ -92,7 +94,14 @@
 	    {% endif %}
 		
 	  </form>
-          
+
+
+	  {% else %}
+	  No estás autorizado para ver esta página...
+	  {% endif%}
+    <!-- # verbose -->
+
+	  
 	
           </div>
         </div>

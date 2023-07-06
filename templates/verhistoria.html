@@ -23,7 +23,7 @@
           {% endif %}        
       </div>
 
-      <form class="old" action="/requestalargarhistoria" method="post">
+      <form class="old" action="/alargarhistoria/{{post.id+23500}}" method="post">
 	<input type="hidden" id="historiaId" name="historiaId" value="{{post.id}}">
         <button class="btn btn-outline-custom" type="submit">
           Alargar Historia
@@ -41,10 +41,6 @@
     </div>
 
 
-  {% if historias %}
-  {% else %}
-    <div> Aún no hay historias aquí...</div>
-  {% endif %}
 </div>
 
 <script>
