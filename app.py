@@ -857,7 +857,7 @@ def confirm_email(email):
 """
 
 
-TOKENS_LIMIT=55000 #from here users without email cannot create more stories
+TOKENS_LIMIT=35000 #from here users without email cannot create more stories
 TOKENS_EMAIL_REQUEST=15000 #from here the email is requested
 TOKENS_TOP_LIMIT=150000 #from here the user cannot create more stories
 
