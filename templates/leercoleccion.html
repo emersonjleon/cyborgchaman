@@ -18,44 +18,43 @@
       </div>
     </div>
   </div>
-
+  
   {% if coleccion.is_public or current_user in coleccion.members %}
   
-<div class="leer_cont">
-  <!-- <h2>Tus historias</h2> -->
+    <div class="leer_cont">
+      <!-- <h2>Tus historias</h2> -->
+      
+      {% for post in coleccion.historias |sort (attribute="weight") %}
+	<div class="historia_cont">
+	  <div class="story">
+            <h3> <b>{{ post.titulo }}</b></h3>
+            {% if post.image_link %}
+	      <div style="text-align: center;">
+		<img src='.{{post.image_link}}'>
+		<!-- {{post.image_link}} -->
+	      </div>	      
+	    {% endif %}        
+	    <p>
 
-  {% for post in coleccion.historias |sort (attribute="weight") %}
-    <div class="historia_cont">
-      <div class="story">
-        <h3> <b>{{ post.titulo }}</b></h3>
-          {% if post.image_link %}
-	    <div style="text-align: center;">
-	      <img src='.{{post.image_link}}'>
-	      <!-- {{post.image_link}} -->
-	    </div>	      
+	      {% if preview and post.historia|length >220 %}
+  		{{ post.historia[0:180] }}...
 
-          {% endif %}        
-        <p>
-
-	  {% if preview and post.historia|length >220 %}
-  	    {{ post.historia[0:220] }}...
-
-	  <a href="{{ url_for('leerhistoria', storyid=post.id+23500 ) }}" class="btn btn-outline-custom">Leer Historia </a>
-
-	  {% else %}
-	    {{ post.historia }}
-	  {% endif %}
+		<a href="{{ url_for('leerhistoria', storyid=post.id+23500 ) }}" class="btn btn-outline-custom">Leer Historia </a>
+	      {% else %}
+		{{ post.historia }}
+	      {% endif %}
 
 
-	</p>
+	    </p>
 
-          <h5>{{ post.autor}}, {{ post.fecha.date() }} </h5>
-          <!-- {% if post.AIinspiration %} -->
-          <!--   <h5>({{ post.AIinspiration }})</h5>  -->
-          <!-- {% endif %}         -->
-      </div>
+            <h5>{{ post.autor}}, {{ post.fecha.date() }} </h5>
+            <!-- {% if post.AIinspiration %} -->
+            <!--   <h5>({{ post.AIinspiration }})</h5>  -->
+            <!-- {% endif %}         -->
+	  </div>
 	    
-      <!-- <div> -->
+	  <!-- <div> -->
+
 	    
       <!-- 	    <form class="old" action="/publicarhistoria" method="post"> -->
       <!-- 	      <input type="hidden" id="historiaId" name="historiaId" value="{{post.id}}"> -->
@@ -64,43 +63,42 @@
       <!--         </button> -->
       <!-- 	    </form> -->
       <!-- </div> -->
-      <div>
-      </div>
+	  <div>
+	  </div>
 
-      {% if coleccion.historias|length ==0 %}
-      <div class="historia_cont">
-	<div> Aún no hay historias aquí...</div>
-      </div>
-      {% endif %}
-
+	  {% if coleccion.historias|length ==0 %}
+	    <div class="historia_cont">
+	      <div> Aún no hay historias aquí...</div>
+	    </div>
+	  {% endif %}
+      
 
       
-    </div>
-    {% endfor %}
-
+	</div>
+      {% endfor %}
     {% else %}
       No estás autorizado para ver esta página...
     {% endif%}
     <!-- # verbose -->
-    {% if True and current_user.is_admin %}
-    <p>
-      {{coleccion}};
-      admins {{coleccion.admins}};
-      members {{coleccion.members}};
-      who can write? {{coleccion.can_write}};
-      is public? {{coleccion.is_public}};
-      creator id {{coleccion.creator_id}};
+    {% if False and current_user.is_admin %}
+      <p>
+	{{coleccion}};
+	admins {{coleccion.admins}};
+	members {{coleccion.members}};
+	who can write? {{coleccion.can_write}};
+	is public? {{coleccion.is_public}};
+	creator id {{coleccion.creator_id}};
       
-      visitor{{current_user}}
-    </p>
+	visitor{{current_user}}
+      </p>
     {% endif %}
+  
+    </div>
 
-</div>
 
-
-  <!--form action="/leerhistorias/" method="post">
-    <p> 
-    <input type="submit" text value="Leer historia" />
-    </p>
+    <!--form action="/leerhistorias/" method="post">
+	<p> 
+	  <input type="submit" text value="Leer historia" />
+	</p>
   </form-->
 {% endblock %}

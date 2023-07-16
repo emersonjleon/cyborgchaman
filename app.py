@@ -740,7 +740,7 @@ def leerhistorias():
         #coleccion=Collection.query.filter_by(id=int(col_id)).first_or_404()
         return redirect(url_for("leercoleccion", colectionidx=int(col_id)+42300))
 
-    return render_template("leerhistorias.html", historias=list(current_user.mis_historias().historias))
+    return render_template("leerhistorias.html", historias=list(reversed(current_user.mis_historias().historias)))
 
 #####################
 @app.route("/leercoleccion/<int:colectionidx>", methods=("GET", "POST"))
@@ -757,18 +757,22 @@ def leercoleccion(colectionidx):
 
 
 @app.route("/leerhistoria/<int:storyid>", methods=("GET", "POST"))
-@login_required
+#@login_required ##disabled this to make public stories public
 def leerhistoria(storyid):
     historia=Historia.query.filter_by(id=int(storyid)-23500).first_or_404()
     public=Collection.query.filter_by(id=2).one()
-    if historia in public.historias or current_user.id==historia.sesion.user_id: #AUthorizations!!!!
-        #storyid= request.form["historiaId"]
+    try:
+        if historia in public.historias or current_user.id==historia.sesion.user_id:
+            # edit later: add generar nueva imagen, corregir texto manualmente, publicar, agregar como extensión de otra historia.
         
-        
-        # edit later: add generar nueva imagen, corregir texto manualmente, publicar, agregar como extensión de otra historia.
-        
-        return render_template("verhistoria.html", post=historia)
-    return render_template_string("""{% extends "base.html" %}
+            return render_template("verhistoria.html", post=historia)
+    except: #AnonymousUserMixin'
+        return render_template_string("""{% extends "base.html" %}
+        {% block content %}
+        El usuario no está autorizado para ver esta página...
+        {% endblock %}""")
+    else:
+        return render_template_string("""{% extends "base.html" %}
         {% block content %}
         El usuario no está autorizado para ver esta página...
         {% endblock %}""")
@@ -913,9 +917,9 @@ def openAI_generar_titulo(historia):
     titleprompt=f"""Escriba el título de la  siguiente historia (en el idioma de la historia). 
 *historia:{historia}. *Título:"""
     title = openai.Completion.create(
-        model="text-babbage-001", #gpt-3.5-turbo-instruct
+        model="text-curie-001", #gpt-3.5-turbo-instruct
         prompt=titleprompt,
-        temperature=0.8,
+        temperature=0.7,
         max_tokens=20
     )
     return title.choices[0].text
