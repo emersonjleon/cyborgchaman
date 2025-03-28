@@ -1,0 +1,15 @@
+# En el archivo WSGI
+import sys
+import os
+
+# Añadir la ruta del proyecto a sys.path
+path = '/home/tu_usuario/myproject'
+if path not in sys.path:
+    sys.path.append(path)
+
+# Establecer la variable de entorno para el virtualenv
+os.environ['VIRTUAL_ENV'] = '/home/tu_usuario/.virtualenvs/myenv'
+os.environ['PYTHONPATH'] = '/home/tu_usuario/.virtualenvs/myenv/lib/python3.8/site-packages'
+
+# Cargar la aplicación Flask
+from app import app as application

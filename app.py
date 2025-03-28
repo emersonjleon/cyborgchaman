@@ -17,6 +17,7 @@
 
 import os
 import openai
+import google.generativeai as genai
 from flask import Flask, redirect, render_template, request, url_for, render_template_string
 #import pickle
 from datetime import datetime, date
@@ -77,6 +78,9 @@ class ConfigClass(object):
 
 load_dotenv(find_dotenv())
 openai.api_key = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY = os.getenv("Gemini_Token")
+genai.configure(api_key=GEMINI_API_KEY)
+
 #myflaskkey=os.getenv("MYFLASK_KEY")
 #print(myflaskkey)
     
@@ -852,9 +856,75 @@ def confirm_email(email):
         user.myuseremail= email.email
         db.session.commit()
 
-########
+##################################################        
+########     GEMINI           ####################
+##################################################
 
 
+
+gemini_model = genai.GenerativeModel('gemini-2.0-flash')
+
+def gemini_completion(prompt, user, length=700, temp=0.9):
+    if user.tokens_usados>TOKENS_LIMIT and user.myuseremail=='':
+        return "tokens limit", 0
+        #{  "completion_tokens": 0,  "prompt_tokens": 0,"total_tokens": 0}
+    elif user.tokens_usados>TOKENS_TOP_LIMIT:
+        return "top tokens limit", 0
+    else:
+        response= gemini_model.generate_content(prompt)
+        # response = openai.Completion.create(
+        #     model="gpt-3.5-turbo-instruct",#"text-davinci-003", deprecated
+        #     prompt=prompt,
+        #     temperature=temp,
+        #     max_tokens=length,
+        #     presence_penalty=0.95,
+        #     frequency_penalty=0.9,
+        #     user=current_user.__repr__()
+        # )
+    return response.text, response.usage_metadata
+
+
+
+def gemini_generar_titulo(historia):
+    """Usando openAI generamos el título de una historia"""
+    titleprompt=f"""Escriba el título de la  siguiente historia (en el idioma de la historia). 
+*historia:{historia}. *Título:"""
+    title=gemini_model.generate_content(titleprompt)
+    # title = openai.Completion.create(
+    #     model="gpt-3.5-turbo-instruct",
+    #     prompt=titleprompt,
+    #     temperature=0.7,
+    #     max_tokens=20
+    # )
+    return title.text
+
+##################################
+# def bk_gemini_generar_titulo(historia):
+#     """Usando openAI generamos el título de una historia"""
+#     titleprompt=f"""Determine el título de las  siguientes historias. *cuento: Un domingo soleado, cuya fecha no recuerdo, me
+# alisté para trabajar. Mi madre me dio la bendición
+# y me dirigí hacia la misa de doce en la iglesia
+# del 20 de Julio. Al llegar observé que la iglesia
+# estaba repleta y comencé a rezar. Pedí por un
+# día a la mano de Dios y que este me protegiera.
+# De repente comenzó la misa. El padre salió y
+# empezaron las alabanzas. Casi al instante, mi jefe
+# me llamó para que me afanara por empezar mi
+# labor. Mirando a la figura de Cristo, pedí perdón,
+# le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
+# *cuento:{historia}. Título del cuento:"""
+#     title = openai.Completion.create(
+#         model="gpt-3.5-turbo-instruct",#text-davinci-002",
+#         prompt=titleprompt,
+#         temperature=0.8,
+#         max_tokens=20
+#     )
+#     return title.choices[0].text
+
+
+
+
+#########
 """
 ** Generador de Historias
 *** openAI completion
@@ -865,6 +935,29 @@ TOKENS_LIMIT=35000 #from here users without email cannot create more stories
 TOKENS_EMAIL_REQUEST=15000 #from here the email is requested
 TOKENS_TOP_LIMIT=150000 #from here the user cannot create more stories
 
+def openAI_completionG(prompt, user, length=700, temp=0.9, llm='gemini'):
+    if llm='gemini':
+        
+    else:    
+        if user.tokens_usados>TOKENS_LIMIT and user.myuseremail=='':
+            return "tokens limit", 0
+            #{  "completion_tokens": 0,  "prompt_tokens": 0,"total_tokens": 0}
+        elif user.tokens_usados>TOKENS_TOP_LIMIT:
+            return "top tokens limit", 0
+        else:
+            response = openai.Completion.create(
+                model="gpt-3.5-turbo-instruct",#"text-davinci-003", deprecated
+                prompt=prompt,
+                temperature=temp,
+                max_tokens=length,
+                presence_penalty=0.95,
+                frequency_penalty=0.9,
+                user=current_user.__repr__()
+            )
+        return response.choices[0].text, response.usage
+
+
+
 def openAI_completion(prompt, user, length=700, temp=0.9):
     if user.tokens_usados>TOKENS_LIMIT and user.myuseremail=='':
         return "tokens limit", 0
@@ -873,7 +966,7 @@ def openAI_completion(prompt, user, length=700, temp=0.9):
         return "top tokens limit", 0
     else:
         response = openai.Completion.create(
-            model="text-davinci-003",
+            model="gpt-3.5-turbo-instruct",#"text-davinci-003", deprecated
             prompt=prompt,
             temperature=temp,
             max_tokens=length,
@@ -903,28 +996,48 @@ def tokenslimit():
 *** titulo y autor
 """
 
-def generar_autor(user, aihelp='+GPT3'):
+def generar_autor(user, aihelp=' + Gemini 1.5'):
     if user.first_name:
         return user.first_name+user.last_name+aihelp
     else:
         return user.username+aihelp
 
+"""
+*** generar historia:
+modificaremos esta misma función temporalmente para usarla desde Gemini
+
+"""
+
+# def openAI_generar_historia(alargar, palabras, historias, user):
+#     #prompt=openAI_final_prompt(alargar, palabras, historias)
+#     prompt=openAI_prompt_alargarconpalabras(alargar, palabras)
+#     story, usage= openAI_completion(prompt, user)
+#     return prompt, story, usage 
 
 
-##################################3
+
+
+def openAI_generar_historia(alargar, palabras, historias, user):
+    #prompt=openAI_final_prompt(alargar, palabras, historias)
+    prompt=openAI_prompt_alargarconpalabras(alargar, palabras)
+    story, usage= gemini_completion(prompt, user)
+    return prompt, story, usage 
+
+
+##################################
 def openAI_generar_titulo(historia):
     """Usando openAI generamos el título de una historia"""
     titleprompt=f"""Escriba el título de la  siguiente historia (en el idioma de la historia). 
 *historia:{historia}. *Título:"""
     title = openai.Completion.create(
-        model="text-curie-001", #gpt-3.5-turbo-instruct
+        model="gpt-3.5-turbo-instruct",
         prompt=titleprompt,
         temperature=0.7,
         max_tokens=20
     )
     return title.choices[0].text
 
-##################################3
+##################################
 def bk_openAI_generar_titulo(historia):
     """Usando openAI generamos el título de una historia"""
     titleprompt=f"""Determine el título de las  siguientes historias. *cuento: Un domingo soleado, cuya fecha no recuerdo, me
@@ -940,7 +1053,7 @@ labor. Mirando a la figura de Cristo, pedí perdón,
 le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
 *cuento:{historia}. Título del cuento:"""
     title = openai.Completion.create(
-        model="text-davinci-002",
+        model="gpt-3.5-turbo-instruct",#text-davinci-002",
         prompt=titleprompt,
         temperature=0.8,
         max_tokens=20
@@ -951,10 +1064,6 @@ le apunté a mi cliente y disparé. Título del cuento: Por el pan de cada día
 
 
 
-
-"""
-*** generar historia
-"""
 
 
 
@@ -1026,11 +1135,6 @@ def generarhistoria():
     return render_template("generarhistoria.html", historias=current_user.sesion_actual().historias)
 
 
-def openAI_generar_historia(alargar, palabras, historias, user):
-    #prompt=openAI_final_prompt(alargar, palabras, historias)
-    prompt=openAI_prompt_alargarconpalabras(alargar, palabras)
-    story, usage= openAI_completion(prompt, user)
-    return prompt, story, usage 
 
 
 
